@@ -1,4 +1,4 @@
-package com.orozco.gesterin.persistence;
+package com.orozco.gesterin.repositories;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

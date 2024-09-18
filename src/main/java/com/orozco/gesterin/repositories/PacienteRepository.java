@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.orozco.gesterin.persistence;
+package com.orozco.gesterin.repositories;
 
+import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.model.Paciente;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,11 +17,11 @@ import java.sql.SQLException;
  * @fecha 17 sep. 2024
  * @description Sistema GESTERIN
  */
-public class PacienteDao {
+public class PacienteRepository {
 
-    private ConnectionMysql connection;
+    private final ConnectionMysql connection;
 
-    public PacienteDao() {
+    public PacienteRepository() {
         this.connection = new ConnectionMysql();
     }
 
@@ -37,14 +38,12 @@ public class PacienteDao {
                 sentencia.setString(5, paciente.getEmail());
                 sentencia.setString(6, paciente.getAddress());
                 sentencia.setString(7, paciente.getTelephone());
-                
+
                 sentencia.executeUpdate();
             }
 
-        } catch (SQLException ex) {
-            System.out.println("""
-                               Error al registrar paciente 
-                               Error: """ + ex.getMessage());
+        } catch (NullPointerException | SQLException ex) {
+            ControllerExceptionHandler.handleError(ex, "Error al registrar paciente");
             return false;
         }
 

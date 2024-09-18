@@ -1,10 +1,13 @@
 package com.orozco.gesterin.gui;
 
 import com.orozco.gesterin.model.Paciente;
-import controller.PacienteController;
+import com.orozco.gesterin.controller.PacienteController;
+import com.orozco.gesterin.gui.validations.CustomDocumentFilter;
+import com.orozco.gesterin.utils.AppConstants;
+import java.util.regex.Pattern;
 import javax.swing.JDesktopPane;
 import javax.swing.JOptionPane;
-import javax.swing.event.InternalFrameEvent;
+import javax.swing.text.AbstractDocument;
 
 /**
  *
@@ -13,7 +16,7 @@ import javax.swing.event.InternalFrameEvent;
  * @fecha 17 sep. 2024
  * @description Sistema GESTERIN
  */
-public class iFGestionPacientes extends javax.swing.JInternalFrame {
+public final class iFGestionPacientes extends javax.swing.JInternalFrame {
 
     JFPrincipal ppal;
     JDesktopPane desktop;
@@ -28,6 +31,22 @@ public class iFGestionPacientes extends javax.swing.JInternalFrame {
         initComponents();
         this.ppal = jppal;
         this.desktop = esc;
+        this.initialStatus();
+        this.initFields();
+    }
+
+    public void initFields() {
+        Pattern pattrenFullNames = Pattern.compile(AppConstants.PATTERN_NAME_LASTNAME_SLIM);
+        ((AbstractDocument) this.txtName.getDocument())
+                .setDocumentFilter(new CustomDocumentFilter(
+                        AppConstants.NAME_LASTNAME_MAX,
+                        pattrenFullNames)
+                );
+        ((AbstractDocument) this.txtLastName.getDocument())
+                .setDocumentFilter(new CustomDocumentFilter(
+                        AppConstants.NAME_LASTNAME_MAX,
+                        pattrenFullNames)
+                );
     }
 
     public void initialStatus() {
@@ -44,11 +63,6 @@ public class iFGestionPacientes extends javax.swing.JInternalFrame {
         this.btnNuevo.setEnabled(false);
         this.btnGuardar.setEnabled(true);
         this.btnCancel.setEnabled(true);
-    }
-
-    private void exit() {
-        this.ppal.salirAlMnuPpal();
-        this.dispose();
     }
 
     @SuppressWarnings("unchecked")
@@ -96,7 +110,7 @@ public class iFGestionPacientes extends javax.swing.JInternalFrame {
         lblTitle.setText("FORMULARIO REGISTRO DE PACIENTE");
         lblTitle.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jPanFields.setBackground(new java.awt.Color(255, 255, 255));
+        jPanFields.setBackground(new java.awt.Color(204, 204, 204));
 
         lblName.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblName.setForeground(new java.awt.Color(51, 51, 51));
@@ -219,7 +233,7 @@ public class iFGestionPacientes extends javax.swing.JInternalFrame {
                 .addGap(24, 24, 24))
         );
 
-        jpanButons.setBackground(new java.awt.Color(255, 255, 255));
+        jpanButons.setBackground(new java.awt.Color(204, 204, 204));
 
         btnCancel.setText("Cancelar");
         btnCancel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -345,11 +359,13 @@ public class iFGestionPacientes extends javax.swing.JInternalFrame {
 
         PacienteController pacienteController = new PacienteController();
         boolean request = pacienteController.registrarpaciente(paciente);
+        if (request) {
+            JOptionPane.showMessageDialog(null,
+                    "Paciente Registrado con exito!!",
+                    "Exito",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
 
-        JOptionPane.showMessageDialog(null,
-                request == true ? "Paciente Registrado con exito!!" : "Paciente no registrado, ocurrio un problema",
-                request == true ? "Exito" : "Error",
-                request == true ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
 
     }//GEN-LAST:event_btnGuardarActionPerformed
 

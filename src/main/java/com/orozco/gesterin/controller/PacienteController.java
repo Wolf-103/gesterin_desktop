@@ -1,7 +1,7 @@
-package controller;
+package com.orozco.gesterin.controller;
 
 import com.orozco.gesterin.model.Paciente;
-import com.orozco.gesterin.persistence.PacienteDao;
+import com.orozco.gesterin.repositories.PacienteRepository;
 
 /**
  *
@@ -12,10 +12,10 @@ import com.orozco.gesterin.persistence.PacienteDao;
  */
 public class PacienteController {
 
-    private final PacienteDao pacienteDao;
+    private final PacienteRepository pacienteDao;
 
     public PacienteController() {
-        this.pacienteDao = new PacienteDao();
+        this.pacienteDao = new PacienteRepository();
     }
 
     public boolean registrarpaciente(Paciente paciente) {

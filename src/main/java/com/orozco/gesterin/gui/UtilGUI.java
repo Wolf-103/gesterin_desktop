@@ -10,6 +10,9 @@ import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyVetoException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -17,6 +20,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFormattedTextField;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
@@ -56,80 +60,150 @@ public abstract class UtilGUI {
      * </ul>
      */
     public static void deshabilitarHabilitarComponentes(JPanel panel, boolean estado) {
-        Color background;
-        Color foreground;
-        if (estado) {
-            background = colorBackgroundActivo;
-            foreground = colorForegroundCamposActivos;
-        } else {
-            background = colorBackgroundInactivo;
-            foreground = colorForegroundCamposInactivo;
-        }
-        //Utilice instanceof cuando necesite confirmar el tipo de un objeto en tiempo de ejecución
-        Component[] componentes = panel.getComponents();
-        for (int i = 0; i < componentes.length; i++) {
-            if (componentes[i] instanceof JTextField) {
-                ((JTextField) componentes[i]).setEnabled(estado);
-                ((JTextField) componentes[i]).setBackground(background);
-                ((JTextField) componentes[i]).setForeground(foreground);
-                ((JTextField) componentes[i]).setDisabledTextColor(foreground);
-            } else {
-                if (componentes[i] instanceof JTextArea) {
-                    ((JTextArea) componentes[i]).setEnabled(estado);
-                    ((JTextArea) componentes[i]).setBackground(background);
-                    ((JTextArea) componentes[i]).setForeground(foreground);
-                    //Por si tiene disabletextColor
-                    ((JTextArea) componentes[i]).setDisabledTextColor(foreground);
-                } else {
-                    if (componentes[i] instanceof JFormattedTextField) {
-                        ((JFormattedTextField) componentes[i]).setEnabled(estado);
-                        ((JFormattedTextField) componentes[i]).setBackground(background);
-                        ((JFormattedTextField) componentes[i]).setForeground(foreground);
+        Color background = estado ? colorBackgroundActivo : colorBackgroundInactivo;
+        Color foreground = estado ? colorForegroundCamposActivos : colorForegroundCamposInactivo;
 
-                    } else {
-                        if (componentes[i] instanceof JComboBox) {
-                            ((JComboBox) componentes[i]).setEnabled(estado);
-                            ((JComboBox) componentes[i]).setBackground(background);
-                            ((JComboBox) componentes[i]).setForeground(foreground);
-                        } else {
-                            if (componentes[i] instanceof JScrollPane) {
-                                JScrollPane jScrllP = (JScrollPane) componentes[i];
-                                for (int j = 0; j < jScrllP.getViewport().getComponents().length; j++) {
-                                    if (jScrllP.getViewport().getComponent(j) instanceof JTextArea) {
-                                        ((JTextArea) jScrllP.getViewport().getComponent(j)).setEnabled(estado);
-                                        ((JTextArea) jScrllP.getViewport().getComponent(j)).setBackground(background);
-                                        ((JTextArea) jScrllP.getViewport().getComponent(j)).setForeground(foreground);
-                                        //Por si tiene disabletextColor
-                                        ((JTextArea) jScrllP.getViewport().getComponent(j)).setDisabledTextColor(foreground);
-                                    }
-                                }
-                            } else {
-                                if (componentes[i] instanceof JButton) {
-                                    ((JButton) componentes[i]).setEnabled(estado);
-                                } else {
-                                    if (componentes[i] instanceof JCheckBox) {
-                                        JCheckBox checkBox = ((JCheckBox) componentes[i]);
-                                        checkBox.setEnabled(estado);
-                                        ((JCheckBox) componentes[i]).setBackground(background);
-                                        ((JCheckBox) componentes[i]).setForeground(foreground);
-                                    } else {
-                                        if (componentes[i] instanceof JToggleButton) {
-                                            JToggleButton btn = ((JToggleButton) componentes[i]);
-                                            btn.setEnabled(estado);
-                                        } else {
-                                            if (componentes[i] instanceof JSpinner) {
-                                                JSpinner spin = ((JSpinner) componentes[i]);
-                                                spin.setEnabled(estado);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+        /**
+         * Utilice consumer porque es una interfaz que admite solo un argumento
+         * que seran en este caso los compnonetes dentro del panel, se genera un
+         * map como clave el tipo de componente y como valor el consumer que
+         * guarda al componente en sí Cada componente que se define dentro de la
+         * clase, antes de guardarse se redefine con las nuevas características
+         * según el estado
+        *
+         */
+        Map<Class<? extends Component>, Consumer<Component>> componentActions = new HashMap<>();
+        componentActions.put(JTextField.class, comp -> {
+            JTextField textField = (JTextField) comp;
+            textField.setEnabled(estado);
+            textField.setBackground(background);
+            textField.setForeground(foreground);
+            textField.setDisabledTextColor(foreground);
+        });
+        componentActions.put(JTextArea.class, comp -> {
+            JTextArea textArea = (JTextArea) comp;
+            textArea.setEnabled(estado);
+            textArea.setBackground(background);
+            textArea.setForeground(foreground);
+            textArea.setDisabledTextColor(foreground);
+        });
+        componentActions.put(JFormattedTextField.class, comp -> {
+            JFormattedTextField formattedTextField = (JFormattedTextField) comp;
+            formattedTextField.setEnabled(estado);
+            formattedTextField.setBackground(background);
+            formattedTextField.setForeground(foreground);
+        });
+        componentActions.put(JComboBox.class, comp -> {
+            JComboBox<?> comboBox = (JComboBox<?>) comp;
+            comboBox.setEnabled(estado);
+            comboBox.setBackground(background);
+            comboBox.setForeground(foreground);
+        });
+        componentActions.put(JScrollPane.class, comp -> {
+            JScrollPane scrollPane = (JScrollPane) comp;
+            for (Component c : scrollPane.getViewport().getComponents()) {
+                if (c instanceof JTextArea textArea) {
+                    textArea.setEnabled(estado);
+                    textArea.setBackground(background);
+                    textArea.setForeground(foreground);
+                    textArea.setDisabledTextColor(foreground);
                 }
             }
+        });
+        componentActions.put(JButton.class, comp -> {
+            JButton button = (JButton) comp;
+            button.setEnabled(estado);
+        });
+        componentActions.put(JCheckBox.class, comp -> {
+            JCheckBox checkBox = (JCheckBox) comp;
+            checkBox.setEnabled(estado);
+            checkBox.setBackground(background);
+            checkBox.setForeground(foreground);
+        });
+        componentActions.put(JRadioButton.class, comp -> {
+            JRadioButton jRadioBtn = (JRadioButton) comp;
+            jRadioBtn.setEnabled(estado);
+            jRadioBtn.setBackground(background);
+            jRadioBtn.setForeground(foreground);
+        });
+        componentActions.put(JToggleButton.class, comp -> {
+            JToggleButton toggleButton = (JToggleButton) comp;
+            toggleButton.setEnabled(estado);
+        });
+        componentActions.put(JSpinner.class, comp -> {
+            JSpinner spinner = (JSpinner) comp;
+            spinner.setEnabled(estado);
+        });
+
+        /**
+         * Aplicar acciones a cada componente, si no se encuentra coincidencia
+         * en la key (la clase del componente) entonces devuelve el componente
+         * sin modificar
+        *
+         */
+        for (Component componente : panel.getComponents()) {
+            componentActions.getOrDefault(componente.getClass(), c -> {
+            }).accept(componente);
         }
+//        Component[] componentes = panel.getComponents();
+//        for (Component componente : componentes) {
+//            if (componente instanceof JTextField jTextField) {
+//                jTextField.setEnabled(estado);
+//                jTextField.setBackground(background);
+//                jTextField.setForeground(foreground);
+//                jTextField.setDisabledTextColor(foreground);
+//            } else {
+//                if (componente instanceof JTextArea jTextArea) {
+//                    jTextArea.setEnabled(estado);
+//                    jTextArea.setBackground(background);
+//                    jTextArea.setForeground(foreground);
+//                    //Por si tiene disabletextColor
+//                    jTextArea.setDisabledTextColor(foreground);
+//                } else {
+//                    if (componente instanceof JFormattedTextField jFormattedTextField) {
+//                        jFormattedTextField.setEnabled(estado);
+//                        jFormattedTextField.setBackground(background);
+//                        jFormattedTextField.setForeground(foreground);
+//                    } else {
+//                        if (componente instanceof JComboBox jComboBox) {
+//                            jComboBox.setEnabled(estado);
+//                            jComboBox.setBackground(background);
+//                            jComboBox.setForeground(foreground);
+//                        } else {
+//                            if (componente instanceof JScrollPane jScrllP) {
+//                                for (int j = 0; j < jScrllP.getViewport().getComponents().length; j++) {
+//                                    if (jScrllP.getViewport().getComponent(j) instanceof JTextArea jTextArea) {
+//                                        jTextArea.setEnabled(estado);
+//                                        jTextArea.setBackground(background);
+//                                        jTextArea.setForeground(foreground);
+//                                        //Por si tiene disabletextColor
+//                                        jTextArea.setDisabledTextColor(foreground);
+//                                    }
+//                                }
+//                            } else {
+//                                if (componente instanceof JButton jButton) {
+//                                    jButton.setEnabled(estado);
+//                                } else {
+//                                    if (componente instanceof JCheckBox checkBox) {
+//                                        checkBox.setEnabled(estado);
+//                                        ((JCheckBox) componente).setBackground(background);
+//                                        ((JCheckBox) componente).setForeground(foreground);
+//                                    } else {
+//                                        if (componente instanceof JToggleButton btn) {
+//                                            btn.setEnabled(estado);
+//                                        } else {
+//                                            if (componente instanceof JSpinner spin) {
+//                                                spin.setEnabled(estado);
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     public static void borrarCamposDeComponentes(JPanel panel) {
