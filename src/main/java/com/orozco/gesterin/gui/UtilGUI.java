@@ -4,17 +4,18 @@
  */
 package com.orozco.gesterin.gui;
 
+import com.orozco.gesterin.utils.AppConstants;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.beans.PropertyVetoException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -48,6 +49,10 @@ public abstract class UtilGUI {
 
     public static Color colorBackgroundActivo = Color.WHITE;
     public static Color colorBackgroundInactivo = Color.GRAY;
+
+    private static final String dniNumeroRepetido = "(\\d)\\1{" + AppConstants.DNI_MIN + "," + AppConstants.DNI_MAX + "}";
+    private static final String cuitCuilRepetido = "(\\d)\\1{" + AppConstants.CUIT_CUIL_MIN + "," + AppConstants.CUIT_CUIL_MAX + "}";
+    private static final String numeroTelefonicoRepetido = "(\\d)\\1{" + AppConstants.TELEPHONE_MIN + "," + AppConstants.TELEPHONE_MAX + "}";
 
     /**
      * Coloca los componentes en según su estado predefinido para el sistema
@@ -308,10 +313,11 @@ public abstract class UtilGUI {
     }
 
     /**
-     * Cada vez que redimensionemos nuestra pantalla principal, la o las pantallas dependientes del
-     * escritorio se moveran a su centro
+     * Cada vez que redimensionemos nuestra pantalla principal, la o las
+     * pantallas dependientes del escritorio se moveran a su centro
+     *
      * @param desktop
-     * @param frame 
+     * @param frame
      */
     private static void centerFrame(JDesktopPane desktop, JInternalFrame frame) {
         Dimension desktopSize = desktop.getSize();
@@ -322,10 +328,11 @@ public abstract class UtilGUI {
     }
 
     /**
-     * Si intentamos abrir una ventana interna que ya existe dentro del escritorio
-     * lo movemos al frente
+     * Si intentamos abrir una ventana interna que ya existe dentro del
+     * escritorio lo movemos al frente
+     *
      * @param desktop
-     * @param frame 
+     * @param frame
      */
     private static void bringToFront(JDesktopPane desktop, JInternalFrame frame) {
         JInternalFrame[] frames = desktop.getAllFrames();
@@ -342,10 +349,11 @@ public abstract class UtilGUI {
     }
 
     /**
-     * Este médodo escucha cuando se redimenciona la pantalla principal y coloca a los frame internos
-     * en el medio de éste
+     * Este médodo escucha cuando se redimenciona la pantalla principal y coloca
+     * a los frame internos en el medio de éste
+     *
      * @param desktop
-     * @param frame 
+     * @param frame
      */
     private static void addResizeListener(JDesktopPane desktop, JInternalFrame frame) {
         desktop.addComponentListener(new ComponentAdapter() {
@@ -356,4 +364,47 @@ public abstract class UtilGUI {
         });
     }
 
+    /**
+     * Comprueba que no se repitan numeros
+     *
+     * @param numero es numero a verificar
+     * @param tipo tipo de patron a evaluar (dni,cuitCuil, telefono)
+     * @return
+     */
+    public static boolean validarNumerosRepetidos(String numero, String tipo) {
+        // Cargamos el patron de expresion a comprara .    
+        String patron = "";
+        if (tipo.equals("dni")) {
+            patron = dniNumeroRepetido;
+        } else {
+            if (tipo.equals("telefono")) {
+                patron = numeroTelefonicoRepetido;
+            } else {
+                if (tipo.equals("cuitCuil")) {
+                    patron = cuitCuilRepetido;
+                }
+            }
+        }
+        Pattern pattern1 = Pattern.compile(patron, Pattern.MULTILINE);
+        //verificar si pertence al patron
+        Matcher matcher1 = pattern1.matcher(numero);
+        return matcher1.matches();
+    }
+    
+    /**
+     * Comprueba si cumple con el patron de la construciòn de un correo
+     * electronico
+     *
+     * @param email es el correo completo a verificar
+     * @return
+     * <ul>
+     * <li>TRUE: si cumple con las condiciones</li>
+     * <li>FALSE: si incumple las condiciones</li>
+     * </ul>
+     */
+    public static boolean validateEmail(String email) {
+        Pattern pattern = Pattern.compile(AppConstants.PATTERN_EMAIL);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
 }

@@ -2,6 +2,8 @@ package com.orozco.gesterin.gui;
 
 import com.orozco.gesterin.model.Paciente;
 import com.orozco.gesterin.controller.PacienteController;
+import com.orozco.gesterin.exception.ControllerExceptionHandler;
+import com.orozco.gesterin.exception.FieldEmptyException;
 import com.orozco.gesterin.gui.validations.CustomDocumentFilter;
 import com.orozco.gesterin.utils.AppConstants;
 import java.util.ArrayList;
@@ -58,6 +60,31 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
                 .setDocumentFilter(new CustomDocumentFilter(
                         AppConstants.NAME_LASTNAME_MAX,
                         pattrenFullNames)
+                );
+        ((AbstractDocument) this.txtDNI.getDocument())
+                .setDocumentFilter(new CustomDocumentFilter(
+                        AppConstants.DNI_MAX,
+                        Pattern.compile(AppConstants.PATTERN_DNI_SLIM))
+                );
+        ((AbstractDocument) this.txtSocialSecurity.getDocument())
+                .setDocumentFilter(new CustomDocumentFilter(
+                        AppConstants.SOCIAL_SECURITY_SLIM_MAX,
+                        Pattern.compile(AppConstants.PATTERN_DNI_SLIM))
+                );
+        ((AbstractDocument) this.txtAddress.getDocument())
+                .setDocumentFilter(new CustomDocumentFilter(
+                        AppConstants.ADDRESS_MAX,
+                        Pattern.compile(AppConstants.PATTERN_ADDRESS))
+                );
+        ((AbstractDocument) this.txtTelephone.getDocument())
+                .setDocumentFilter(new CustomDocumentFilter(
+                        AppConstants.TELEPHONE_MAX,
+                        Pattern.compile(AppConstants.PATTERN_TELEPHONE))
+                );
+        ((AbstractDocument) this.txtEmail.getDocument())
+                .setDocumentFilter(new CustomDocumentFilter(
+                        AppConstants.EMAIL_MAX,
+                        Pattern.compile(AppConstants.PATTERN_EMAIL))
                 );
     }
 
@@ -540,12 +567,83 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
         }
     }
 
-    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        if (!this.update) {
-            this.newPaciente();
-        } else {
-            this.updatePaciente(this.pacienteSelected);
+    public boolean validateFields() {
+        boolean verificado = false;
+        try {
+//------Datos Generales Cliente 
+            if (this.txtDNI.getText().equals("")) {
+                this.txtDNI.requestFocus();
+                throw new FieldEmptyException(4012, "El dni no puede estar constituido por digitos repetidos.");
+            } else {
+                if (UtilGUI.validarNumerosRepetidos(this.txtDNI.getText(), "dni")) {
+//                    this.jTabPanelCliente.setSelectedIndex(0);
+                    this.txtDNI.requestFocus();
+                    throw new FieldEmptyException(4012, "El dni no puede estar constituido por digitos repetidos.");
+                } else {
+                    if (this.txtDNI.getText().length() < AppConstants.DNI_MIN) {
+                        this.txtDNI.requestFocus();
+                        throw new FieldEmptyException(4012, "El dni no puede tener una longitud menor a " + AppConstants.DNI_MIN + ".");
+                    } else {
+                        if (this.txtName.getText().equals("")) {
+                            this.txtName.requestFocus();
+                            throw new FieldEmptyException(4012, "Debe cargar NOMBRE del Cliente");
+                        } else {
+                            if (this.txtLastName.getText().equals("")) {
+                                this.txtLastName.requestFocus();
+                                throw new FieldEmptyException(4012, "Debe cargar APELLIDO del Cliente");
+                            } else {
+                                if (this.txtAddress.getText().equals("")) {
+                                    this.txtAddress.requestFocus();
+                                    throw new FieldEmptyException(4012, "Debe cargar DIRECCION del Cliente");
+                                } else {
+                                    if (this.txtSocialSecurity.getText().equals("")) {
+                                        this.txtSocialSecurity.requestFocus();
+                                        throw new FieldEmptyException(4012, "Debe cargar OBRA SOCIAL del Cliente");
+                                    } else {
+                                        if (this.txtTelephone.getText().equals("")) {
+                                            this.txtTelephone.requestFocus();
+                                            throw new FieldEmptyException(4012, "Debe cargar TELÉFONO del Cliente");
+                                        } else {
+                                            if (!this.rBtnActive.isSelected() && !this.rBtnInactive.isSelected()) {
+                                                this.rBtnActive.requestFocus();
+                                                throw new FieldEmptyException(4012, "Debe seleccionar el ESTADO del Cliente");
+                                            } else {
+                                                if (this.txtEmail.getText().equals("")) {
+                                                    this.txtEmail.requestFocus();
+                                                    throw new FieldEmptyException(4012, "Debe cargar EMAIL del Cliente");
+                                                } else {
+                                                    if (UtilGUI.validateEmail(this.txtEmail.getText())) {
+                                                        this.txtEmail.requestFocus();
+                                                        throw new FieldEmptyException(4012, """
+                                                            Verifique la informaci\u00f3n ingresada, el email debe tener el formato: 
+                                                            xxxxx...@xxxxx.xxx """);
+                                                    } else {
+                                                        verificado = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (FieldEmptyException ex) {
+            ControllerExceptionHandler.handleError(ex, "Verificar Campos");
         }
+
+        return verificado;
+    }
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        if (this.validateFields())
+            if (!this.update) {
+                this.newPaciente();
+            } else {
+                this.updatePaciente(this.pacienteSelected);
+            }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnClearFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearFilterActionPerformed

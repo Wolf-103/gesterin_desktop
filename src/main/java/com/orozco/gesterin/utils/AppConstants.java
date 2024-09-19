@@ -17,10 +17,11 @@ public class AppConstants {
     public static final int NAME_LASTNAME_MAX = 20;
     public static final int MAX_LOGIN_ATTEMPTS = 5;
     public static final long BLOCK_DURATION = 1 * 60 * 1000; // 5 MIN
+    public static final int EMAIL_MAX = 255;
     public static final int DNI_MAX = 8;
     public static final int DNI_MIN = 7;
-    public static final int RAZON_SOCIAL_MIN = 5;
-    public static final int RAZON_SOCIAL_MAX = 120;
+    public static final int SOCIAL_SECURITY_SLIM_MIN = 7 + 2;
+    public static final int SOCIAL_SECURITY_SLIM_MAX = 8 + 2;
     public static final int CUIT_CUIL_MAX = 8 + 3;
     public static final int CUIT_CUIL_MIN = 7 + 3;
     public static final int ADDRESS_MIN = 3;
@@ -42,16 +43,16 @@ public class AppConstants {
     public static final String PATTERN_EMAIL = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
     public static final String PATTERN_PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9]{" + PASSWORD_MIN + ",}$";
     public static final String PATTERN_ONLY_NUMBER = "^[0-9]$";
+    public static final String PATTERN_SOCIAL_SECURITY_SLIM = "^[0-9]+$";
+    public static final String PATTERN_DNI_SLIM = "^[0-9]+$";
     public static final String PATTERN_DNI = "^[0-9]{" + DNI_MIN + "," + DNI_MAX + "}$";
     public static final String PATTERN_CUIT_CUIL = "^[0-9]{" + CUIT_CUIL_MIN + "," + CUIT_CUIL_MAX + "}$";
     public static final String PATTERN_TELEPHONE = "^[0-9]{" + TELEPHONE_MIN + "," + TELEPHONE_MAX + "}$";
     public static final String PATTERN_MOVILPHONE = "^[0-9]{" + MOVILPHONE_MIN + "," + MOVILPHONE_MAX + "}$";
-    
     public static final String PATTERN_NAME_LASTNAME_SLIM = "^[A-Za-zÁÉÍÓÚÑáéíóúñ\\s]+$";
     public static final String PATTERN_NAME_LASTNAME = "^[A-Za-zÁÉÍÓÚÑáéíóúñ\\s]{" + NAME_LASTNAME_MIN + "," + NAME_LASTNAME_MAX + "}$";
     public static final String PATTERN_DESCRIPTION_DEF = "^[\\p{L}\\p{Nd}\\s.,;:()¿?¡!_-]{" + 0 + "," + DESCRIPTION_MAX_DEF + "}$";
     public static final String PATTERN_DESCRIPTION = "^[\\p{L}\\p{Nd}\\s.,;:()¿?¡!_-]{" + DESCRIPTION_MIN + "," + DESCRIPTION_MAX + "}$";
+    public static final String PATTERN_ADDRESS_SLIM = "^[\\p{L}\\p{Nd}\\s.,_-]+$";
     public static final String PATTERN_ADDRESS = "^[\\p{L}\\p{Nd}\\s.,_-]{" + ADDRESS_MIN + "," + ADDRESS_MAX + "}$";
-    public static final String PATTERN_RAZON_SOCIAL = "^[\\p{L}\\p{Nd}\\s.,_-]{" + RAZON_SOCIAL_MIN + "," + RAZON_SOCIAL_MAX + "}$";
-
 }

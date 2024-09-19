@@ -92,7 +92,7 @@ public class ControllerExceptionHandler {
                         + "Detalle: " + context);
                 getMessageError(context.toString(), """
                                                     Error al consultar Base de Datos. 
-                                                    Detalle: """+ex.getMessage(), JOptionPane.ERROR_MESSAGE);
+                                                    Detalle: """ + ex.getMessage(), JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -101,6 +101,17 @@ public class ControllerExceptionHandler {
                 System.out.println("BadLocationException error: " + ex.getMessage() + "\n"
                         + "Detalle: " + context);
                 getMessageError(context.toString(), "Error al manitular documento", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        registerHandler((ex, context) -> {
+            if (ex instanceof FieldEmptyException fieldErr) {
+                System.out.println("Validación de campos. Message: " + fieldErr.getMessage() + "\n"
+                        + "Detail: " + fieldErr.getDetails() + "\n"
+                        + "Contexto: " + context);
+                getMessageError("Error al Validar Campos", "Message: " + fieldErr.getMessage() + "\n"
+                        + "Detail: " + fieldErr.getDetails() + "\n"
+                        + "Contexto: " + context, JOptionPane.WARNING_MESSAGE);
             }
         });
 
