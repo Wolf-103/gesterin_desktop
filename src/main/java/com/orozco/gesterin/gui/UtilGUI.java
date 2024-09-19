@@ -9,6 +9,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.beans.PropertyVetoException;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +72,7 @@ public abstract class UtilGUI {
          * guarda al componente en sí Cada componente que se define dentro de la
          * clase, antes de guardarse se redefine con las nuevas características
          * según el estado
-        *
+         *
          */
         Map<Class<? extends Component>, Consumer<Component>> componentActions = new HashMap<>();
         componentActions.put(JTextField.class, comp -> {
@@ -139,7 +141,7 @@ public abstract class UtilGUI {
          * Aplicar acciones a cada componente, si no se encuentra coincidencia
          * en la key (la clase del componente) entonces devuelve el componente
          * sin modificar
-        *
+         *
          */
         for (Component componente : panel.getComponents()) {
             componentActions.getOrDefault(componente.getClass(), c -> {
@@ -255,6 +257,14 @@ public abstract class UtilGUI {
         }
     }
 
+    /**
+     * Antes de crear y adjuntar una ventana interna a mi desktop verifico si ya
+     * existe si no existe la configuro y la agrego a mi desktop la centro y la
+     * hago visible
+     *
+     * @param desktop
+     * @param frame
+     */
     public static void openInternalFrame(JDesktopPane desktop, JInternalFrame frame) {
         if (!isFrameOpen(desktop, frame)) {
             configureFrame(frame);
@@ -267,6 +277,14 @@ public abstract class UtilGUI {
         }
     }
 
+    /**
+     * Verifica si dentro de los internal frame de mi desktop existe un iFrame
+     * dado
+     *
+     * @param desktop
+     * @param frame
+     * @return true si encuentra false sino
+     */
     private static boolean isFrameOpen(JDesktopPane desktop, JInternalFrame frame) {
         JInternalFrame[] frames = desktop.getAllFrames();
         for (JInternalFrame openFrame : frames) {
@@ -277,11 +295,24 @@ public abstract class UtilGUI {
         return false;
     }
 
+    /**
+     * Nuestros internal frame no podran redimensionarse ni maximizar
+     *
+     * @param frame
+     */
     private static void configureFrame(JInternalFrame frame) {
         frame.setClosable(true);
         frame.setResizable(false);
+        frame.setIconifiable(false);
+        frame.setMaximizable(false);
     }
 
+    /**
+     * Cada vez que redimensionemos nuestra pantalla principal, la o las pantallas dependientes del
+     * escritorio se moveran a su centro
+     * @param desktop
+     * @param frame 
+     */
     private static void centerFrame(JDesktopPane desktop, JInternalFrame frame) {
         Dimension desktopSize = desktop.getSize();
         Dimension frameSize = frame.getSize();
@@ -290,6 +321,12 @@ public abstract class UtilGUI {
         frame.setLocation(x, y);
     }
 
+    /**
+     * Si intentamos abrir una ventana interna que ya existe dentro del escritorio
+     * lo movemos al frente
+     * @param desktop
+     * @param frame 
+     */
     private static void bringToFront(JDesktopPane desktop, JInternalFrame frame) {
         JInternalFrame[] frames = desktop.getAllFrames();
         for (JInternalFrame openFrame : frames) {
@@ -304,6 +341,12 @@ public abstract class UtilGUI {
         }
     }
 
+    /**
+     * Este médodo escucha cuando se redimenciona la pantalla principal y coloca a los frame internos
+     * en el medio de éste
+     * @param desktop
+     * @param frame 
+     */
     private static void addResizeListener(JDesktopPane desktop, JInternalFrame frame) {
         desktop.addComponentListener(new ComponentAdapter() {
             @Override

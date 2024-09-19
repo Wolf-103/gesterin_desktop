@@ -4,9 +4,14 @@ import com.orozco.gesterin.model.Paciente;
 import com.orozco.gesterin.controller.PacienteController;
 import com.orozco.gesterin.gui.validations.CustomDocumentFilter;
 import com.orozco.gesterin.utils.AppConstants;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.swing.JDesktopPane;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
 
 /**
@@ -20,6 +25,10 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
 
     JFPrincipal ppal;
     JDesktopPane desktop;
+    List<Paciente> listPacientes = new ArrayList<>();
+    PacienteController pacienteController;
+    boolean update = false;
+    Paciente pacienteSelected = null;
 
     /**
      * Creates new form GestionPacientes
@@ -31,8 +40,11 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
         initComponents();
         this.ppal = jppal;
         this.desktop = esc;
+        this.pacienteController = new PacienteController();
         this.initialStatus();
         this.initFields();
+
+        this.loadTablePacientes();
     }
 
     public void initFields() {
@@ -49,20 +61,52 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
                 );
     }
 
+    public void loadForm(Paciente paciente) {
+        this.txtName.setText(paciente.getFirstName() != null ? paciente.getFirstName() : "");
+        this.txtLastName.setText(paciente.getLastName() != null ? paciente.getLastName() : "");
+        this.txtDNI.setText(paciente.getDni() != null ? paciente.getDni() : "");
+        this.txtAddress.setText(paciente.getAddress() != null ? paciente.getAddress() : "");
+        this.txtSocialSecurity.setText(paciente.getSocialSecurity() != null ? paciente.getSocialSecurity() : "");
+        this.txtEmail.setText(paciente.getEmail() != null ? paciente.getEmail() : "");
+        this.txtTelephone.setText(paciente.getTelephone() != null ? paciente.getTelephone() : "");
+        if (paciente.getStatus() != null) {
+            if (paciente.getStatus().equals("ACTIVE")) {
+                this.rBtnActive.setSelected(true);
+            } else {
+                this.rBtnInactive.setSelected(true);
+            }
+        } else {
+            this.rBtnInactive.setSelected(true);
+        }
+    }
+
+    public void loadTablePacientes() {
+        String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "DNI", "STATUS"};
+        DefaultTableModel model = new DefaultTableModel(null, columnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        this.listPacientes = this.pacienteController.getAll();
+        for (Paciente paciente : this.listPacientes) {
+            Object[] data = new Object[columnNames.length];
+            data[0] = paciente.getId();
+            data[1] = paciente.getFirstName();
+            data[2] = paciente.getLastName();
+            data[3] = paciente.getDni();
+            data[4] = paciente.getStatus();
+            model.addRow(data);
+        }
+        this.jTblPacientes.setModel(model);
+    }
+
     public void initialStatus() {
-//        this.pacienteSelect = null;
+        this.pacienteSelected = null;
         UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
         UtilGUI.borrarCamposDeComponentes(this.jPanFields);
         this.btnNuevo.setEnabled(true);
         this.btnGuardar.setEnabled(false);
-        this.btnCancel.setEnabled(false);
-    }
-
-    private void enableField() {
-        UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
-        this.btnNuevo.setEnabled(false);
-        this.btnGuardar.setEnabled(true);
-        this.btnCancel.setEnabled(true);
     }
 
     @SuppressWarnings("unchecked")
@@ -70,6 +114,8 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         btnGrupStatus = new javax.swing.ButtonGroup();
+        jPopMnuTableOptions = new javax.swing.JPopupMenu();
+        jMnuEdit = new javax.swing.JMenuItem();
         jPanGeneral = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         lblTitle = new javax.swing.JLabel();
@@ -83,7 +129,7 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
         txtSocialSecurity = new javax.swing.JTextField();
         lblSocialSecurity = new javax.swing.JLabel();
         lblAddress = new javax.swing.JLabel();
-        txtAddress1 = new javax.swing.JTextField();
+        txtAddress = new javax.swing.JTextField();
         txtTelephone = new javax.swing.JTextField();
         lblTelephone = new javax.swing.JLabel();
         lblEmail = new javax.swing.JLabel();
@@ -95,6 +141,20 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
         btnCancel = new javax.swing.JButton();
         btnGuardar = new javax.swing.JButton();
         btnNuevo = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTblPacientes = new javax.swing.JTable();
+        jpanBtnList = new javax.swing.JPanel();
+        btnClearFilter = new javax.swing.JButton();
+        lblTitleListaPacientes = new javax.swing.JLabel();
+
+        jMnuEdit.setText("Editar");
+        jMnuEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMnuEditActionPerformed(evt);
+            }
+        });
+        jPopMnuTableOptions.add(jMnuEdit);
 
         setClosable(true);
         setTitle("Gestión de Pacientes");
@@ -185,7 +245,7 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
                             .addComponent(txtDNI, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtSocialSecurity, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtTelephone, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtAddress1, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanFieldsLayout.createSequentialGroup()
                                 .addGap(8, 8, 8)
                                 .addComponent(rBtnActive, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -215,7 +275,7 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtAddress1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblTelephone, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -303,7 +363,84 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
                 .addComponent(jPanFields, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jpanButons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addContainerGap(37, Short.MAX_VALUE))
+        );
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jTblPacientes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jTblPacientes.setComponentPopupMenu(jPopMnuTableOptions);
+        jTblPacientes.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jScrollPane1.setViewportView(jTblPacientes);
+
+        jpanBtnList.setBackground(new java.awt.Color(255, 255, 255));
+        jpanBtnList.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jpanBtnList.setForeground(new java.awt.Color(255, 255, 255));
+
+        btnClearFilter.setText("Quitar Filtros");
+        btnClearFilter.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnClearFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearFilterActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jpanBtnListLayout = new javax.swing.GroupLayout(jpanBtnList);
+        jpanBtnList.setLayout(jpanBtnListLayout);
+        jpanBtnListLayout.setHorizontalGroup(
+            jpanBtnListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpanBtnListLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnClearFilter)
+                .addContainerGap())
+        );
+        jpanBtnListLayout.setVerticalGroup(
+            jpanBtnListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpanBtnListLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnClearFilter)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        lblTitleListaPacientes.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        lblTitleListaPacientes.setForeground(new java.awt.Color(51, 51, 51));
+        lblTitleListaPacientes.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTitleListaPacientes.setText("LISTA DE PACIENTE");
+        lblTitleListaPacientes.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1)
+                    .addComponent(lblTitleListaPacientes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
+                    .addComponent(jpanBtnList, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblTitleListaPacientes, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(3, 3, 3)
+                .addComponent(jpanBtnList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 391, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanGeneralLayout = new javax.swing.GroupLayout(jPanGeneral);
@@ -312,14 +449,18 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
             jPanGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanGeneralLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanGeneralLayout.setVerticalGroup(
             jPanGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanGeneralLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanGeneralLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanGeneralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -342,32 +483,100 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-        this.enableField();
+        this.update = false;
+        this.pacienteSelected = null;
+        UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
+        this.btnNuevo.setEnabled(false);
+        this.btnGuardar.setEnabled(true);
     }//GEN-LAST:event_btnNuevoActionPerformed
 
-    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        Paciente paciente = new Paciente(
-                this.txtName.getText(),
-                this.txtLastName.getText(),
-                this.txtDNI.getText(),
-                this.txtSocialSecurity.getText(),
-                this.txtEmail.getText(),
-                this.rBtnActive.isSelected() == true ? "ACTIVE" : "INACTIVE",
-                this.txtAddress1.getText(),
-                this.txtTelephone.getText()
-        );
+    private Paciente setPaciente(Paciente paciente) {
+        paciente.setFirstName(this.txtName.getText());
+        paciente.setLastName(this.txtLastName.getText());
+        paciente.setDni(this.txtDNI.getText());
+        paciente.setSocialSecurity(this.txtSocialSecurity.getText());
+        paciente.setEmail(this.txtEmail.getText());
+        paciente.setStatus(this.rBtnActive.isSelected() == true ? "ACTIVE" : "INACTIVE");
+        paciente.setAddress(this.txtAddress.getText());
+        paciente.setTelephone(this.txtTelephone.getText());
+        return paciente;
+    }
 
-        PacienteController pacienteController = new PacienteController();
-        boolean request = pacienteController.registrarpaciente(paciente);
+    private void newPaciente() {
+        Paciente paciente = new Paciente();
+        paciente = this.setPaciente(paciente);
+        boolean request = this.pacienteController.registrarpaciente(paciente);
         if (request) {
             JOptionPane.showMessageDialog(null,
                     "Paciente Registrado con exito!!",
                     "Exito",
                     JOptionPane.INFORMATION_MESSAGE);
+            this.loadTablePacientes();
+            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+            this.btnNuevo.setEnabled(true);
+            this.btnGuardar.setEnabled(false);
         }
+    }
 
+    private void updatePaciente(Paciente paciente) {
+        if (paciente != null) {
+            paciente = this.setPaciente(paciente);
+            boolean request = this.pacienteController.update(paciente);
+            if (request) {
+                JOptionPane.showMessageDialog(null,
+                        "Paciente actualizado con exito!!",
+                        "Exito",
+                        JOptionPane.INFORMATION_MESSAGE);
+                this.loadTablePacientes();
+                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+                this.btnNuevo.setEnabled(true);
+                this.btnGuardar.setEnabled(false);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null,
+                    "Paciente No seleccionado",
+                    "Informacion",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
 
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        if (!this.update) {
+            this.newPaciente();
+        } else {
+            this.updatePaciente(this.pacienteSelected);
+        }
     }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnClearFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearFilterActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnClearFilterActionPerformed
+
+    private void jMnuEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuEditActionPerformed
+
+        int row = this.jTblPacientes.getSelectedRow();
+        if (row != -1) {
+            Long idPaciente = ((Long) this.jTblPacientes.getValueAt(row, 0));
+            Optional<Paciente> pacienteOptional = this.listPacientes.stream()
+                    .filter(paciente -> Objects.equals(paciente.getId(), idPaciente))
+                    .findFirst();
+            if (pacienteOptional.isPresent()) {
+                this.pacienteSelected = pacienteOptional.get();
+                UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
+                this.loadForm(this.pacienteSelected);
+                this.btnNuevo.setEnabled(false);
+                this.btnGuardar.setEnabled(true);
+                this.update = true;
+            } else {
+                UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+                this.btnNuevo.setEnabled(true);
+                this.btnGuardar.setEnabled(false);
+                this.update = false;
+            }
+        }
+    }//GEN-LAST:event_jMnuEditActionPerformed
 
     @Override
     public void dispose() {
@@ -377,12 +586,19 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
+    private javax.swing.JButton btnClearFilter;
     private javax.swing.ButtonGroup btnGrupStatus;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnNuevo;
+    private javax.swing.JMenuItem jMnuEdit;
     private javax.swing.JPanel jPanFields;
     private javax.swing.JPanel jPanGeneral;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPopupMenu jPopMnuTableOptions;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTblPacientes;
+    private javax.swing.JPanel jpanBtnList;
     private javax.swing.JPanel jpanButons;
     private javax.swing.JLabel lblAddress;
     private javax.swing.JLabel lblDNI;
@@ -393,9 +609,10 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblStatus;
     private javax.swing.JLabel lblTelephone;
     private javax.swing.JLabel lblTitle;
+    private javax.swing.JLabel lblTitleListaPacientes;
     private javax.swing.JRadioButton rBtnActive;
     private javax.swing.JRadioButton rBtnInactive;
-    private javax.swing.JTextField txtAddress1;
+    private javax.swing.JTextField txtAddress;
     private javax.swing.JTextField txtDNI;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtLastName;

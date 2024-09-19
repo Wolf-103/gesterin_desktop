@@ -23,7 +23,6 @@ public class Paciente {
     }
 
     public Paciente(String firstName, String lastName, String dni, String socialSecurity, String email, String status, String address, String telephone) {
-        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.dni = dni;

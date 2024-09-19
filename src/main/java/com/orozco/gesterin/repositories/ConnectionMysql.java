@@ -23,20 +23,15 @@ public class ConnectionMysql {
     private String url = "jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database + "?serverTimezone=UTC";
 
     public ConnectionMysql() {
-        try {
-            this.conn = DriverManager.getConnection(this.url, this.user, this.password);
-
-            if (conn != null) {
-                System.out.println("Connection success!!");
-            }
-
-        } catch (SQLException ex) {
-            System.out.println("Connection error: " + ex.getMessage());
-        }
+        // El constructor no abre la conexión
     }
 
     public Connection getConn() {
-        return conn;
+        try {
+            return DriverManager.getConnection(this.url, this.user, this.password);
+        } catch (SQLException ex) {
+            System.out.println("Connection error: " + ex.getMessage());
+            return null; // Devuelve null si no puede obtener la conexión
+        }
     }
-
 }

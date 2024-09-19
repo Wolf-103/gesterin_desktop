@@ -2,6 +2,7 @@ package com.orozco.gesterin.controller;
 
 import com.orozco.gesterin.model.Paciente;
 import com.orozco.gesterin.repositories.PacienteRepository;
+import java.util.List;
 
 /**
  *
@@ -12,14 +13,22 @@ import com.orozco.gesterin.repositories.PacienteRepository;
  */
 public class PacienteController {
 
-    private final PacienteRepository pacienteDao;
+    private final PacienteRepository pacienteRepo;
 
     public PacienteController() {
-        this.pacienteDao = new PacienteRepository();
+        this.pacienteRepo = new PacienteRepository();
     }
 
     public boolean registrarpaciente(Paciente paciente) {
-        return this.pacienteDao.registrar(paciente);
+        return this.pacienteRepo.registrar(paciente);
+    }
+    
+    public List<Paciente> getAll(){
+        return this.pacienteRepo.getAll();
+    }
+    
+    public boolean update(Paciente paciente){
+        return this.pacienteRepo.update(paciente);
     }
 
 }
