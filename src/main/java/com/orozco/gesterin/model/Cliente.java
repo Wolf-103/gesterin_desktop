@@ -7,7 +7,7 @@ package com.orozco.gesterin.model;
  * @fecha 17 sep. 2024
  * @description Sistema GESTERIN
  */
-public class Paciente {
+public class Cliente {
 
     private Long id;
     private String firstName;
@@ -19,10 +19,10 @@ public class Paciente {
     private String address;
     private String telephone;
 
-    public Paciente() {
+    public Cliente() {
     }
 
-    public Paciente(String firstName, String lastName, String dni, String socialSecurity, String email, String status, String address, String telephone) {
+    public Cliente(String firstName, String lastName, String dni, String socialSecurity, String email, String status, String address, String telephone) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.dni = dni;

@@ -1,4 +1,4 @@
-package com.orozco.gesterin.gui.validations;
+package com.orozco.gesterin.vista.validations;
 
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import java.util.logging.Level;

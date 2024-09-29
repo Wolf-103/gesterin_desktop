@@ -67,7 +67,7 @@ public class ControllerExceptionHandler {
     static {
         // Registrar manejador para RuntimeException
         registerHandler((ex, context) -> {
-            if (ex instanceof RuntimeException) {
+            if (ex instanceof RuntimeException && !(ex instanceof CustomeBaseException)) {
                 System.out.println("RuntimeException Error: " + ex.getMessage() + "\n"
                         + "Detalle: " + context);
                 getMessageError(context.toString(), """

@@ -1,4 +1,4 @@
-package com.orozco.gesterin.repositories;
+package com.orozco.gesterin.DAO;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

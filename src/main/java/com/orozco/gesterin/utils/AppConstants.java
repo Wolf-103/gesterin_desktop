@@ -41,12 +41,14 @@ public class AppConstants {
     public static final int OBSERVATION_MAX = 2000;
 
     public static final String PATTERN_EMAIL = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+    public static final String PATTERN_EMAIL_VALID_CHARACTERS = "^[A-Za-z0-9+_.-]+@?[A-Za-z0-9+_.-]*$";
     public static final String PATTERN_PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9]{" + PASSWORD_MIN + ",}$";
     public static final String PATTERN_ONLY_NUMBER = "^[0-9]$";
     public static final String PATTERN_SOCIAL_SECURITY_SLIM = "^[0-9]+$";
     public static final String PATTERN_DNI_SLIM = "^[0-9]+$";
     public static final String PATTERN_DNI = "^[0-9]{" + DNI_MIN + "," + DNI_MAX + "}$";
     public static final String PATTERN_CUIT_CUIL = "^[0-9]{" + CUIT_CUIL_MIN + "," + CUIT_CUIL_MAX + "}$";
+    public static final String PATTERN_TELEPHONE_SLIM = "^[0-9]+$";
     public static final String PATTERN_TELEPHONE = "^[0-9]{" + TELEPHONE_MIN + "," + TELEPHONE_MAX + "}$";
     public static final String PATTERN_MOVILPHONE = "^[0-9]{" + MOVILPHONE_MIN + "," + MOVILPHONE_MAX + "}$";
     public static final String PATTERN_NAME_LASTNAME_SLIM = "^[A-Za-zÁÉÍÓÚÑáéíóúñ\\s]+$";

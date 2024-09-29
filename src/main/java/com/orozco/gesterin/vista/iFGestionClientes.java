@@ -1,10 +1,10 @@
-package com.orozco.gesterin.gui;
+package com.orozco.gesterin.vista;
 
-import com.orozco.gesterin.model.Paciente;
-import com.orozco.gesterin.controller.PacienteController;
+import com.orozco.gesterin.model.Cliente;
+import com.orozco.gesterin.controller.ClienteController;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.exception.FieldEmptyException;
-import com.orozco.gesterin.gui.validations.CustomDocumentFilter;
+import com.orozco.gesterin.vista.validations.CustomDocumentFilter;
 import com.orozco.gesterin.utils.AppConstants;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,32 +23,32 @@ import javax.swing.text.AbstractDocument;
  * @fecha 17 sep. 2024
  * @description Sistema GESTERIN
  */
-public final class iFGestionPacientes extends javax.swing.JInternalFrame {
-
+public final class iFGestionClientes extends javax.swing.JInternalFrame {
+    
     JFPrincipal ppal;
     JDesktopPane desktop;
-    List<Paciente> listPacientes = new ArrayList<>();
-    PacienteController pacienteController;
+    List<Cliente> listClientes = new ArrayList<>();
+    ClienteController clienteController;
     boolean update = false;
-    Paciente pacienteSelected = null;
+    Cliente clienteSelected = null;
 
     /**
-     * Creates new form GestionPacientes
+     * Creates new form GestionClientes
      *
      * @param esc
      * @param jppal
      */
-    public iFGestionPacientes(JDesktopPane esc, JFPrincipal jppal) {
+    public iFGestionClientes(JDesktopPane esc, JFPrincipal jppal) {
         initComponents();
         this.ppal = jppal;
         this.desktop = esc;
-        this.pacienteController = new PacienteController();
+        this.clienteController = new ClienteController();
         this.initialStatus();
         this.initFields();
-
-        this.loadTablePacientes();
+        
+        this.loadTableClientes();
     }
-
+    
     public void initFields() {
         Pattern pattrenFullNames = Pattern.compile(AppConstants.PATTERN_NAME_LASTNAME_SLIM);
         ((AbstractDocument) this.txtName.getDocument())
@@ -69,35 +69,35 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
         ((AbstractDocument) this.txtSocialSecurity.getDocument())
                 .setDocumentFilter(new CustomDocumentFilter(
                         AppConstants.SOCIAL_SECURITY_SLIM_MAX,
-                        Pattern.compile(AppConstants.PATTERN_DNI_SLIM))
+                        Pattern.compile(AppConstants.PATTERN_SOCIAL_SECURITY_SLIM))
                 );
         ((AbstractDocument) this.txtAddress.getDocument())
                 .setDocumentFilter(new CustomDocumentFilter(
                         AppConstants.ADDRESS_MAX,
-                        Pattern.compile(AppConstants.PATTERN_ADDRESS))
+                        Pattern.compile(AppConstants.PATTERN_ADDRESS_SLIM))
                 );
         ((AbstractDocument) this.txtTelephone.getDocument())
                 .setDocumentFilter(new CustomDocumentFilter(
                         AppConstants.TELEPHONE_MAX,
-                        Pattern.compile(AppConstants.PATTERN_TELEPHONE))
+                        Pattern.compile(AppConstants.PATTERN_TELEPHONE_SLIM))
                 );
         ((AbstractDocument) this.txtEmail.getDocument())
                 .setDocumentFilter(new CustomDocumentFilter(
                         AppConstants.EMAIL_MAX,
-                        Pattern.compile(AppConstants.PATTERN_EMAIL))
+                        Pattern.compile(AppConstants.PATTERN_EMAIL_VALID_CHARACTERS))
                 );
     }
-
-    public void loadForm(Paciente paciente) {
-        this.txtName.setText(paciente.getFirstName() != null ? paciente.getFirstName() : "");
-        this.txtLastName.setText(paciente.getLastName() != null ? paciente.getLastName() : "");
-        this.txtDNI.setText(paciente.getDni() != null ? paciente.getDni() : "");
-        this.txtAddress.setText(paciente.getAddress() != null ? paciente.getAddress() : "");
-        this.txtSocialSecurity.setText(paciente.getSocialSecurity() != null ? paciente.getSocialSecurity() : "");
-        this.txtEmail.setText(paciente.getEmail() != null ? paciente.getEmail() : "");
-        this.txtTelephone.setText(paciente.getTelephone() != null ? paciente.getTelephone() : "");
-        if (paciente.getStatus() != null) {
-            if (paciente.getStatus().equals("ACTIVE")) {
+    
+    public void loadForm(Cliente cliente) {
+        this.txtName.setText(cliente.getFirstName() != null ? cliente.getFirstName() : "");
+        this.txtLastName.setText(cliente.getLastName() != null ? cliente.getLastName() : "");
+        this.txtDNI.setText(cliente.getDni() != null ? cliente.getDni() : "");
+        this.txtAddress.setText(cliente.getAddress() != null ? cliente.getAddress() : "");
+        this.txtSocialSecurity.setText(cliente.getSocialSecurity() != null ? cliente.getSocialSecurity() : "");
+        this.txtEmail.setText(cliente.getEmail() != null ? cliente.getEmail() : "");
+        this.txtTelephone.setText(cliente.getTelephone() != null ? cliente.getTelephone() : "");
+        if (cliente.getStatus() != null) {
+            if (cliente.getStatus().equals("ACTIVE")) {
                 this.rBtnActive.setSelected(true);
             } else {
                 this.rBtnInactive.setSelected(true);
@@ -106,8 +106,8 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
             this.rBtnInactive.setSelected(true);
         }
     }
-
-    public void loadTablePacientes() {
+    
+    public void loadTableClientes() {
         String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "DNI", "STATUS"};
         DefaultTableModel model = new DefaultTableModel(null, columnNames) {
             @Override
@@ -115,27 +115,27 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
                 return false;
             }
         };
-        this.listPacientes = this.pacienteController.getAll();
-        for (Paciente paciente : this.listPacientes) {
+        this.listClientes = this.clienteController.getAll();
+        for (Cliente cliente : this.listClientes) {
             Object[] data = new Object[columnNames.length];
-            data[0] = paciente.getId();
-            data[1] = paciente.getFirstName();
-            data[2] = paciente.getLastName();
-            data[3] = paciente.getDni();
-            data[4] = paciente.getStatus();
+            data[0] = cliente.getId();
+            data[1] = cliente.getFirstName();
+            data[2] = cliente.getLastName();
+            data[3] = cliente.getDni();
+            data[4] = cliente.getStatus();
             model.addRow(data);
         }
-        this.jTblPacientes.setModel(model);
+        this.jTblCliente.setModel(model);
     }
-
+    
     public void initialStatus() {
-        this.pacienteSelected = null;
+        this.clienteSelected = null;
         UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
         UtilGUI.borrarCamposDeComponentes(this.jPanFields);
         this.btnNuevo.setEnabled(true);
         this.btnGuardar.setEnabled(false);
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -170,10 +170,10 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
         btnNuevo = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTblPacientes = new javax.swing.JTable();
+        jTblCliente = new javax.swing.JTable();
         jpanBtnList = new javax.swing.JPanel();
         btnClearFilter = new javax.swing.JButton();
-        lblTitleListaPacientes = new javax.swing.JLabel();
+        lblTitleListaClientes = new javax.swing.JLabel();
 
         jMnuEdit.setText("Editar");
         jMnuEdit.addActionListener(new java.awt.event.ActionListener() {
@@ -184,7 +184,7 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
         jPopMnuTableOptions.add(jMnuEdit);
 
         setClosable(true);
-        setTitle("Gestión de Pacientes");
+        setTitle("Gestión de Clientes");
 
         jPanGeneral.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -194,7 +194,7 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
         lblTitle.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         lblTitle.setForeground(new java.awt.Color(51, 51, 51));
         lblTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTitle.setText("FORMULARIO REGISTRO DE PACIENTE");
+        lblTitle.setText("FORMULARIO REGISTRO DE CLIENTES");
         lblTitle.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jPanFields.setBackground(new java.awt.Color(204, 204, 204));
@@ -396,7 +396,7 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jTblPacientes.setModel(new javax.swing.table.DefaultTableModel(
+        jTblCliente.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -407,9 +407,9 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jTblPacientes.setComponentPopupMenu(jPopMnuTableOptions);
-        jTblPacientes.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jScrollPane1.setViewportView(jTblPacientes);
+        jTblCliente.setComponentPopupMenu(jPopMnuTableOptions);
+        jTblCliente.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jScrollPane1.setViewportView(jTblCliente);
 
         jpanBtnList.setBackground(new java.awt.Color(255, 255, 255));
         jpanBtnList.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -440,11 +440,11 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        lblTitleListaPacientes.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        lblTitleListaPacientes.setForeground(new java.awt.Color(51, 51, 51));
-        lblTitleListaPacientes.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTitleListaPacientes.setText("LISTA DE PACIENTE");
-        lblTitleListaPacientes.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        lblTitleListaClientes.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        lblTitleListaClientes.setForeground(new java.awt.Color(51, 51, 51));
+        lblTitleListaClientes.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTitleListaClientes.setText("LISTA DE CLIENTES");
+        lblTitleListaClientes.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -454,7 +454,7 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1)
-                    .addComponent(lblTitleListaPacientes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
+                    .addComponent(lblTitleListaClientes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
                     .addComponent(jpanBtnList, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -462,7 +462,7 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblTitleListaPacientes, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblTitleListaClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(3, 3, 3)
                 .addComponent(jpanBtnList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -511,110 +511,111 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
         this.update = false;
-        this.pacienteSelected = null;
+        this.clienteSelected = null;
         UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
+        UtilGUI.borrarCamposDeComponentes(this.jPanFields);
         this.btnNuevo.setEnabled(false);
         this.btnGuardar.setEnabled(true);
     }//GEN-LAST:event_btnNuevoActionPerformed
-
-    private Paciente setPaciente(Paciente paciente) {
-        paciente.setFirstName(this.txtName.getText());
-        paciente.setLastName(this.txtLastName.getText());
-        paciente.setDni(this.txtDNI.getText());
-        paciente.setSocialSecurity(this.txtSocialSecurity.getText());
-        paciente.setEmail(this.txtEmail.getText());
-        paciente.setStatus(this.rBtnActive.isSelected() == true ? "ACTIVE" : "INACTIVE");
-        paciente.setAddress(this.txtAddress.getText());
-        paciente.setTelephone(this.txtTelephone.getText());
-        return paciente;
+    
+    private Cliente setCliente(Cliente cliente) {
+        cliente.setFirstName(this.txtName.getText());
+        cliente.setLastName(this.txtLastName.getText());
+        cliente.setDni(this.txtDNI.getText());
+        cliente.setSocialSecurity(this.txtSocialSecurity.getText());
+        cliente.setEmail(this.txtEmail.getText());
+        cliente.setStatus(this.rBtnActive.isSelected() == true ? "ACTIVE" : "INACTIVE");
+        cliente.setAddress(this.txtAddress.getText());
+        cliente.setTelephone(this.txtTelephone.getText());
+        return cliente;
     }
-
-    private void newPaciente() {
-        Paciente paciente = new Paciente();
-        paciente = this.setPaciente(paciente);
-        boolean request = this.pacienteController.registrarpaciente(paciente);
+    
+    private void newCliente() {
+        Cliente cliente = new Cliente();
+        cliente = this.setCliente(cliente);
+        boolean request = this.clienteController.registrarCliente(cliente);
         if (request) {
             JOptionPane.showMessageDialog(null,
-                    "Paciente Registrado con exito!!",
+                    "Cliente Registrado con exito!!",
                     "Exito",
                     JOptionPane.INFORMATION_MESSAGE);
-            this.loadTablePacientes();
+            this.loadTableClientes();
             UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
             this.btnNuevo.setEnabled(true);
             this.btnGuardar.setEnabled(false);
         }
     }
-
-    private void updatePaciente(Paciente paciente) {
-        if (paciente != null) {
-            paciente = this.setPaciente(paciente);
-            boolean request = this.pacienteController.update(paciente);
+    
+    private void updateCliente(Cliente cliente) {
+        if (cliente != null) {
+            cliente = this.setCliente(cliente);
+            boolean request = this.clienteController.update(cliente);
             if (request) {
                 JOptionPane.showMessageDialog(null,
-                        "Paciente actualizado con exito!!",
+                        "Cliente actualizado con exito!!",
                         "Exito",
                         JOptionPane.INFORMATION_MESSAGE);
-                this.loadTablePacientes();
+                this.loadTableClientes();
                 UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
                 this.btnNuevo.setEnabled(true);
                 this.btnGuardar.setEnabled(false);
             }
         } else {
             JOptionPane.showMessageDialog(null,
-                    "Paciente No seleccionado",
+                    "Cliente No seleccionado",
                     "Informacion",
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }
-
+    
     public boolean validateFields() {
         boolean verificado = false;
         try {
 //------Datos Generales Cliente 
             if (this.txtDNI.getText().equals("")) {
                 this.txtDNI.requestFocus();
-                throw new FieldEmptyException(4012, "El dni no puede estar constituido por digitos repetidos.");
+                throw new FieldEmptyException(4012, "Campo DNI vacío", "El dni no puede estar constituido por digitos repetidos.");
             } else {
                 if (UtilGUI.validarNumerosRepetidos(this.txtDNI.getText(), "dni")) {
 //                    this.jTabPanelCliente.setSelectedIndex(0);
                     this.txtDNI.requestFocus();
-                    throw new FieldEmptyException(4012, "El dni no puede estar constituido por digitos repetidos.");
+                    throw new FieldEmptyException(4012, "Campo DNI no válido", "El dni no puede estar constituido por digitos repetidos.");
                 } else {
                     if (this.txtDNI.getText().length() < AppConstants.DNI_MIN) {
                         this.txtDNI.requestFocus();
-                        throw new FieldEmptyException(4012, "El dni no puede tener una longitud menor a " + AppConstants.DNI_MIN + ".");
+                        throw new FieldEmptyException(4012, "Campo DNI no válido.", "El dni no puede tener una longitud menor a " + AppConstants.DNI_MIN + ".");
                     } else {
                         if (this.txtName.getText().equals("")) {
                             this.txtName.requestFocus();
-                            throw new FieldEmptyException(4012, "Debe cargar NOMBRE del Cliente");
+                            throw new FieldEmptyException(4012, "Campo Nombre vacío", "Debe cargar NOMBRE del Cliente");
                         } else {
                             if (this.txtLastName.getText().equals("")) {
                                 this.txtLastName.requestFocus();
-                                throw new FieldEmptyException(4012, "Debe cargar APELLIDO del Cliente");
+                                throw new FieldEmptyException(4012, "Campo Apellido vacío", "Debe cargar APELLIDO del Cliente");
                             } else {
                                 if (this.txtAddress.getText().equals("")) {
                                     this.txtAddress.requestFocus();
-                                    throw new FieldEmptyException(4012, "Debe cargar DIRECCION del Cliente");
+                                    throw new FieldEmptyException(4012, "Campo Dirección vacío", "Debe cargar DIRECCION del Cliente");
                                 } else {
                                     if (this.txtSocialSecurity.getText().equals("")) {
                                         this.txtSocialSecurity.requestFocus();
-                                        throw new FieldEmptyException(4012, "Debe cargar OBRA SOCIAL del Cliente");
+                                        throw new FieldEmptyException(4012, "Campo Obra Social vacío", "Debe cargar OBRA SOCIAL del Cliente");
                                     } else {
                                         if (this.txtTelephone.getText().equals("")) {
                                             this.txtTelephone.requestFocus();
-                                            throw new FieldEmptyException(4012, "Debe cargar TELÉFONO del Cliente");
+                                            throw new FieldEmptyException(4012, "Campo Teléfono vacío", "Debe cargar TELÉFONO del Cliente");
                                         } else {
                                             if (!this.rBtnActive.isSelected() && !this.rBtnInactive.isSelected()) {
                                                 this.rBtnActive.requestFocus();
-                                                throw new FieldEmptyException(4012, "Debe seleccionar el ESTADO del Cliente");
+                                                throw new FieldEmptyException(4012, "Campo Estado no seleccionado.", "Debe seleccionar el ESTADO del Cliente");
                                             } else {
                                                 if (this.txtEmail.getText().equals("")) {
                                                     this.txtEmail.requestFocus();
-                                                    throw new FieldEmptyException(4012, "Debe cargar EMAIL del Cliente");
+                                                    throw new FieldEmptyException(4012, "Campo Email vacío", "Debe cargar EMAIL del Cliente");
                                                 } else {
-                                                    if (UtilGUI.validateEmail(this.txtEmail.getText())) {
+                                                    if (!UtilGUI.validateEmail(this.txtEmail.getText())) {
                                                         this.txtEmail.requestFocus();
-                                                        throw new FieldEmptyException(4012, """
+                                                        throw new FieldEmptyException(4012, "Campo Email no valido", """
                                                             Verifique la informaci\u00f3n ingresada, el email debe tener el formato: 
                                                             xxxxx...@xxxxx.xxx """);
                                                     } else {
@@ -633,16 +634,16 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
         } catch (FieldEmptyException ex) {
             ControllerExceptionHandler.handleError(ex, "Verificar Campos");
         }
-
+        
         return verificado;
     }
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         if (this.validateFields())
             if (!this.update) {
-                this.newPaciente();
+                this.newCliente();
             } else {
-                this.updatePaciente(this.pacienteSelected);
+                this.updateCliente(this.clienteSelected);
             }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
@@ -651,18 +652,18 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnClearFilterActionPerformed
 
     private void jMnuEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuEditActionPerformed
-
-        int row = this.jTblPacientes.getSelectedRow();
+        
+        int row = this.jTblCliente.getSelectedRow();
         if (row != -1) {
-            Long idPaciente = ((Long) this.jTblPacientes.getValueAt(row, 0));
-            Optional<Paciente> pacienteOptional = this.listPacientes.stream()
-                    .filter(paciente -> Objects.equals(paciente.getId(), idPaciente))
+            Long idCliente = ((Long) this.jTblCliente.getValueAt(row, 0));
+            Optional<Cliente> clienteOptional = this.listClientes.stream()
+                    .filter(cliente -> Objects.equals(cliente.getId(), idCliente))
                     .findFirst();
-            if (pacienteOptional.isPresent()) {
-                this.pacienteSelected = pacienteOptional.get();
+            if (clienteOptional.isPresent()) {
+                this.clienteSelected = clienteOptional.get();
                 UtilGUI.borrarCamposDeComponentes(this.jPanFields);
                 UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
-                this.loadForm(this.pacienteSelected);
+                this.loadForm(this.clienteSelected);
                 this.btnNuevo.setEnabled(false);
                 this.btnGuardar.setEnabled(true);
                 this.update = true;
@@ -675,7 +676,7 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
             }
         }
     }//GEN-LAST:event_jMnuEditActionPerformed
-
+    
     @Override
     public void dispose() {
         this.ppal.salirAlMnuPpal();
@@ -695,7 +696,7 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPopupMenu jPopMnuTableOptions;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTblPacientes;
+    private javax.swing.JTable jTblCliente;
     private javax.swing.JPanel jpanBtnList;
     private javax.swing.JPanel jpanButons;
     private javax.swing.JLabel lblAddress;
@@ -707,7 +708,7 @@ public final class iFGestionPacientes extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblStatus;
     private javax.swing.JLabel lblTelephone;
     private javax.swing.JLabel lblTitle;
-    private javax.swing.JLabel lblTitleListaPacientes;
+    private javax.swing.JLabel lblTitleListaClientes;
     private javax.swing.JRadioButton rBtnActive;
     private javax.swing.JRadioButton rBtnInactive;
     private javax.swing.JTextField txtAddress;

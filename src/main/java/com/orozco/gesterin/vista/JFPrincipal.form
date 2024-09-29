@@ -19,17 +19,17 @@
             </MenuItem>
           </SubComponents>
         </Menu>
-        <Menu class="javax.swing.JMenu" name="jMnuGestionPaciente">
+        <Menu class="javax.swing.JMenu" name="jMnuGestionCliente">
           <Properties>
             <Property name="text" type="java.lang.String" value="Gestion Pacientes"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMniGestionPaciente">
+            <MenuItem class="javax.swing.JMenuItem" name="jMniGestionCliente">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Gesti&#xf3;n"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMniGestionPacienteActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMniGestionClienteActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

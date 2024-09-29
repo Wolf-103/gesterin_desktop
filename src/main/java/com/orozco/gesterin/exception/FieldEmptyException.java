@@ -13,7 +13,7 @@ import java.io.Serial;
  * @fecha 19 sep. 2024
  * @description Sistema GESTERIN
  */
-public class FieldEmptyException extends RuntimeException {
+public class FieldEmptyException extends CustomeBaseException {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -22,6 +22,13 @@ public class FieldEmptyException extends RuntimeException {
     private String details;
 
     public FieldEmptyException(int code, String details) {
+        super();
+        this.code = code;
+        this.details = details;
+    }
+
+    public FieldEmptyException(int code, String message, String details) {
+        super(message);
         this.code = code;
         this.details = details;
     }
@@ -33,5 +40,4 @@ public class FieldEmptyException extends RuntimeException {
     public String getDetails() {
         return details;
     }
-
 }
