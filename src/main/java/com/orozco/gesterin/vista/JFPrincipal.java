@@ -18,12 +18,12 @@ public class JFPrincipal extends javax.swing.JFrame {
 
     public void ingresarAUnMnu() {
         this.jMnuInicio.setEnabled(false);
-        this.jMnuGestionCliente.setEnabled(false);
+        this.jMnuCliente.setEnabled(false);
     }
 
     public void salirAlMnuPpal() {
         this.jMnuInicio.setEnabled(true);
-        this.jMnuGestionCliente.setEnabled(true);
+        this.jMnuCliente.setEnabled(true);
     }
 
     /**
@@ -39,7 +39,9 @@ public class JFPrincipal extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMnuInicio = new javax.swing.JMenu();
         jMnuExit = new javax.swing.JMenuItem();
-        jMnuGestionCliente = new javax.swing.JMenu();
+        jMnuUsuarios = new javax.swing.JMenu();
+        jMniGestionCliente1 = new javax.swing.JMenuItem();
+        jMnuCliente = new javax.swing.JMenu();
         jMniGestionCliente = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -67,7 +69,19 @@ public class JFPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMnuInicio);
 
-        jMnuGestionCliente.setText("Gestion Pacientes");
+        jMnuUsuarios.setText("Usuarios");
+
+        jMniGestionCliente1.setText("Gestión");
+        jMniGestionCliente1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMniGestionCliente1ActionPerformed(evt);
+            }
+        });
+        jMnuUsuarios.add(jMniGestionCliente1);
+
+        jMenuBar1.add(jMnuUsuarios);
+
+        jMnuCliente.setText("Clientes");
 
         jMniGestionCliente.setText("Gestión");
         jMniGestionCliente.addActionListener(new java.awt.event.ActionListener() {
@@ -75,9 +89,9 @@ public class JFPrincipal extends javax.swing.JFrame {
                 jMniGestionClienteActionPerformed(evt);
             }
         });
-        jMnuGestionCliente.add(jMniGestionCliente);
+        jMnuCliente.add(jMniGestionCliente);
 
-        jMenuBar1.add(jMnuGestionCliente);
+        jMenuBar1.add(jMnuCliente);
 
         setJMenuBar(jMenuBar1);
 
@@ -96,7 +110,6 @@ public class JFPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMniGestionClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMniGestionClienteActionPerformed
-
         iFGestionClientes gestionPacientes = new iFGestionClientes(this.jDesktop, this);
         UtilGUI.openInternalFrame(this.jDesktop, gestionPacientes);
         this.ingresarAUnMnu();
@@ -106,13 +119,19 @@ public class JFPrincipal extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jMnuExitActionPerformed
 
+    private void jMniGestionCliente1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMniGestionCliente1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMniGestionCliente1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktop;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMniGestionCliente;
+    private javax.swing.JMenuItem jMniGestionCliente1;
+    private javax.swing.JMenu jMnuCliente;
     private javax.swing.JMenuItem jMnuExit;
-    private javax.swing.JMenu jMnuGestionCliente;
     private javax.swing.JMenu jMnuInicio;
+    private javax.swing.JMenu jMnuUsuarios;
     // End of variables declaration//GEN-END:variables
 }
