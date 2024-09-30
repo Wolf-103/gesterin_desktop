@@ -1,5 +1,7 @@
 package com.orozco.gesterin.model;
 
+import java.util.List;
+
 /**
  *
  * @author CRISTIAN MANUEL OROZCO
@@ -18,6 +20,9 @@ public class Cliente {
     private String status;
     private String address;
     private String telephone;
+    private CaracteristicasFisicas caracteristicasFisicas;
+    private List<AntecedentePersonal> listaAntecedentesPersonales;
+    private List<HistorialClinico> listaHistorialClinico;
 
     public Cliente() {
     }
@@ -103,6 +108,30 @@ public class Cliente {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public CaracteristicasFisicas getCaracteristicasFisicas() {
+        return caracteristicasFisicas;
+    }
+
+    public void setCaracteristicasFisicas(CaracteristicasFisicas caracteristicasFisicas) {
+        this.caracteristicasFisicas = caracteristicasFisicas;
+    }
+
+    public List<AntecedentePersonal> getListaAntecedentesPersonales() {
+        return listaAntecedentesPersonales;
+    }
+
+    public void setListaAntecedentesPersonales(List<AntecedentePersonal> listaAntecedentesPersonales) {
+        this.listaAntecedentesPersonales = listaAntecedentesPersonales;
+    }
+
+    public List<HistorialClinico> getListaHistorialClinico() {
+        return listaHistorialClinico;
+    }
+
+    public void setListaHistorialClinico(List<HistorialClinico> listaHistorialClinico) {
+        this.listaHistorialClinico = listaHistorialClinico;
     }
 
 }
