@@ -194,7 +194,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         lblTitle.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         lblTitle.setForeground(new java.awt.Color(51, 51, 51));
         lblTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTitle.setText("FORMULARIO REGISTRO DE CLIENTES");
+        lblTitle.setText("FORMULARIO REGISTRO DE UUSUARIOS");
         lblTitle.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jPanFields.setBackground(new java.awt.Color(204, 204, 204));
@@ -443,7 +443,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         lblTitleListaClientes.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         lblTitleListaClientes.setForeground(new java.awt.Color(51, 51, 51));
         lblTitleListaClientes.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTitleListaClientes.setText("LISTA DE CLIENTES");
+        lblTitleListaClientes.setText("LISTA DE USUARIOS");
         lblTitleListaClientes.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
