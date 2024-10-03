@@ -81,7 +81,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                         AppConstants.TELEPHONE_MAX,
                         Pattern.compile(AppConstants.PATTERN_TELEPHONE_SLIM))
                 );
-        ((AbstractDocument) this.txtEmail.getDocument())
+        ((AbstractDocument) this.txtUsuario.getDocument())
                 .setDocumentFilter(new CustomDocumentFilter(
                         AppConstants.EMAIL_MAX,
                         Pattern.compile(AppConstants.PATTERN_EMAIL_VALID_CHARACTERS))
@@ -94,7 +94,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         this.txtDNI.setText(cliente.getDni() != null ? cliente.getDni() : "");
         this.txtAddress.setText(cliente.getAddress() != null ? cliente.getAddress() : "");
         this.txtSocialSecurity.setText(cliente.getSocialSecurity() != null ? cliente.getSocialSecurity() : "");
-        this.txtEmail.setText(cliente.getEmail() != null ? cliente.getEmail() : "");
+        this.txtUsuario.setText(cliente.getEmail() != null ? cliente.getEmail() : "");
         this.txtTelephone.setText(cliente.getTelephone() != null ? cliente.getTelephone() : "");
         if (cliente.getStatus() != null) {
             if (cliente.getStatus().equals("ACTIVE")) {
@@ -125,7 +125,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             data[4] = cliente.getStatus();
             model.addRow(data);
         }
-        this.jTblCliente.setModel(model);
+        this.jTblUsuario.setModel(model);
     }
     
     public void initialStatus() {
@@ -151,26 +151,28 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         txtName = new javax.swing.JTextField();
         txtLastName = new javax.swing.JTextField();
         lblLastName = new javax.swing.JLabel();
-        lblDNI = new javax.swing.JLabel();
-        txtDNI = new javax.swing.JTextField();
-        txtSocialSecurity = new javax.swing.JTextField();
-        lblSocialSecurity = new javax.swing.JLabel();
-        lblAddress = new javax.swing.JLabel();
-        txtAddress = new javax.swing.JTextField();
         txtTelephone = new javax.swing.JTextField();
         lblTelephone = new javax.swing.JLabel();
         lblEmail = new javax.swing.JLabel();
-        txtEmail = new javax.swing.JTextField();
+        txtUsuario = new javax.swing.JTextField();
         lblStatus = new javax.swing.JLabel();
         rBtnActive = new javax.swing.JRadioButton();
         rBtnInactive = new javax.swing.JRadioButton();
+        cboRol = new javax.swing.JComboBox<>();
+        lblRol = new javax.swing.JLabel();
+        lblEspecialidad = new javax.swing.JLabel();
+        cboEspecialidad = new javax.swing.JComboBox<>();
+        lblUsuario = new javax.swing.JLabel();
+        lblPassword = new javax.swing.JLabel();
+        txtEmail = new javax.swing.JTextField();
+        txtPassword = new javax.swing.JPasswordField();
         jpanButons = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
         btnGuardar = new javax.swing.JButton();
         btnNuevo = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTblCliente = new javax.swing.JTable();
+        jTblUsuario = new javax.swing.JTable();
         jpanBtnList = new javax.swing.JPanel();
         btnClearFilter = new javax.swing.JButton();
         lblTitleListaClientes = new javax.swing.JLabel();
@@ -194,7 +196,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         lblTitle.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         lblTitle.setForeground(new java.awt.Color(51, 51, 51));
         lblTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTitle.setText("FORMULARIO REGISTRO DE UUSUARIOS");
+        lblTitle.setText("FORMULARIO REGISTRO DE USUARIOS");
         lblTitle.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jPanFields.setBackground(new java.awt.Color(204, 204, 204));
@@ -208,21 +210,6 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         lblLastName.setForeground(new java.awt.Color(51, 51, 51));
         lblLastName.setText("Apellido");
         lblLastName.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-
-        lblDNI.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblDNI.setForeground(new java.awt.Color(51, 51, 51));
-        lblDNI.setText("DNI");
-        lblDNI.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-
-        lblSocialSecurity.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblSocialSecurity.setForeground(new java.awt.Color(51, 51, 51));
-        lblSocialSecurity.setText("Obra Social");
-        lblSocialSecurity.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-
-        lblAddress.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        lblAddress.setForeground(new java.awt.Color(51, 51, 51));
-        lblAddress.setText("Dirección");
-        lblAddress.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         lblTelephone.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblTelephone.setForeground(new java.awt.Color(51, 51, 51));
@@ -245,40 +232,79 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         btnGrupStatus.add(rBtnInactive);
         rBtnInactive.setText("Inactivo");
 
+        cboRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "ADMINISTRADOR", "PROFESIONAL" }));
+        cboRol.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+        lblRol.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblRol.setForeground(new java.awt.Color(51, 51, 51));
+        lblRol.setText("Rol");
+        lblRol.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        lblEspecialidad.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblEspecialidad.setForeground(new java.awt.Color(51, 51, 51));
+        lblEspecialidad.setText("Especialidad");
+        lblEspecialidad.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        cboEspecialidad.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "ADMINISTRADOR", "PROFESIONAL" }));
+        cboEspecialidad.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+        lblUsuario.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblUsuario.setForeground(new java.awt.Color(51, 51, 51));
+        lblUsuario.setText("Nombre Usuario");
+        lblUsuario.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        lblPassword.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblPassword.setForeground(new java.awt.Color(51, 51, 51));
+        lblPassword.setText("Contraseña");
+        lblPassword.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        txtPassword.setText("jPasswordField1");
+
         javax.swing.GroupLayout jPanFieldsLayout = new javax.swing.GroupLayout(jPanFields);
         jPanFields.setLayout(jPanFieldsLayout);
         jPanFieldsLayout.setHorizontalGroup(
             jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanFieldsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanFieldsLayout.createSequentialGroup()
-                        .addComponent(lblEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanFieldsLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblTelephone, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblSocialSecurity, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblLastName, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblDNI, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblName, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtDNI, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtSocialSecurity, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtTelephone, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanFieldsLayout.createSequentialGroup()
-                                .addGap(8, 8, 8)
-                                .addComponent(rBtnActive, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblEmail, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblRol, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
-                                .addComponent(rBtnInactive, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(22, Short.MAX_VALUE))
+                                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(cboRol, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanFieldsLayout.createSequentialGroup()
+                                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(lblTelephone, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                                        .addComponent(lblLastName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                                        .addComponent(lblName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE))
+                                    .addComponent(lblStatus, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblUsuario, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblPassword, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtTelephone, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanFieldsLayout.createSequentialGroup()
+                                        .addGap(8, 8, 8)
+                                        .addComponent(rBtnActive, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(rBtnInactive, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addContainerGap(14, Short.MAX_VALUE))
+                    .addGroup(jPanFieldsLayout.createSequentialGroup()
+                        .addComponent(lblEspecialidad, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(cboEspecialidad, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanFieldsLayout.setVerticalGroup(
             jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -293,31 +319,34 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                     .addComponent(txtLastName, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblDNI, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtDNI, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblSocialSecurity, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtSocialSecurity, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblTelephone, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtTelephone, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
-                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(rBtnInactive, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(rBtnActive, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(24, 24, 24))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rBtnInactive, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(rBtnActive, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cboRol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblRol, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cboEspecialidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblEspecialidad, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         jpanButons.setBackground(new java.awt.Color(204, 204, 204));
@@ -390,13 +419,13 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 .addComponent(jPanFields, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jpanButons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jTblCliente.setModel(new javax.swing.table.DefaultTableModel(
+        jTblUsuario.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -407,9 +436,9 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jTblCliente.setComponentPopupMenu(jPopMnuTableOptions);
-        jTblCliente.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        jScrollPane1.setViewportView(jTblCliente);
+        jTblUsuario.setComponentPopupMenu(jPopMnuTableOptions);
+        jTblUsuario.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jScrollPane1.setViewportView(jTblUsuario);
 
         jpanBtnList.setBackground(new java.awt.Color(255, 255, 255));
         jpanBtnList.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -454,7 +483,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1)
-                    .addComponent(lblTitleListaClientes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
+                    .addComponent(lblTitleListaClientes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE)
                     .addComponent(jpanBtnList, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -523,7 +552,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         cliente.setLastName(this.txtLastName.getText());
         cliente.setDni(this.txtDNI.getText());
         cliente.setSocialSecurity(this.txtSocialSecurity.getText());
-        cliente.setEmail(this.txtEmail.getText());
+        cliente.setEmail(this.txtUsuario.getText());
         cliente.setStatus(this.rBtnActive.isSelected() == true ? "ACTIVE" : "INACTIVE");
         cliente.setAddress(this.txtAddress.getText());
         cliente.setTelephone(this.txtTelephone.getText());
@@ -609,12 +638,12 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                                                 this.rBtnActive.requestFocus();
                                                 throw new FieldEmptyException(4012, "Campo Estado no seleccionado.", "Debe seleccionar el ESTADO del Cliente");
                                             } else {
-                                                if (this.txtEmail.getText().equals("")) {
-                                                    this.txtEmail.requestFocus();
+                                                if (this.txtUsuario.getText().equals("")) {
+                                                    this.txtUsuario.requestFocus();
                                                     throw new FieldEmptyException(4012, "Campo Email vacío", "Debe cargar EMAIL del Cliente");
                                                 } else {
-                                                    if (!UtilGUI.validateEmail(this.txtEmail.getText())) {
-                                                        this.txtEmail.requestFocus();
+                                                    if (!UtilGUI.validateEmail(this.txtUsuario.getText())) {
+                                                        this.txtUsuario.requestFocus();
                                                         throw new FieldEmptyException(4012, "Campo Email no valido", """
                                                             Verifique la informaci\u00f3n ingresada, el email debe tener el formato: 
                                                             xxxxx...@xxxxx.xxx """);
@@ -653,9 +682,9 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
     private void jMnuEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuEditActionPerformed
         
-        int row = this.jTblCliente.getSelectedRow();
+        int row = this.jTblUsuario.getSelectedRow();
         if (row != -1) {
-            Long idCliente = ((Long) this.jTblCliente.getValueAt(row, 0));
+            Long idCliente = ((Long) this.jTblUsuario.getValueAt(row, 0));
             Optional<Cliente> clienteOptional = this.listClientes.stream()
                     .filter(cliente -> Objects.equals(cliente.getId(), idCliente))
                     .findFirst();
@@ -689,6 +718,8 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     private javax.swing.ButtonGroup btnGrupStatus;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnNuevo;
+    private javax.swing.JComboBox<String> cboEspecialidad;
+    private javax.swing.JComboBox<String> cboRol;
     private javax.swing.JMenuItem jMnuEdit;
     private javax.swing.JPanel jPanFields;
     private javax.swing.JPanel jPanGeneral;
@@ -696,27 +727,27 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPopupMenu jPopMnuTableOptions;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTblCliente;
+    private javax.swing.JTable jTblUsuario;
     private javax.swing.JPanel jpanBtnList;
     private javax.swing.JPanel jpanButons;
-    private javax.swing.JLabel lblAddress;
-    private javax.swing.JLabel lblDNI;
     private javax.swing.JLabel lblEmail;
+    private javax.swing.JLabel lblEspecialidad;
     private javax.swing.JLabel lblLastName;
     private javax.swing.JLabel lblName;
-    private javax.swing.JLabel lblSocialSecurity;
+    private javax.swing.JLabel lblPassword;
+    private javax.swing.JLabel lblRol;
     private javax.swing.JLabel lblStatus;
     private javax.swing.JLabel lblTelephone;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JLabel lblTitleListaClientes;
+    private javax.swing.JLabel lblUsuario;
     private javax.swing.JRadioButton rBtnActive;
     private javax.swing.JRadioButton rBtnInactive;
-    private javax.swing.JTextField txtAddress;
-    private javax.swing.JTextField txtDNI;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtLastName;
     private javax.swing.JTextField txtName;
-    private javax.swing.JTextField txtSocialSecurity;
+    private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtTelephone;
+    private javax.swing.JTextField txtUsuario;
     // End of variables declaration//GEN-END:variables
 }

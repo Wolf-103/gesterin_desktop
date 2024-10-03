@@ -14,7 +14,7 @@ package com.orozco.gesterin.utils;
 public class AppConstants {
 
     public static final int NAME_LASTNAME_MIN = 3;
-    public static final int NAME_LASTNAME_MAX = 20;
+    public static final int NAME_LASTNAME_MAX = 45;
     public static final int MAX_LOGIN_ATTEMPTS = 5;
     public static final long BLOCK_DURATION = 1 * 60 * 1000; // 5 MIN
     public static final int EMAIL_MAX = 255;
@@ -33,10 +33,10 @@ public class AppConstants {
     public static final int PASSWORD_MAX = 30;
     public static final int PASSWORD_SIZE_DEF = 12;
     public static final int PASSWORD_MIN = 8;
-    public static final int DESCRIPTION_MAX_DEF = 255;
+    public static final int DESCRIPTION_MAX_DEF = 1200;
     public static final int DESCRIPTION_MIN = 0;
-    public static final int DESCRIPTION_MAX = 1200;
-    public static final int OBSERVATION_MAX_DEF = 255;
+    public static final int DESCRIPTION_MAX = 2000;
+    public static final int OBSERVATION_MAX_DEF = 1200;
     public static final int OBSERVATION_MIN = 3;
     public static final int OBSERVATION_MAX = 2000;
 
