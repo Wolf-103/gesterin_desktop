@@ -1,7 +1,7 @@
 package com.orozco.gesterin.controller;
 
 import com.orozco.gesterin.model.Cliente;
-import com.orozco.gesterin.DAO.ClienteDAO;
+import com.orozco.gesterin.DAO.Implementaciones.ClienteDAO;
 import java.util.List;
 
 /**

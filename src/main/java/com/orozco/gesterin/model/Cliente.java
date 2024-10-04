@@ -15,14 +15,15 @@ public class Cliente {
     private String dni;
     private String socialSecurity;
     private String email;
-    private String status;
+    private Boolean status;
     private String address;
     private String telephone;
+    private CaracteristicasFisicas caracteristicasFisicas;
 
     public Cliente() {
     }
 
-    public Cliente(String firstName, String lastName, String dni, String socialSecurity, String email, String status, String address, String telephone) {
+    public Cliente(String firstName, String lastName, String dni, String socialSecurity, String email, Boolean status, String address, String telephone) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.dni = dni;
@@ -81,11 +82,11 @@ public class Cliente {
         this.email = email;
     }
 
-    public String getStatus() {
+    public Boolean getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Boolean status) {
         this.status = status;
     }
 
@@ -103,6 +104,14 @@ public class Cliente {
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public CaracteristicasFisicas getCaracteristicasFisicas() {
+        return caracteristicasFisicas;
+    }
+
+    public void setCaracteristicasFisicas(CaracteristicasFisicas caracteristicasFisicas) {
+        this.caracteristicasFisicas = caracteristicasFisicas;
     }
 
 }

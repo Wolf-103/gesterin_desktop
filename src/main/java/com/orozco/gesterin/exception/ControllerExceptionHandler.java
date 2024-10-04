@@ -115,6 +115,17 @@ public class ControllerExceptionHandler {
             }
         });
 
+        registerHandler((ex, context) -> {
+            if (ex instanceof GlobalException error) {
+                System.out.println("Excepción General. Message: " + error.getMessage() + "\n"
+                        + "Detail: " + error.getDetails() + "\n"
+                        + "Contexto: " + context);
+                getMessageError("Exepción en la aplicación", "Message: " + error.getMessage() + "\n"
+                        + "Detail: " + error.getDetails() + "\n"
+                        + "Contexto: " + context, JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
     }
 
     /**

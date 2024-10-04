@@ -524,7 +524,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         cliente.setDni(this.txtDNI.getText());
         cliente.setSocialSecurity(this.txtSocialSecurity.getText());
         cliente.setEmail(this.txtEmail.getText());
-        cliente.setStatus(this.rBtnActive.isSelected() == true ? "ACTIVE" : "INACTIVE");
+        cliente.setStatus(this.rBtnActive.isSelected());
         cliente.setAddress(this.txtAddress.getText());
         cliente.setTelephone(this.txtTelephone.getText());
         return cliente;
