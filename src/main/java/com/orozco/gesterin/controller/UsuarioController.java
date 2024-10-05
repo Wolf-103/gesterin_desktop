@@ -1,7 +1,7 @@
 package com.orozco.gesterin.controller;
 
-import com.orozco.gesterin.model.Cliente;
-import com.orozco.gesterin.DAO.Implementaciones.ClienteDAO;
+import com.orozco.gesterin.DAO.Implementaciones.UsuarioDAO;
+import com.orozco.gesterin.model.Usuario;
 import java.util.List;
 
 /**
@@ -13,30 +13,12 @@ import java.util.List;
  */
 public class UsuarioController {
 
-    private final ClienteDAO clienteDAO;
+    private final UsuarioDAO usuarioDAO;
 
     public UsuarioController() {
-        this.clienteDAO = new ClienteDAO();
+        this.usuarioDAO = new UsuarioDAO();
     }
 
-    public boolean save(Cliente cliente) {
-        return this.clienteDAO.save(cliente);
-    }
     
-    public List<Cliente> findAll(){
-        return this.clienteDAO.findAll();
-    }
-    
-    public List<Cliente> findByParams(String params){
-        return this.clienteDAO.findAllByParams(params);
-    }
-    
-    public boolean update(Cliente cliente){
-        return this.clienteDAO.update(cliente);
-    }
-    
-    public boolean delete(Long idCliente){
-        return this.clienteDAO.delete(idCliente);
-    }
 
 }

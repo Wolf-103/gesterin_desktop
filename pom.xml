@@ -11,7 +11,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <exec.mainClass>com.orozco.gesterin.Gesterin</exec.mainClass>
         <mysql.version>8.0.33</mysql.version>
-        <bcrypt.version>0.3</bcrypt.version>
+        <jbcrypt.version>0.4</jbcrypt.version>
 
     </properties>
     <dependencies>
@@ -20,6 +20,13 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+            <type>jar</type>
+        </dependency>
+
     </dependencies>
     
 </project>

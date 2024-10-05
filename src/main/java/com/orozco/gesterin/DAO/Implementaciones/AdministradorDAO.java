@@ -4,6 +4,7 @@ import com.orozco.gesterin.DAO.ConnectionMysql;
 import com.orozco.gesterin.DAO.GenericDAO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.model.Administrador;
+import com.orozco.gesterin.model.Usuario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -147,7 +148,7 @@ public class AdministradorDAO implements GenericDAO<Administrador, Long> {
         sentence.setString(2, entity.getApellido());
         sentence.setString(3, entity.getEmail());
         sentence.setString(4, entity.getTelefono());
-        sentence.setLong(5, entity.getUsuario_id());
+        sentence.setLong(5, entity.getUsuario().getId());
     }
 
     private Administrador cearEntity(final ResultSet resultSet) throws SQLException {
@@ -157,7 +158,9 @@ public class AdministradorDAO implements GenericDAO<Administrador, Long> {
         entity.setTelefono(resultSet.getString(3));
         entity.setNombre(resultSet.getString(4));
         entity.setApellido(resultSet.getString(5));
-        entity.setUsuario_id(resultSet.getLong(6));
+        Usuario us = new Usuario();
+        us.setId(resultSet.getLong(6));
+        entity.setUsuario(us);
         return entity;
     }
 

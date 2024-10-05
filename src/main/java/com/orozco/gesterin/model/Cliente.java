@@ -7,55 +7,23 @@ package com.orozco.gesterin.model;
  * @fecha 17 sep. 2024
  * @description Sistema GESTERIN
  */
-public class Cliente {
+public class Cliente extends Persona {
 
-    private Long id;
-    private String nombre;
-    private String apellido;
     private String dni;
     private String obraSocial;
-    private String email;
     private Boolean estado;
     private String direccion;
-    private String telefono;
     private CaracteristicasFisicas caracteristicasFisicas;
 
-    public Cliente() {
-    }
-
-    public Cliente(String nombre, String apellido, String dni, String obraSocial, String email, Boolean estado, String direccion, String telefono) {
-        this.nombre = nombre;
-        this.apellido = apellido;
+    public Cliente(String dni, String obraSocial, Boolean estado, String direccion, String nombre, String apellido, String email, String telefono) {
+        super(nombre, apellido, email, telefono);
         this.dni = dni;
         this.obraSocial = obraSocial;
-        this.email = email;
         this.estado = estado;
         this.direccion = direccion;
-        this.telefono = telefono;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String firstName) {
-        this.nombre = firstName;
-    }
-
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String lastName) {
-        this.apellido = lastName;
+    public Cliente() {
     }
 
     public String getDni() {
@@ -70,40 +38,24 @@ public class Cliente {
         return obraSocial;
     }
 
-    public void setObraSocial(String socialSecurity) {
-        this.obraSocial = socialSecurity;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public void setObraSocial(String obraSocial) {
+        this.obraSocial = obraSocial;
     }
 
     public Boolean getEstado() {
         return estado;
     }
 
-    public void setEstado(Boolean status) {
-        this.estado = status;
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
 
     public String getDireccion() {
         return direccion;
     }
 
-    public void setDireccion(String address) {
-        this.direccion = address;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telephone) {
-        this.telefono = telephone;
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
     public CaracteristicasFisicas getCaracteristicasFisicas() {

@@ -1,18 +1,14 @@
 package com.orozco.gesterin.vista;
 
-import com.orozco.gesterin.model.Cliente;
-import com.orozco.gesterin.controller.ClienteController;
-import com.orozco.gesterin.exception.ControllerExceptionHandler;
-import com.orozco.gesterin.exception.FieldEmptyException;
+import com.orozco.gesterin.controller.UsuarioController;
+import com.orozco.gesterin.model.Persona;
+import com.orozco.gesterin.model.Usuario;
 import com.orozco.gesterin.vista.validations.CustomDocumentFilter;
 import com.orozco.gesterin.utils.AppConstants;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.swing.JDesktopPane;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
 
@@ -24,13 +20,13 @@ import javax.swing.text.AbstractDocument;
  * @description Sistema GESTERIN
  */
 public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
-    
+
     JFPrincipal ppal;
     JDesktopPane desktop;
-    List<Cliente> listClientes = new ArrayList<>();
-    ClienteController clienteController;
+    List<Persona> listaPersonas = new ArrayList<>();
+    UsuarioController usuarioController;
     boolean update = false;
-    Cliente clienteSelected = null;
+    Usuario usuarioSelected = null;
 
     /**
      * Creates new form GestionClientes
@@ -42,13 +38,13 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         initComponents();
         this.ppal = jppal;
         this.desktop = esc;
-        this.clienteController = new ClienteController();
+        this.usuarioController = new UsuarioController();
         this.initialStatus();
         this.initFields();
-        
+
         this.loadTableClientes();
     }
-    
+
     public void initFields() {
         Pattern pattrenFullNames = Pattern.compile(AppConstants.PATTERN_NAME_LASTNAME_SLIM);
         ((AbstractDocument) this.txtName.getDocument())
@@ -61,21 +57,6 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                         AppConstants.NAME_LASTNAME_MAX,
                         pattrenFullNames)
                 );
-        ((AbstractDocument) this.txtDNI.getDocument())
-                .setDocumentFilter(new CustomDocumentFilter(
-                        AppConstants.DNI_MAX,
-                        Pattern.compile(AppConstants.PATTERN_DNI_SLIM))
-                );
-        ((AbstractDocument) this.txtSocialSecurity.getDocument())
-                .setDocumentFilter(new CustomDocumentFilter(
-                        AppConstants.SOCIAL_SECURITY_SLIM_MAX,
-                        Pattern.compile(AppConstants.PATTERN_SOCIAL_SECURITY_SLIM))
-                );
-        ((AbstractDocument) this.txtAddress.getDocument())
-                .setDocumentFilter(new CustomDocumentFilter(
-                        AppConstants.ADDRESS_MAX,
-                        Pattern.compile(AppConstants.PATTERN_ADDRESS_SLIM))
-                );
         ((AbstractDocument) this.txtTelephone.getDocument())
                 .setDocumentFilter(new CustomDocumentFilter(
                         AppConstants.TELEPHONE_MAX,
@@ -87,17 +68,16 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                         Pattern.compile(AppConstants.PATTERN_EMAIL_VALID_CHARACTERS))
                 );
     }
-    
-    public void loadForm(Cliente cliente) {
-        this.txtName.setText(cliente.getNombre() != null ? cliente.getNombre() : "");
-        this.txtLastName.setText(cliente.getApellido() != null ? cliente.getApellido() : "");
-        this.txtDNI.setText(cliente.getDni() != null ? cliente.getDni() : "");
-        this.txtAddress.setText(cliente.getDireccion() != null ? cliente.getDireccion() : "");
-        this.txtSocialSecurity.setText(cliente.getObraSocial() != null ? cliente.getObraSocial() : "");
-        this.txtUsuario.setText(cliente.getEmail() != null ? cliente.getEmail() : "");
-        this.txtTelephone.setText(cliente.getTelefono() != null ? cliente.getTelefono() : "");
-        if (cliente.getEstado() != null) {
-            if (cliente.getEstado().equals("ACTIVE")) {
+
+    public void loadForm(Persona persona, Usuario usuario) {
+        this.txtName.setText(persona.getNombre() != null ? persona.getNombre() : "");
+        this.txtLastName.setText(persona.getApellido()!= null ? persona.getApellido() : "");
+        this.txtEmail.setText(persona.getTelefono() != null ? persona.getTelefono() : "");
+        this.txtTelephone.setText(persona.getTelefono() != null ? persona.getTelefono() : "");
+        this.txtUsuario.setText(persona.getEmail() != null ? persona.getEmail() : "");
+
+        if (usuario.getEstado() != null) {
+            if (usuario.getEstado()) {
                 this.rBtnActive.setSelected(true);
             } else {
                 this.rBtnInactive.setSelected(true);
@@ -107,35 +87,40 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         }
     }
     
+    private List<Persona> getPersonaUsuario(){
+        List<Persona> listaPersonaUsuario = null;
+        return listaPersonaUsuario;
+    }
+
     public void loadTableClientes() {
-        String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "DNI", "STATUS"};
+        String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "EMAIL", "TELEFONO"};
         DefaultTableModel model = new DefaultTableModel(null, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        this.listClientes = this.clienteController.findAll();
-        for (Cliente cliente : this.listClientes) {
+        this.listaPersonas = this.getPersonaUsuario();
+        for (Persona persona : this.listaPersonas) {
             Object[] data = new Object[columnNames.length];
-            data[0] = cliente.getId();
-            data[1] = cliente.getNombre();
-            data[2] = cliente.getApellido();
-            data[3] = cliente.getDni();
-            data[4] = cliente.getEstado();
+            data[0] = persona.getId();
+            data[1] = persona.getNombre();
+            data[2] = persona.getApellido();
+            data[3] = persona.getEmail();
+            data[4] = persona.getTelefono();
             model.addRow(data);
         }
         this.jTblUsuario.setModel(model);
     }
-    
+
     public void initialStatus() {
-        this.clienteSelected = null;
+        this.usuarioSelected = null;
         UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
         UtilGUI.borrarCamposDeComponentes(this.jPanFields);
         this.btnNuevo.setEnabled(true);
         this.btnGuardar.setEnabled(false);
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -161,11 +146,11 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         cboRol = new javax.swing.JComboBox<>();
         lblRol = new javax.swing.JLabel();
         lblEspecialidad = new javax.swing.JLabel();
-        cboEspecialidad = new javax.swing.JComboBox<>();
         lblUsuario = new javax.swing.JLabel();
         lblPassword = new javax.swing.JLabel();
         txtEmail = new javax.swing.JTextField();
         txtPassword = new javax.swing.JPasswordField();
+        btnCancel1 = new javax.swing.JButton();
         jpanButons = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
         btnGuardar = new javax.swing.JButton();
@@ -245,9 +230,6 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         lblEspecialidad.setText("Especialidad");
         lblEspecialidad.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        cboEspecialidad.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "ADMINISTRADOR", "PROFESIONAL" }));
-        cboEspecialidad.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-
         lblUsuario.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblUsuario.setForeground(new java.awt.Color(51, 51, 51));
         lblUsuario.setText("Nombre Usuario");
@@ -259,6 +241,14 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         lblPassword.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         txtPassword.setText("jPasswordField1");
+
+        btnCancel1.setText("Especialidad");
+        btnCancel1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCancel1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancel1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanFieldsLayout = new javax.swing.GroupLayout(jPanFields);
         jPanFields.setLayout(jPanFieldsLayout);
@@ -303,7 +293,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                     .addGroup(jPanFieldsLayout.createSequentialGroup()
                         .addComponent(lblEspecialidad, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(cboEspecialidad, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnCancel1, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanFieldsLayout.setVerticalGroup(
@@ -343,9 +333,9 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                     .addComponent(cboRol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblRol, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cboEspecialidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblEspecialidad, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lblEspecialidad, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                    .addComponent(btnCancel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -540,140 +530,136 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
         this.update = false;
-        this.clienteSelected = null;
+        this.usuarioSelected = null;
         UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
         UtilGUI.borrarCamposDeComponentes(this.jPanFields);
         this.btnNuevo.setEnabled(false);
         this.btnGuardar.setEnabled(true);
     }//GEN-LAST:event_btnNuevoActionPerformed
-    
-    private Cliente setCliente(Cliente cliente) {
-        cliente.setNombre(this.txtName.getText());
-        cliente.setApellido(this.txtLastName.getText());
-        cliente.setDni(this.txtDNI.getText());
-        cliente.setObraSocial(this.txtSocialSecurity.getText());
-        cliente.setEmail(this.txtUsuario.getText());
-        cliente.setStatus(this.rBtnActive.isSelected() == true ? "ACTIVE" : "INACTIVE");
-        cliente.setDireccion(this.txtAddress.getText());
-        cliente.setTelefono(this.txtTelephone.getText());
-        return cliente;
-    }
-    
-    private void newCliente() {
-        Cliente cliente = new Cliente();
-        cliente = this.setCliente(cliente);
-        boolean request = this.clienteController.save(cliente);
-        if (request) {
-            JOptionPane.showMessageDialog(null,
-                    "Cliente Registrado con exito!!",
-                    "Exito",
-                    JOptionPane.INFORMATION_MESSAGE);
-            this.loadTableClientes();
-            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
-            this.btnNuevo.setEnabled(true);
-            this.btnGuardar.setEnabled(false);
-        }
-    }
-    
-    private void updateCliente(Cliente cliente) {
-        if (cliente != null) {
-            cliente = this.setCliente(cliente);
-            boolean request = this.clienteController.update(cliente);
-            if (request) {
-                JOptionPane.showMessageDialog(null,
-                        "Cliente actualizado con exito!!",
-                        "Exito",
-                        JOptionPane.INFORMATION_MESSAGE);
-                this.loadTableClientes();
-                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
-                this.btnNuevo.setEnabled(true);
-                this.btnGuardar.setEnabled(false);
-            }
-        } else {
-            JOptionPane.showMessageDialog(null,
-                    "Cliente No seleccionado",
-                    "Informacion",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-    
-    public boolean validateFields() {
-        boolean verificado = false;
-        try {
-//------Datos Generales Cliente 
-            if (this.txtDNI.getText().equals("")) {
-                this.txtDNI.requestFocus();
-                throw new FieldEmptyException(4012, "Campo DNI vacío", "El dni no puede estar constituido por digitos repetidos.");
-            } else {
-                if (UtilGUI.validarNumerosRepetidos(this.txtDNI.getText(), "dni")) {
-//                    this.jTabPanelCliente.setSelectedIndex(0);
-                    this.txtDNI.requestFocus();
-                    throw new FieldEmptyException(4012, "Campo DNI no válido", "El dni no puede estar constituido por digitos repetidos.");
-                } else {
-                    if (this.txtDNI.getText().length() < AppConstants.DNI_MIN) {
-                        this.txtDNI.requestFocus();
-                        throw new FieldEmptyException(4012, "Campo DNI no válido.", "El dni no puede tener una longitud menor a " + AppConstants.DNI_MIN + ".");
-                    } else {
-                        if (this.txtName.getText().equals("")) {
-                            this.txtName.requestFocus();
-                            throw new FieldEmptyException(4012, "Campo Nombre vacío", "Debe cargar NOMBRE del Cliente");
-                        } else {
-                            if (this.txtLastName.getText().equals("")) {
-                                this.txtLastName.requestFocus();
-                                throw new FieldEmptyException(4012, "Campo Apellido vacío", "Debe cargar APELLIDO del Cliente");
-                            } else {
-                                if (this.txtAddress.getText().equals("")) {
-                                    this.txtAddress.requestFocus();
-                                    throw new FieldEmptyException(4012, "Campo Dirección vacío", "Debe cargar DIRECCION del Cliente");
-                                } else {
-                                    if (this.txtSocialSecurity.getText().equals("")) {
-                                        this.txtSocialSecurity.requestFocus();
-                                        throw new FieldEmptyException(4012, "Campo Obra Social vacío", "Debe cargar OBRA SOCIAL del Cliente");
-                                    } else {
-                                        if (this.txtTelephone.getText().equals("")) {
-                                            this.txtTelephone.requestFocus();
-                                            throw new FieldEmptyException(4012, "Campo Teléfono vacío", "Debe cargar TELÉFONO del Cliente");
-                                        } else {
-                                            if (!this.rBtnActive.isSelected() && !this.rBtnInactive.isSelected()) {
-                                                this.rBtnActive.requestFocus();
-                                                throw new FieldEmptyException(4012, "Campo Estado no seleccionado.", "Debe seleccionar el ESTADO del Cliente");
-                                            } else {
-                                                if (this.txtUsuario.getText().equals("")) {
-                                                    this.txtUsuario.requestFocus();
-                                                    throw new FieldEmptyException(4012, "Campo Email vacío", "Debe cargar EMAIL del Cliente");
-                                                } else {
-                                                    if (!UtilGUI.validateEmail(this.txtUsuario.getText())) {
-                                                        this.txtUsuario.requestFocus();
-                                                        throw new FieldEmptyException(4012, "Campo Email no valido", """
-                                                            Verifique la informaci\u00f3n ingresada, el email debe tener el formato: 
-                                                            xxxxx...@xxxxx.xxx """);
-                                                    } else {
-                                                        verificado = true;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (FieldEmptyException ex) {
-            ControllerExceptionHandler.handleError(ex, "Verificar Campos");
-        }
-        
-        return verificado;
-    }
+
+//    private Persona setPersona(Persona persona) {
+//        persona.setNombre(this.txtName.getText());
+//        persona.setApellido(this.txtLastName.getText());
+//        persona.setEmail(this.txtEmail.getText());
+//        persona.setTelefono(this.txtTelephone.getText());
+//        return persona;
+//    }
+//
+//    private void newCliente() {
+//        Cliente cliente = new Cliente();
+//        cliente = this.setPersona(cliente);
+//        boolean request = this.usuarioController.save(cliente);
+//        if (request) {
+//            JOptionPane.showMessageDialog(null,
+//                    "Cliente Registrado con exito!!",
+//                    "Exito",
+//                    JOptionPane.INFORMATION_MESSAGE);
+//            this.loadTableClientes();
+//            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+//            this.btnNuevo.setEnabled(true);
+//            this.btnGuardar.setEnabled(false);
+//        }
+//    }
+//
+//    private void updateCliente(Cliente cliente) {
+//        if (cliente != null) {
+//            cliente = this.setPersona(cliente);
+//            boolean request = this.usuarioController.update(cliente);
+//            if (request) {
+//                JOptionPane.showMessageDialog(null,
+//                        "Cliente actualizado con exito!!",
+//                        "Exito",
+//                        JOptionPane.INFORMATION_MESSAGE);
+//                this.loadTableClientes();
+//                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+//                this.btnNuevo.setEnabled(true);
+//                this.btnGuardar.setEnabled(false);
+//            }
+//        } else {
+//            JOptionPane.showMessageDialog(null,
+//                    "Cliente No seleccionado",
+//                    "Informacion",
+//                    JOptionPane.INFORMATION_MESSAGE);
+//        }
+//    }
+
+//    public boolean validateFields() {
+//        boolean verificado = false;
+//        try {
+////------Datos Generales Cliente 
+//            if (this.txtDNI.getText().equals("")) {
+//                this.txtDNI.requestFocus();
+//                throw new FieldEmptyException(4012, "Campo DNI vacío", "El dni no puede estar constituido por digitos repetidos.");
+//            } else {
+//                if (UtilGUI.validarNumerosRepetidos(this.txtDNI.getText(), "dni")) {
+////                    this.jTabPanelCliente.setSelectedIndex(0);
+//                    this.txtDNI.requestFocus();
+//                    throw new FieldEmptyException(4012, "Campo DNI no válido", "El dni no puede estar constituido por digitos repetidos.");
+//                } else {
+//                    if (this.txtDNI.getText().length() < AppConstants.DNI_MIN) {
+//                        this.txtDNI.requestFocus();
+//                        throw new FieldEmptyException(4012, "Campo DNI no válido.", "El dni no puede tener una longitud menor a " + AppConstants.DNI_MIN + ".");
+//                    } else {
+//                        if (this.txtName.getText().equals("")) {
+//                            this.txtName.requestFocus();
+//                            throw new FieldEmptyException(4012, "Campo Nombre vacío", "Debe cargar NOMBRE del Cliente");
+//                        } else {
+//                            if (this.txtLastName.getText().equals("")) {
+//                                this.txtLastName.requestFocus();
+//                                throw new FieldEmptyException(4012, "Campo Apellido vacío", "Debe cargar APELLIDO del Cliente");
+//                            } else {
+//                                if (this.txtAddress.getText().equals("")) {
+//                                    this.txtAddress.requestFocus();
+//                                    throw new FieldEmptyException(4012, "Campo Dirección vacío", "Debe cargar DIRECCION del Cliente");
+//                                } else {
+//                                    if (this.txtSocialSecurity.getText().equals("")) {
+//                                        this.txtSocialSecurity.requestFocus();
+//                                        throw new FieldEmptyException(4012, "Campo Obra Social vacío", "Debe cargar OBRA SOCIAL del Cliente");
+//                                    } else {
+//                                        if (this.txtTelephone.getText().equals("")) {
+//                                            this.txtTelephone.requestFocus();
+//                                            throw new FieldEmptyException(4012, "Campo Teléfono vacío", "Debe cargar TELÉFONO del Cliente");
+//                                        } else {
+//                                            if (!this.rBtnActive.isSelected() && !this.rBtnInactive.isSelected()) {
+//                                                this.rBtnActive.requestFocus();
+//                                                throw new FieldEmptyException(4012, "Campo Estado no seleccionado.", "Debe seleccionar el ESTADO del Cliente");
+//                                            } else {
+//                                                if (this.txtUsuario.getText().equals("")) {
+//                                                    this.txtUsuario.requestFocus();
+//                                                    throw new FieldEmptyException(4012, "Campo Email vacío", "Debe cargar EMAIL del Cliente");
+//                                                } else {
+//                                                    if (!UtilGUI.validateEmail(this.txtUsuario.getText())) {
+//                                                        this.txtUsuario.requestFocus();
+//                                                        throw new FieldEmptyException(4012, "Campo Email no valido", """
+//                                                            Verifique la informaci\u00f3n ingresada, el email debe tener el formato: 
+//                                                            xxxxx...@xxxxx.xxx """);
+//                                                    } else {
+//                                                        verificado = true;
+//                                                    }
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        } catch (FieldEmptyException ex) {
+//            ControllerExceptionHandler.handleError(ex, "Verificar Campos");
+//        }
+//
+//        return verificado;
+//    }
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        if (this.validateFields())
-            if (!this.update) {
-                this.newCliente();
-            } else {
-                this.updateCliente(this.clienteSelected);
-            }
+//        if (this.validateFields())
+//            if (!this.update) {
+//                this.newCliente();
+//            } else {
+//                this.updateCliente(this.usuarioSelected);
+//            }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnClearFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearFilterActionPerformed
@@ -681,31 +667,35 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnClearFilterActionPerformed
 
     private void jMnuEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuEditActionPerformed
-        
-        int row = this.jTblUsuario.getSelectedRow();
-        if (row != -1) {
-            Long idCliente = ((Long) this.jTblUsuario.getValueAt(row, 0));
-            Optional<Cliente> clienteOptional = this.listClientes.stream()
-                    .filter(cliente -> Objects.equals(cliente.getId(), idCliente))
-                    .findFirst();
-            if (clienteOptional.isPresent()) {
-                this.clienteSelected = clienteOptional.get();
-                UtilGUI.borrarCamposDeComponentes(this.jPanFields);
-                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
-                this.loadForm(this.clienteSelected);
-                this.btnNuevo.setEnabled(false);
-                this.btnGuardar.setEnabled(true);
-                this.update = true;
-            } else {
-                UtilGUI.borrarCamposDeComponentes(this.jPanFields);
-                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
-                this.btnNuevo.setEnabled(true);
-                this.btnGuardar.setEnabled(false);
-                this.update = false;
-            }
-        }
+
+//        int row = this.jTblUsuario.getSelectedRow();
+//        if (row != -1) {
+//            Long idCliente = ((Long) this.jTblUsuario.getValueAt(row, 0));
+//            Optional<Cliente> clienteOptional = this.listaPersonas.stream()
+//                    .filter(cliente -> Objects.equals(cliente.getId(), idCliente))
+//                    .findFirst();
+//            if (clienteOptional.isPresent()) {
+//                this.usuarioSelected = clienteOptional.get();
+//                UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+//                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
+//                this.loadForm(this.usuarioSelected);
+//                this.btnNuevo.setEnabled(false);
+//                this.btnGuardar.setEnabled(true);
+//                this.update = true;
+//            } else {
+//                UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+//                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+//                this.btnNuevo.setEnabled(true);
+//                this.btnGuardar.setEnabled(false);
+//                this.update = false;
+//            }
+//        }
     }//GEN-LAST:event_jMnuEditActionPerformed
-    
+
+    private void btnCancel1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancel1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCancel1ActionPerformed
+
     @Override
     public void dispose() {
         this.ppal.salirAlMnuPpal();
@@ -714,11 +704,11 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
+    private javax.swing.JButton btnCancel1;
     private javax.swing.JButton btnClearFilter;
     private javax.swing.ButtonGroup btnGrupStatus;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnNuevo;
-    private javax.swing.JComboBox<String> cboEspecialidad;
     private javax.swing.JComboBox<String> cboRol;
     private javax.swing.JMenuItem jMnuEdit;
     private javax.swing.JPanel jPanFields;
