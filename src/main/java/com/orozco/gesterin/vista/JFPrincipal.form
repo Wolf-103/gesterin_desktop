@@ -24,12 +24,12 @@
             <Property name="text" type="java.lang.String" value="Usuarios"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMniGestionCliente1">
+            <MenuItem class="javax.swing.JMenuItem" name="jMnuGestionUsuarios">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Gesti&#xf3;n"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMniGestionCliente1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMnuGestionUsuariosActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

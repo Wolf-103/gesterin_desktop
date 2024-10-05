@@ -171,7 +171,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         jPopMnuTableOptions.add(jMnuEdit);
 
         setClosable(true);
-        setTitle("Gestión de Clientes");
+        setTitle("Gestión de Usuario");
 
         jPanGeneral.setBackground(new java.awt.Color(255, 255, 255));
 

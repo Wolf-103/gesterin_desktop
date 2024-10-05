@@ -11,7 +11,7 @@ public class JFPrincipal extends javax.swing.JFrame {
 
     public JFPrincipal() {
         initComponents();
-          this.setLocationRelativeTo(null);
+        this.setLocationRelativeTo(null);
         //iniciar en modo maximizado
         this.setExtendedState(JFPrincipal.MAXIMIZED_BOTH);
     }
@@ -19,11 +19,13 @@ public class JFPrincipal extends javax.swing.JFrame {
     public void ingresarAUnMnu() {
         this.jMnuInicio.setEnabled(false);
         this.jMnuCliente.setEnabled(false);
+        this.jMnuUsuarios.setEnabled(false);
     }
 
     public void salirAlMnuPpal() {
         this.jMnuInicio.setEnabled(true);
         this.jMnuCliente.setEnabled(true);
+        this.jMnuUsuarios.setEnabled(true);
     }
 
     /**
@@ -40,7 +42,7 @@ public class JFPrincipal extends javax.swing.JFrame {
         jMnuInicio = new javax.swing.JMenu();
         jMnuExit = new javax.swing.JMenuItem();
         jMnuUsuarios = new javax.swing.JMenu();
-        jMniGestionCliente1 = new javax.swing.JMenuItem();
+        jMnuGestionUsuarios = new javax.swing.JMenuItem();
         jMnuCliente = new javax.swing.JMenu();
         jMniGestionCliente = new javax.swing.JMenuItem();
 
@@ -71,13 +73,13 @@ public class JFPrincipal extends javax.swing.JFrame {
 
         jMnuUsuarios.setText("Usuarios");
 
-        jMniGestionCliente1.setText("Gestión");
-        jMniGestionCliente1.addActionListener(new java.awt.event.ActionListener() {
+        jMnuGestionUsuarios.setText("Gestión");
+        jMnuGestionUsuarios.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMniGestionCliente1ActionPerformed(evt);
+                jMnuGestionUsuariosActionPerformed(evt);
             }
         });
-        jMnuUsuarios.add(jMniGestionCliente1);
+        jMnuUsuarios.add(jMnuGestionUsuarios);
 
         jMenuBar1.add(jMnuUsuarios);
 
@@ -119,18 +121,20 @@ public class JFPrincipal extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jMnuExitActionPerformed
 
-    private void jMniGestionCliente1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMniGestionCliente1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMniGestionCliente1ActionPerformed
+    private void jMnuGestionUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuGestionUsuariosActionPerformed
+        iFGestionUsuarios gestionUsuarios = new iFGestionUsuarios(this.jDesktop, this);
+        UtilGUI.openInternalFrame(this.jDesktop, gestionUsuarios);
+        this.ingresarAUnMnu();
+    }//GEN-LAST:event_jMnuGestionUsuariosActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktop;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMniGestionCliente;
-    private javax.swing.JMenuItem jMniGestionCliente1;
     private javax.swing.JMenu jMnuCliente;
     private javax.swing.JMenuItem jMnuExit;
+    private javax.swing.JMenuItem jMnuGestionUsuarios;
     private javax.swing.JMenu jMnuInicio;
     private javax.swing.JMenu jMnuUsuarios;
     // End of variables declaration//GEN-END:variables

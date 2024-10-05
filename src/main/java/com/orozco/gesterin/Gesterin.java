@@ -1,5 +1,6 @@
 package com.orozco.gesterin;
 
+import com.orozco.gesterin.vista.JFLoguin;
 import com.orozco.gesterin.vista.JFPrincipal;
 import java.sql.SQLException;
 
@@ -27,7 +28,11 @@ public class Gesterin {
 //        LOGGER.warn("Log level warn");
 //        LOGGER.error("Log level error");
 //        LOGGER.fatal("Log level fatal");
+
         JFPrincipal principal = new JFPrincipal();
         principal.setVisible(true);
+
+//           JFLoguin login = new JFLoguin();
+//           login.setVisible(true);
     }
 }

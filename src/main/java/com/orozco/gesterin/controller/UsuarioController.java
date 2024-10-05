@@ -1,8 +1,6 @@
 package com.orozco.gesterin.controller;
 
 import com.orozco.gesterin.DAO.Implementaciones.UsuarioDAO;
-import com.orozco.gesterin.model.Usuario;
-import java.util.List;
 
 /**
  *

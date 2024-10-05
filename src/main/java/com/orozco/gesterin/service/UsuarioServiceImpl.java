@@ -15,13 +15,13 @@ import java.util.List;
  * @fecha 5 oct. 2024
  * @description Sistema GESTERIN
  */
-public class UsuuarioServiceImpl {
+public class UsuarioServiceImpl {
 
     private final UsuarioDAO usuarioDAO;
     private final AdministradorDAO administradorDAO;
     private final ProfesionalDAO profesionalDAO;
 
-    public UsuuarioServiceImpl() {
+    public UsuarioServiceImpl() {
         this.usuarioDAO = new UsuarioDAO();
         this.administradorDAO = new AdministradorDAO();
         this.profesionalDAO = new ProfesionalDAO();
