@@ -12,14 +12,16 @@ public class Usuario {
     private Long id;
     private String nombre;
     private String constrasena;
+    private Boolean estado;
     private Long rol_id;
 
     public Usuario() {
     }
 
-    public Usuario(String nombre, String constrasena, Long rol_id) {
+    public Usuario(String nombre, String constrasena, Boolean estado, Long rol_id) {
         this.nombre = nombre;
         this.constrasena = constrasena;
+        this.estado = estado;
         this.rol_id = rol_id;
     }
 
@@ -45,6 +47,14 @@ public class Usuario {
 
     public void setConstrasena(String constrasena) {
         this.constrasena = constrasena;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
 
     public Long getRol_id() {

@@ -1,6 +1,7 @@
 package com.orozco.gesterin.DAO.Implementaciones;
 
 import com.orozco.gesterin.DAO.ConnectionMysql;
+import com.orozco.gesterin.DAO.GenericDAO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.model.Cliente;
 import java.sql.Connection;
@@ -18,7 +19,7 @@ import java.util.List;
  * @fecha 17 sep. 2024
  * @description Sistema GESTERIN
  */
-public class ClienteDAO {
+public class ClienteDAO implements GenericDAO<Cliente, Long> {
 
     private final ConnectionMysql connection;
 
@@ -26,13 +27,14 @@ public class ClienteDAO {
         this.connection = new ConnectionMysql();
     }
 
-    public boolean registrar(Cliente cliente) {
+    @Override
+    public boolean save(Cliente cliente) {
         try {
-            String registarSQL = "INSERT INTO clientes(firstname, lastname, dni, social_security, email, address, telephone, status) "
+            String registarSQL = "INSERT INTO clientes(nombre, apellido, dni, obra_social, email, direccion, telefono, estado) "
                     + " VALUES(?,?,?,?,?,?,?,?)";
 
             try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(registarSQL, Statement.RETURN_GENERATED_KEYS)) {
-                this.setSentenceClient(sentence, cliente);
+                this.setSentenceEntity(sentence, cliente);
 
                 if (sentence.executeUpdate() == 0) {
                     throw new SQLException("No se ha modificadado ninguna fila.");
@@ -55,14 +57,32 @@ public class ClienteDAO {
         return true;
     }
 
-    public List<Cliente> getAll() {
+    @Override
+    public Cliente findById(Long id) {
+        String findSQL = "SELECT * FROM clientes WHERE id=?";
+        Cliente entity = null;
+        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(findSQL)) {
+            sentence.setLong(1, id);
+            try (ResultSet rs = sentence.executeQuery()) {
+                if (rs.next()) {
+                    entity = this.cearEntity(rs);
+                }
+            }
+        } catch (SQLException ex) {
+            ControllerExceptionHandler.handleError(ex, "Error al buscar cliente por ID: " + id);
+        }
+        return entity;
+    }
+
+    @Override
+    public List<Cliente> findAll() {
         List<Cliente> listClientes = new ArrayList<>();
         String request = "SELECT * FROM clientes";
 
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request); ResultSet resultSet = sentence.executeQuery()) {
 
             while (resultSet.next()) {
-                Cliente cliente = this.cearCliente(resultSet);
+                Cliente cliente = this.cearEntity(resultSet);
                 listClientes.add(cliente);
             }
         } catch (NullPointerException | SQLException ex) {
@@ -71,14 +91,16 @@ public class ClienteDAO {
         return listClientes;
     }
 
+    @Override
     public boolean update(Cliente cliente) {
-        String updateSQL = "UPDATE clientes SET firstname=?, lastname=?, dni=?, social_security=?, email=?, address=?, telephone=?, status=? WHERE id=?";
+        String updateSQL = "UPDATE clientes SET nombre=?, apellido=?, dni=?, obra_social=?, email=?, direccion=?, telefono=?, estado=? WHERE id=?";
 
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
-            this.setSentenceClient(sentence, cliente);
+            this.setSentenceEntity(sentence, cliente);
             sentence.setLong(9, cliente.getId());
-
-            sentence.executeUpdate();
+            if (sentence.executeUpdate() == 0) {
+                throw new SQLException("No se ha modificadado ninguna fila.");
+            }
         } catch (NullPointerException | SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al actualizar cliente ID: " + cliente.getId());
             return false;
@@ -86,18 +108,7 @@ public class ClienteDAO {
         return true;
     }
 
-    private void setSentenceClient(final PreparedStatement sentence, Cliente cliente) throws SQLException {
-        sentence.setString(1, cliente.getFirstName());
-        sentence.setString(2, cliente.getLastName());
-        sentence.setString(3, cliente.getDni());
-        sentence.setString(4, cliente.getSocialSecurity());
-        sentence.setString(5, cliente.getEmail());
-        sentence.setString(6, cliente.getAddress());
-        sentence.setString(7, cliente.getTelephone());
-        sentence.setBoolean(8, cliente.getStatus());
-    }
-
-    public List<Cliente> buscarClientePorParametros(String parametro) {
+    public List<Cliente> findAllByParams(String parametro) {
         List<Cliente> listClientes = new ArrayList<>();
         String request = "SELECT * FROM clientes WHERE dni LIKE ? OR nombre LIKE ? OR apellido LIKE ?";
 
@@ -109,7 +120,7 @@ public class ClienteDAO {
 
             try (ResultSet resultSet = sentence.executeQuery()) {
                 while (resultSet.next()) {
-                    Cliente cliente = cearCliente(resultSet);
+                    Cliente cliente = cearEntity(resultSet);
                     listClientes.add(cliente);
                 }
             }
@@ -119,17 +130,45 @@ public class ClienteDAO {
         return listClientes;
     }
 
-    private Cliente cearCliente(final ResultSet resultSet) throws SQLException {
-        Cliente cliente = new Cliente();
-        cliente.setId(resultSet.getLong(1));
-        cliente.setDni(resultSet.getString(2));
-        cliente.setEmail(resultSet.getString(3));
-        cliente.setSocialSecurity(resultSet.getString(4));
-        cliente.setTelephone(resultSet.getString(5));
-        cliente.setFirstName(resultSet.getString(6));
-        cliente.setLastName(resultSet.getString(7));
-        cliente.setStatus(resultSet.getBoolean(8));
-        cliente.setAddress(resultSet.getString(9));
-        return cliente;
+    @Override
+    public boolean delete(Long id) {
+        String deleteSQL = "DELETE FROM clientes WHERE id=?";
+        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(deleteSQL)) {
+            sentence.setLong(1, id);
+            
+            if (sentence.executeUpdate() == 0) {
+                throw new SQLException("No se ha modificadado ninguna fila.");
+            }
+        } catch (SQLException ex) {
+            ControllerExceptionHandler.handleError(ex, "Error al eliminar cliente ID: " + id);
+            return false;
+        }
+        return true;
     }
+
+    private void setSentenceEntity(final PreparedStatement sentence, Cliente entity) throws SQLException {
+        sentence.setString(1, entity.getNombre());
+        sentence.setString(2, entity.getApellido());
+        sentence.setString(3, entity.getDni());
+        sentence.setString(4, entity.getObraSocial());
+        sentence.setString(5, entity.getEmail());
+        sentence.setString(6, entity.getDireccion());
+        sentence.setString(7, entity.getTelefono());
+        sentence.setBoolean(8, entity.getEstado());
+    }
+
+    private Cliente cearEntity(final ResultSet resultSet) throws SQLException {
+        Cliente entity = new Cliente();
+        entity.setId(resultSet.getLong("id"));
+        entity.setDni(resultSet.getString("dni"));
+        entity.setEmail(resultSet.getString("email"));
+        entity.setObraSocial(resultSet.getString("obra_social"));
+        entity.setTelefono(resultSet.getString("telefono"));
+        entity.setNombre(resultSet.getString("nombre"));
+        entity.setApellido(resultSet.getString("apellido"));
+        entity.setEstado(resultSet.getBoolean("estado"));
+        entity.setDireccion(resultSet.getString("direccion"));
+        return entity;
+    }
+
 }

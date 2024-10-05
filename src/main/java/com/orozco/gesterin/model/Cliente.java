@@ -10,28 +10,28 @@ package com.orozco.gesterin.model;
 public class Cliente {
 
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String nombre;
+    private String apellido;
     private String dni;
-    private String socialSecurity;
+    private String obraSocial;
     private String email;
-    private Boolean status;
-    private String address;
-    private String telephone;
+    private Boolean estado;
+    private String direccion;
+    private String telefono;
     private CaracteristicasFisicas caracteristicasFisicas;
 
     public Cliente() {
     }
 
-    public Cliente(String firstName, String lastName, String dni, String socialSecurity, String email, Boolean status, String address, String telephone) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Cliente(String nombre, String apellido, String dni, String obraSocial, String email, Boolean estado, String direccion, String telefono) {
+        this.nombre = nombre;
+        this.apellido = apellido;
         this.dni = dni;
-        this.socialSecurity = socialSecurity;
+        this.obraSocial = obraSocial;
         this.email = email;
-        this.status = status;
-        this.address = address;
-        this.telephone = telephone;
+        this.estado = estado;
+        this.direccion = direccion;
+        this.telefono = telefono;
     }
 
     public Long getId() {
@@ -42,20 +42,20 @@ public class Cliente {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setNombre(String firstName) {
+        this.nombre = firstName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getApellido() {
+        return apellido;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setApellido(String lastName) {
+        this.apellido = lastName;
     }
 
     public String getDni() {
@@ -66,12 +66,12 @@ public class Cliente {
         this.dni = dni;
     }
 
-    public String getSocialSecurity() {
-        return socialSecurity;
+    public String getObraSocial() {
+        return obraSocial;
     }
 
-    public void setSocialSecurity(String socialSecurity) {
-        this.socialSecurity = socialSecurity;
+    public void setObraSocial(String socialSecurity) {
+        this.obraSocial = socialSecurity;
     }
 
     public String getEmail() {
@@ -82,28 +82,28 @@ public class Cliente {
         this.email = email;
     }
 
-    public Boolean getStatus() {
-        return status;
+    public Boolean getEstado() {
+        return estado;
     }
 
-    public void setStatus(Boolean status) {
-        this.status = status;
+    public void setEstado(Boolean status) {
+        this.estado = status;
     }
 
-    public String getAddress() {
-        return address;
+    public String getDireccion() {
+        return direccion;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setDireccion(String address) {
+        this.direccion = address;
     }
 
-    public String getTelephone() {
-        return telephone;
+    public String getTelefono() {
+        return telefono;
     }
 
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setTelefono(String telephone) {
+        this.telefono = telephone;
     }
 
     public CaracteristicasFisicas getCaracteristicasFisicas() {

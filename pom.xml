@@ -11,6 +11,8 @@
         <maven.compiler.target>17</maven.compiler.target>
         <exec.mainClass>com.orozco.gesterin.Gesterin</exec.mainClass>
         <mysql.version>8.0.33</mysql.version>
+        <bcrypt.version>0.3</bcrypt.version>
+
     </properties>
     <dependencies>
         <dependency>

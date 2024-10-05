@@ -89,15 +89,15 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     }
     
     public void loadForm(Cliente cliente) {
-        this.txtName.setText(cliente.getFirstName() != null ? cliente.getFirstName() : "");
-        this.txtLastName.setText(cliente.getLastName() != null ? cliente.getLastName() : "");
+        this.txtName.setText(cliente.getNombre() != null ? cliente.getNombre() : "");
+        this.txtLastName.setText(cliente.getApellido() != null ? cliente.getApellido() : "");
         this.txtDNI.setText(cliente.getDni() != null ? cliente.getDni() : "");
-        this.txtAddress.setText(cliente.getAddress() != null ? cliente.getAddress() : "");
-        this.txtSocialSecurity.setText(cliente.getSocialSecurity() != null ? cliente.getSocialSecurity() : "");
+        this.txtAddress.setText(cliente.getDireccion() != null ? cliente.getDireccion() : "");
+        this.txtSocialSecurity.setText(cliente.getObraSocial() != null ? cliente.getObraSocial() : "");
         this.txtUsuario.setText(cliente.getEmail() != null ? cliente.getEmail() : "");
-        this.txtTelephone.setText(cliente.getTelephone() != null ? cliente.getTelephone() : "");
-        if (cliente.getStatus() != null) {
-            if (cliente.getStatus().equals("ACTIVE")) {
+        this.txtTelephone.setText(cliente.getTelefono() != null ? cliente.getTelefono() : "");
+        if (cliente.getEstado() != null) {
+            if (cliente.getEstado().equals("ACTIVE")) {
                 this.rBtnActive.setSelected(true);
             } else {
                 this.rBtnInactive.setSelected(true);
@@ -115,14 +115,14 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 return false;
             }
         };
-        this.listClientes = this.clienteController.getAll();
+        this.listClientes = this.clienteController.findAll();
         for (Cliente cliente : this.listClientes) {
             Object[] data = new Object[columnNames.length];
             data[0] = cliente.getId();
-            data[1] = cliente.getFirstName();
-            data[2] = cliente.getLastName();
+            data[1] = cliente.getNombre();
+            data[2] = cliente.getApellido();
             data[3] = cliente.getDni();
-            data[4] = cliente.getStatus();
+            data[4] = cliente.getEstado();
             model.addRow(data);
         }
         this.jTblUsuario.setModel(model);
@@ -548,21 +548,21 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnNuevoActionPerformed
     
     private Cliente setCliente(Cliente cliente) {
-        cliente.setFirstName(this.txtName.getText());
-        cliente.setLastName(this.txtLastName.getText());
+        cliente.setNombre(this.txtName.getText());
+        cliente.setApellido(this.txtLastName.getText());
         cliente.setDni(this.txtDNI.getText());
-        cliente.setSocialSecurity(this.txtSocialSecurity.getText());
+        cliente.setObraSocial(this.txtSocialSecurity.getText());
         cliente.setEmail(this.txtUsuario.getText());
         cliente.setStatus(this.rBtnActive.isSelected() == true ? "ACTIVE" : "INACTIVE");
-        cliente.setAddress(this.txtAddress.getText());
-        cliente.setTelephone(this.txtTelephone.getText());
+        cliente.setDireccion(this.txtAddress.getText());
+        cliente.setTelefono(this.txtTelephone.getText());
         return cliente;
     }
     
     private void newCliente() {
         Cliente cliente = new Cliente();
         cliente = this.setCliente(cliente);
-        boolean request = this.clienteController.registrarCliente(cliente);
+        boolean request = this.clienteController.save(cliente);
         if (request) {
             JOptionPane.showMessageDialog(null,
                     "Cliente Registrado con exito!!",

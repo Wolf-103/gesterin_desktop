@@ -8,14 +8,14 @@ import java.util.List;
  *
  * @author CRISTIAN MANUEL OROZCO
  * @legajo VINF014304
- * @fecha 17 sep. 2024
+ * @fecha 4 oct. 2024
  * @description Sistema GESTERIN
  */
-public class ClienteController {
+public class UsuarioController {
 
     private final ClienteDAO clienteDAO;
 
-    public ClienteController() {
+    public UsuarioController() {
         this.clienteDAO = new ClienteDAO();
     }
 
