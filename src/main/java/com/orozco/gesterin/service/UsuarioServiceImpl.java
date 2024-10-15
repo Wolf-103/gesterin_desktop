@@ -23,7 +23,7 @@ public class UsuarioServiceImpl {
 
     public UsuarioServiceImpl() {
         this.usuarioDAO = new UsuarioDAO();
-        this.administradorDAO = new AdministradorDAO();
+        this.administradorDAO = new AdministradorDAO(null);
         this.profesionalDAO = new ProfesionalDAO();
     }
     

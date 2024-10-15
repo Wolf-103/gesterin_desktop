@@ -4,9 +4,7 @@ import com.orozco.gesterin.DAO.ConnectionMysql;
 import com.orozco.gesterin.DAO.GenericDAO;
 import com.orozco.gesterin.dto.PersonaDTO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
-import com.orozco.gesterin.model.Administrador;
 import com.orozco.gesterin.model.Persona;
-import com.orozco.gesterin.model.Usuario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,29 +17,24 @@ import java.util.List;
  *
  * @author CRISTIAN MANUEL OROZCO
  * @legajo VINF014304
- * @fecha 17 sep. 2024
+ * @fecha 15 Oct. 2024
  * @description Sistema GESTERIN
  */
-public class AdministradorDAO implements GenericDAO<Administrador, Long> {
+public class PersonaDAO implements GenericDAO<Persona, Long> {
 
-//    private final ConnectionMysql connection;
-    private final PersonaDAO personaDAO;
+    ConnectionMysql connection;
 
-    public AdministradorDAO(PersonaDAO personaDAO) {
-//        this.connection = new ConnectionMysql();
-        this.personaDAO = personaDAO;
+    public PersonaDAO() {
+        this.connection = new ConnectionMysql();
     }
 
     @Override
-    public Administrador save(Administrador entity) {
+    public Persona save(Persona entity) {
         try {
-            Persona persona = this.personaDAO.save(new PersonaDTO(
-                    entity.getNombre(), entity.getApellido(), entity.getEmail(), entity.getTelefono()));
-            entity.setId(persona.getId());
-            String registarSQL = "INSERT INTO administradores(id, estado, usuario_id) "
-                    + " VALUES(?,?,?)";
+            String registarSQL = "INSERT INTO people(nombre, apellido, email, telefono) "
+                    + " VALUES(?,?,?,?)";
 
-            try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(registarSQL, Statement.RETURN_GENERATED_KEYS)) {
+            try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(registarSQL, Statement.RETURN_GENERATED_KEYS)) {
                 this.setSentenceEntity(sentence, entity);
 
                 if (sentence.executeUpdate() == 0) {
@@ -56,19 +49,18 @@ public class AdministradorDAO implements GenericDAO<Administrador, Long> {
                     }
                 }
             }
-
         } catch (NullPointerException | SQLException ex) {
-            ControllerExceptionHandler.handleError(ex, "Error al registrar Administrador email: " + entity.getEmail());
+            ControllerExceptionHandler.handleError(ex, "Error al registrar Persona email: " + entity.getEmail());
             return null;
         }
         return this.findById(entity.getId());
     }
 
     @Override
-    public Administrador findById(Long id) {
-        String findSQL = "SELECT * FROM administradores WHERE id=?";
-        Administrador entity = null;
-        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(findSQL)) {
+    public Persona findById(Long id) {
+        String findSQL = "SELECT * FROM people WHERE id=?";
+        Persona entity = null;
+        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(findSQL)) {
             sentence.setLong(1, id);
             try (ResultSet rs = sentence.executeQuery()) {
                 if (rs.next()) {
@@ -76,47 +68,46 @@ public class AdministradorDAO implements GenericDAO<Administrador, Long> {
                 }
             }
         } catch (SQLException ex) {
-            ControllerExceptionHandler.handleError(ex, "Error al buscar Administrador por ID: " + id);
+            ControllerExceptionHandler.handleError(ex, "Error al buscar persona por ID: " + id);
         }
         return entity;
     }
 
     @Override
-    public List<Administrador> findAll() {
-        List<Administrador> listaEntities = new ArrayList<>();
-        String request = "SELECT * FROM administradores";
+    public List<Persona> findAll() {
+        List<Persona> listaEntities = new ArrayList<>();
+        String request = "SELECT * FROM people";
 
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request); ResultSet resultSet = sentence.executeQuery()) {
 
             while (resultSet.next()) {
-                Administrador entity = this.cearEntity(resultSet);
+                Persona entity = this.cearEntity(resultSet);
                 listaEntities.add(entity);
             }
         } catch (NullPointerException | SQLException ex) {
-            ControllerExceptionHandler.handleError(ex, "Error al buscar todos los Administrador registrados");
+            ControllerExceptionHandler.handleError(ex, "Error al buscar todos los persona registrados");
         }
         return listaEntities;
     }
 
     @Override
-    public boolean update(Administrador entity) {
-        String updateSQL = "UPDATE administradores SET nombre=?, apellido=?, email=?, telefono=?, estado=?, usuario_id=? WHERE id=?";
+    public Persona update(Persona entity) {
+        String updateSQL = "UPDATE persona SET nombre=?, apellido=?, email=?, telefono=? WHERE id=?";
 
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
             this.setSentenceEntity(sentence, entity);
             sentence.setLong(6, entity.getId());
-
             sentence.executeUpdate();
         } catch (NullPointerException | SQLException ex) {
-            ControllerExceptionHandler.handleError(ex, "Error al actualizar Administrador ID: " + entity.getId());
-            return false;
+            ControllerExceptionHandler.handleError(ex, "Error al actualizar persona ID: " + entity.getId());
+            return null;
         }
-        return true;
+        return this.findById(entity.getId());
     }
 
-    public List<Administrador> findAllByParams(String parametro) {
-        List<Administrador> listEntity = new ArrayList<>();
-        String request = "SELECT * FROM administradores WHERE nombre LIKE ? OR apellido LIKE ? OR email LIKE ?";
+    public List<Persona> findAllByParams(String parametro) {
+        List<Persona> listEntity = new ArrayList<>();
+        String request = "SELECT * FROM people WHERE nombre LIKE ? OR apellido LIKE ? OR email LIKE ?";
 
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request)) {
             String querySQL = "%" + parametro + "%";
@@ -126,48 +117,43 @@ public class AdministradorDAO implements GenericDAO<Administrador, Long> {
 
             try (ResultSet resultSet = sentence.executeQuery()) {
                 while (resultSet.next()) {
-                    Administrador entity = cearEntity(resultSet);
+                    Persona entity = cearEntity(resultSet);
                     listEntity.add(entity);
                 }
             }
         } catch (NullPointerException | SQLException ex) {
-            ControllerExceptionHandler.handleError(ex, "Error al buscar Administrador por parametro: " + parametro);
+            ControllerExceptionHandler.handleError(ex, "Error al buscar people por parametro: " + parametro);
         }
         return listEntity;
     }
 
     @Override
     public boolean delete(Long id) {
-        String deleteSQL = "DELETE FROM administradores WHERE id=?";
+        String deleteSQL = "DELETE FROM people WHERE id=?";
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(deleteSQL)) {
             sentence.setLong(1, id);
             sentence.executeUpdate();
         } catch (SQLException ex) {
-            ControllerExceptionHandler.handleError(ex, "Error al eliminar Administrador ID: " + id);
+            ControllerExceptionHandler.handleError(ex, "Error al eliminar people ID: " + id);
             return false;
         }
         return true;
     }
 
-    private void setSentenceEntity(final PreparedStatement sentence, Administrador entity) throws SQLException {
+    private void setSentenceEntity(final PreparedStatement sentence, Persona entity) throws SQLException {
         sentence.setString(1, entity.getNombre());
         sentence.setString(2, entity.getApellido());
         sentence.setString(3, entity.getEmail());
         sentence.setString(4, entity.getTelefono());
-        sentence.setLong(5, entity.getUsuario().getId());
     }
 
-    private Administrador cearEntity(final ResultSet resultSet) throws SQLException {
-        Administrador entity = new Administrador();
-        entity.setId(resultSet.getLong(1));
-        entity.setEmail(resultSet.getString(2));
-        entity.setTelefono(resultSet.getString(3));
-        entity.setNombre(resultSet.getString(4));
-        entity.setApellido(resultSet.getString(5));
-        Usuario us = new Usuario();
-        us.setId(resultSet.getLong(6));
-        entity.setUsuario(us);
+    private PersonaDTO cearEntity(final ResultSet resultSet) throws SQLException {
+        PersonaDTO entity = new PersonaDTO();
+        entity.setId(resultSet.getLong("id"));
+        entity.setEmail(resultSet.getString("email"));
+        entity.setTelefono(resultSet.getString("telefono"));
+        entity.setNombre(resultSet.getString("nombre"));
+        entity.setApellido(resultSet.getString("apellido"));
         return entity;
     }
-
 }

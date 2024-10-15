@@ -13,13 +13,13 @@ import java.util.List;
  */
 public interface GenericDAO<T, ID> {
 
-    boolean save(T entity);
+    T save(T entity);
 
     T findById(ID id);
 
     List<T> findAll();
 
-    boolean update(T entity);
+    T update(T entity);
 
     boolean delete(ID id);
 }
