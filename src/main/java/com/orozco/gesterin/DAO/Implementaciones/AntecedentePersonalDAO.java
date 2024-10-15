@@ -25,7 +25,7 @@ public class AntecedentePersonalDAO implements GenericDAO<AntecedentePersonal, L
     }
 
     @Override
-    public boolean save(AntecedentePersonal entity) {
+    public AntecedentePersonal save(AntecedentePersonal entity) {
         String saveSQL = "INSERT INTO antecedentes_personales (observacion, tipoAntecedente_id, cliente_id) VALUES (?, ?, ?)";
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(saveSQL, Statement.RETURN_GENERATED_KEYS)) {
             this.setSentenceEntity(sentence, entity);
@@ -43,9 +43,9 @@ public class AntecedentePersonalDAO implements GenericDAO<AntecedentePersonal, L
             }
         } catch (SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al registrar Antecedente Personal");
-            return false;
+            return null;
         }
-        return true;
+        return this.findById(entity.getId());
     }
 
     @Override
@@ -83,7 +83,7 @@ public class AntecedentePersonalDAO implements GenericDAO<AntecedentePersonal, L
     }
 
     @Override
-    public boolean update(AntecedentePersonal entity) {
+    public AntecedentePersonal update(AntecedentePersonal entity) {
         String updateSQL = "UPDATE antecedentes_personales SET observacion=?, tipoAntecedente_id=?, cliente_id=? WHERE id=?";
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
             sentence.setString(1, entity.getObservacion());
@@ -96,9 +96,9 @@ public class AntecedentePersonalDAO implements GenericDAO<AntecedentePersonal, L
             }
         } catch (SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al actualizar Antecedente Personal");
-            return false;
+            return null;
         }
-        return true;
+        return this.findById(entity.getId());
     }
 
     @Override

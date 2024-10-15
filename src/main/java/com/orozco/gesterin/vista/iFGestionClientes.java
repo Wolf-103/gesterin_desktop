@@ -533,8 +533,8 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
     private void newCliente() {
         Cliente cliente = new Cliente();
         cliente = this.setCliente(cliente);
-        boolean request = this.clienteController.save(cliente);
-        if (request) {
+        cliente = this.clienteController.save(cliente) ;
+        if (cliente != null) {
             JOptionPane.showMessageDialog(null,
                     "Cliente Registrado con exito!!",
                     "Exito",
@@ -549,8 +549,8 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
     private void updateCliente(Cliente cliente) {
         if (cliente != null) {
             cliente = this.setCliente(cliente);
-            boolean request = this.clienteController.update(cliente);
-            if (request) {
+            cliente = this.clienteController.update(cliente);
+            if (cliente != null) {
                 JOptionPane.showMessageDialog(null,
                         "Cliente actualizado con exito!!",
                         "Exito",

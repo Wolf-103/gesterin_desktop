@@ -24,7 +24,7 @@ public class UsuarioServiceImpl {
     public UsuarioServiceImpl() {
         this.usuarioDAO = new UsuarioDAO();
         this.administradorDAO = new AdministradorDAO(null);
-        this.profesionalDAO = new ProfesionalDAO();
+        this.profesionalDAO = new ProfesionalDAO(null);
     }
     
     public List<Persona> findPersonaUsuario(Boolean estado){
@@ -33,7 +33,7 @@ public class UsuarioServiceImpl {
         return listaPersonaUsuario;
     }
 
-    public boolean save(Usuario usuario) {
+    public Usuario save(Usuario usuario) {
         return this.usuarioDAO.save(usuario);
     }
     
@@ -45,7 +45,7 @@ public class UsuarioServiceImpl {
         return this.usuarioDAO.findAllByParams(params);
     }
     
-    public boolean update(Usuario usuario){
+    public Usuario update(Usuario usuario){
         return this.usuarioDAO.update(usuario);
     }
     

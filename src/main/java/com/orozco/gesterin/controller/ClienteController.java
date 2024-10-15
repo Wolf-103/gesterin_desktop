@@ -19,7 +19,7 @@ public class ClienteController {
         this.clienteDAO = new ClienteDAO();
     }
 
-    public boolean save(Cliente cliente) {
+    public Cliente save(Cliente cliente) {
         return this.clienteDAO.save(cliente);
     }
     
@@ -31,7 +31,7 @@ public class ClienteController {
         return this.clienteDAO.findAllByParams(params);
     }
     
-    public boolean update(Cliente cliente){
+    public Cliente update(Cliente cliente){
         return this.clienteDAO.update(cliente);
     }
     

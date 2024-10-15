@@ -19,25 +19,25 @@ import java.util.List;
  * @description Sistema GESTERIN
  */
 public abstract class LesionDAO implements GenericDAO<Lesion, Long> {
-
+    
     protected ConnectionMysql connection;
-
+    
     public LesionDAO() {
         this.connection = new ConnectionMysql();
     }
-
+    
     @Override
-    public boolean save(Lesion entity) {
+    public Lesion save(Lesion entity) {
         String saveSQL = "INSERT INTO " + getTableName() + " (nombre, descripcion, extremidad) VALUES (?, ?, ?)";
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(saveSQL, PreparedStatement.RETURN_GENERATED_KEYS)) {
             sentence.setString(1, entity.getNombre());
             sentence.setString(2, entity.getDescripcion());
             sentence.setString(3, entity.getExtremidad());
-
+            
             if (sentence.executeUpdate() == 0) {
                 throw new SQLException("No se ha modificadado ninguna fila.");
             }
-
+            
             try (ResultSet generatedKeys = sentence.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     entity.setId(generatedKeys.getLong(1));
@@ -47,11 +47,11 @@ public abstract class LesionDAO implements GenericDAO<Lesion, Long> {
             }
         } catch (SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al registrar " + getClassName());
-            return false;
+            return null;
         }
-        return true;
+        return this.findById(entity.getId());
     }
-
+    
     @Override
     public Lesion findById(Long id) {
         String findSQL = "SELECT * FROM " + getTableName() + " WHERE id=?";
@@ -68,7 +68,7 @@ public abstract class LesionDAO implements GenericDAO<Lesion, Long> {
         }
         return entity;
     }
-
+    
     @Override
     public List<Lesion> findAll() {
         List<Lesion> entities = new ArrayList<>();
@@ -82,9 +82,9 @@ public abstract class LesionDAO implements GenericDAO<Lesion, Long> {
         }
         return entities;
     }
-
+    
     @Override
-    public boolean update(Lesion entity) {
+    public Lesion update(Lesion entity) {
         String updateSQL = "UPDATE " + getTableName() + " SET nombre=?, descripcion=?, extremidad=? WHERE id=?";
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
             sentence.setString(1, entity.getNombre());
@@ -95,11 +95,11 @@ public abstract class LesionDAO implements GenericDAO<Lesion, Long> {
             sentence.executeUpdate();
         } catch (SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al actualizar " + getClassName() + " ID: " + entity.getId());
-            return false;
+            return null;
         }
-        return true;
+        return this.findById(entity.getId());
     }
-
+    
     @Override
     public boolean delete(Long id) {
         String deleteSQL = "DELETE FROM " + getTableName() + " WHERE id=?";
@@ -112,10 +112,10 @@ public abstract class LesionDAO implements GenericDAO<Lesion, Long> {
         }
         return true;
     }
-
+    
     protected abstract String getTableName();
-
+    
     protected abstract String getClassName();
-
+    
     protected abstract Lesion mapResultSetToEntity(ResultSet rs) throws SQLException;
 }

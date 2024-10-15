@@ -1,6 +1,5 @@
 package com.orozco.gesterin.DAO.Implementaciones;
 
-import com.orozco.gesterin.DAO.ConnectionMysql;
 import com.orozco.gesterin.DAO.GenericDAO;
 import com.orozco.gesterin.dto.PersonaDTO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
@@ -24,11 +23,9 @@ import java.util.List;
  */
 public class AdministradorDAO implements GenericDAO<Administrador, Long> {
 
-//    private final ConnectionMysql connection;
     private final PersonaDAO personaDAO;
 
     public AdministradorDAO(PersonaDAO personaDAO) {
-//        this.connection = new ConnectionMysql();
         this.personaDAO = personaDAO;
     }
 
@@ -86,7 +83,7 @@ public class AdministradorDAO implements GenericDAO<Administrador, Long> {
         List<Administrador> listaEntities = new ArrayList<>();
         String request = "SELECT * FROM administradores";
 
-        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request); ResultSet resultSet = sentence.executeQuery()) {
+        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request); ResultSet resultSet = sentence.executeQuery()) {
 
             while (resultSet.next()) {
                 Administrador entity = this.cearEntity(resultSet);
@@ -99,26 +96,26 @@ public class AdministradorDAO implements GenericDAO<Administrador, Long> {
     }
 
     @Override
-    public boolean update(Administrador entity) {
+    public Administrador update(Administrador entity) {
         String updateSQL = "UPDATE administradores SET nombre=?, apellido=?, email=?, telefono=?, estado=?, usuario_id=? WHERE id=?";
 
-        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
+        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
             this.setSentenceEntity(sentence, entity);
             sentence.setLong(6, entity.getId());
 
             sentence.executeUpdate();
         } catch (NullPointerException | SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al actualizar Administrador ID: " + entity.getId());
-            return false;
+            return null;
         }
-        return true;
+        return this.findById(entity.getId());
     }
 
     public List<Administrador> findAllByParams(String parametro) {
         List<Administrador> listEntity = new ArrayList<>();
         String request = "SELECT * FROM administradores WHERE nombre LIKE ? OR apellido LIKE ? OR email LIKE ?";
 
-        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request)) {
+        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request)) {
             String querySQL = "%" + parametro + "%";
             sentence.setString(1, querySQL);
             sentence.setString(2, querySQL);
@@ -139,7 +136,7 @@ public class AdministradorDAO implements GenericDAO<Administrador, Long> {
     @Override
     public boolean delete(Long id) {
         String deleteSQL = "DELETE FROM administradores WHERE id=?";
-        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(deleteSQL)) {
+        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(deleteSQL)) {
             sentence.setLong(1, id);
             sentence.executeUpdate();
         } catch (SQLException ex) {

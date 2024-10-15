@@ -28,13 +28,13 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
     }
 
     @Override
-    public boolean save(Usuario usuario) {
+    public Usuario save(Usuario entity) {
         try {
             String registarSQL = "INSERT INTO usuarios(nombre, contrasena, estado, rol_id) "
                     + " VALUES(?,?,?,?)";
 
             try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(registarSQL, Statement.RETURN_GENERATED_KEYS)) {
-                this.setSentenceUsuario(sentence, usuario);
+                this.setSentenceUsuario(sentence, entity);
 
                 if (sentence.executeUpdate() == 0) {
                     throw new SQLException("No se ha modificadado ninguna fila.");
@@ -42,7 +42,7 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
 
                 try (ResultSet generatedKeys = sentence.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        usuario.setId(generatedKeys.getLong(1));
+                        entity.setId(generatedKeys.getLong(1));
                     } else {
                         throw new SQLException("No fue posible obtener el ID generado.");
                     }
@@ -50,11 +50,11 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
             }
 
         } catch (NullPointerException | SQLException ex) {
-            ControllerExceptionHandler.handleError(ex, "Error al registrar usuario Nombre: " + usuario.getNombre());
-            return false;
+            ControllerExceptionHandler.handleError(ex, "Error al registrar usuario Nombre: " + entity.getNombre());
+            return null;
         }
 
-        return true;
+        return this.findById(entity.getId());
     }
 
     @Override
@@ -92,7 +92,7 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
     }
 
     @Override
-    public boolean update(Usuario entity) {
+    public Usuario update(Usuario entity) {
         String updateSQL = "UPDATE usuarios SET nombre=?, contrasena=?, estado=?, rol_id=? WHERE id=?";
 
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
@@ -102,9 +102,9 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
             sentence.executeUpdate();
         } catch (NullPointerException | SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al actualizar usuario ID: " + entity.getId());
-            return false;
+            return null;
         }
-        return true;
+        return this.findById(entity.getId());
     }
 
     public List<Usuario> findAllByParams(String parametro) {

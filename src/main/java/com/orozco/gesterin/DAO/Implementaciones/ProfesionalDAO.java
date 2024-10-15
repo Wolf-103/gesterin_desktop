@@ -2,7 +2,9 @@ package com.orozco.gesterin.DAO.Implementaciones;
 
 import com.orozco.gesterin.DAO.ConnectionMysql;
 import com.orozco.gesterin.DAO.GenericDAO;
+import com.orozco.gesterin.dto.PersonaDTO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
+import com.orozco.gesterin.model.Persona;
 import com.orozco.gesterin.model.Profesional;
 import com.orozco.gesterin.model.Usuario;
 import java.sql.Connection;
@@ -22,19 +24,21 @@ import java.util.List;
  */
 public class ProfesionalDAO implements GenericDAO<Profesional, Long> {
 
-    private final ConnectionMysql connection;
+    private final PersonaDAO personaDAO;
 
-    public ProfesionalDAO() {
-        this.connection = new ConnectionMysql();
+    public ProfesionalDAO(PersonaDAO personaDAO) {
+        this.personaDAO = new PersonaDAO();
     }
 
     @Override
-    public boolean save(Profesional entity) {
+    public Profesional save(Profesional entity) {
         try {
-            String registarSQL = "INSERT INTO profesionales(nombre, apellido, email, telefono, estado, usuario_id) "
-                    + " VALUES(?,?,?,?,?,?,?,?)";
-
-            try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(registarSQL, Statement.RETURN_GENERATED_KEYS)) {
+            Persona persona = this.personaDAO.save(new PersonaDTO(
+                    entity.getNombre(), entity.getApellido(), entity.getEmail(), entity.getTelefono()));
+            entity.setId(persona.getId());
+            String registarSQL = "INSERT INTO profesionales(id, estado, usuario_id) "
+                    + " VALUES(?,?,?)";
+            try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(registarSQL, Statement.RETURN_GENERATED_KEYS)) {
                 this.setSentenceEntity(sentence, entity);
 
                 if (sentence.executeUpdate() == 0) {
@@ -52,17 +56,17 @@ public class ProfesionalDAO implements GenericDAO<Profesional, Long> {
 
         } catch (NullPointerException | SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al registrar profesional email: " + entity.getEmail());
-            return false;
+            return null;
         }
 
-        return true;
+        return this.findById(entity.getId());
     }
 
     @Override
     public Profesional findById(Long id) {
         String findSQL = "SELECT * FROM profesionales WHERE id=?";
         Profesional entity = null;
-        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(findSQL)) {
+        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(findSQL)) {
             sentence.setLong(1, id);
             try (ResultSet rs = sentence.executeQuery()) {
                 if (rs.next()) {
@@ -80,7 +84,7 @@ public class ProfesionalDAO implements GenericDAO<Profesional, Long> {
         List<Profesional> listaEntities = new ArrayList<>();
         String request = "SELECT * FROM profesionales";
 
-        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request); ResultSet resultSet = sentence.executeQuery()) {
+        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request); ResultSet resultSet = sentence.executeQuery()) {
 
             while (resultSet.next()) {
                 Profesional entity = this.cearEntity(resultSet);
@@ -93,26 +97,26 @@ public class ProfesionalDAO implements GenericDAO<Profesional, Long> {
     }
 
     @Override
-    public boolean update(Profesional entity) {
+    public Profesional update(Profesional entity) {
         String updateSQL = "UPDATE profesionales SET nombre=?, apellido=?, email=?, telefono=?, estado=?, usuario_id=? WHERE id=?";
 
-        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
+        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
             this.setSentenceEntity(sentence, entity);
             sentence.setLong(6, entity.getId());
 
             sentence.executeUpdate();
         } catch (NullPointerException | SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al actualizar profesional ID: " + entity.getId());
-            return false;
+            return null;
         }
-        return true;
+        return this.findById(entity.getId());
     }
 
     public List<Profesional> findAllByParams(String parametro) {
         List<Profesional> listEntity = new ArrayList<>();
         String request = "SELECT * FROM profesionales WHERE nombre LIKE ? OR apellido LIKE ? OR email LIKE ?";
 
-        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request)) {
+        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request)) {
             String querySQL = "%" + parametro + "%";
             sentence.setString(1, querySQL);
             sentence.setString(2, querySQL);
@@ -133,7 +137,7 @@ public class ProfesionalDAO implements GenericDAO<Profesional, Long> {
     @Override
     public boolean delete(Long id) {
         String deleteSQL = "DELETE FROM profesiones WHERE id=?";
-        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(deleteSQL)) {
+        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(deleteSQL)) {
             sentence.setLong(1, id);
             sentence.executeUpdate();
         } catch (SQLException ex) {

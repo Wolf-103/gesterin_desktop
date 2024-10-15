@@ -33,7 +33,7 @@ public abstract class GenericDaoImpl<T extends TipoBase, ID> implements GenericD
     }
 
     @Override
-    public boolean save(T entity) {
+    public T save(T entity) {
         String saveSQL = "INSERT INTO " + getTableName() + " (nombre, descripcion) VALUES (?, ?)";
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(saveSQL, PreparedStatement.RETURN_GENERATED_KEYS)) {
             sentence.setString(1, entity.getNombre());
@@ -52,9 +52,9 @@ public abstract class GenericDaoImpl<T extends TipoBase, ID> implements GenericD
             }
         } catch (SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al registrar " + getClassName());
-            return false;
+            return null;
         }
-        return true;
+        return this.findById((ID) entity.getId());
     }
 
     @Override
@@ -89,7 +89,7 @@ public abstract class GenericDaoImpl<T extends TipoBase, ID> implements GenericD
     }
 
     @Override
-    public boolean update(T entity) {
+    public T update(T entity) {
         String updateSQL = "UPDATE " + getTableName() + " SET nombre=?, descripcion=? WHERE id=?";
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
             sentence.setString(1, entity.getNombre());
@@ -98,9 +98,9 @@ public abstract class GenericDaoImpl<T extends TipoBase, ID> implements GenericD
             sentence.executeUpdate();
         } catch (SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al actualizar " + getClassName() + " ID: " + entity.getId());
-            return false;
+            return null;
         }
-        return true;
+        return this.findById((ID) entity.getId());
     }
 
     @Override

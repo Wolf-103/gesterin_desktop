@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.text.html.parser.Entity;
 
 /**
  *
@@ -28,13 +29,13 @@ public class ClienteDAO implements GenericDAO<Cliente, Long> {
     }
 
     @Override
-    public boolean save(Cliente cliente) {
+    public Cliente save(Cliente entity) {
         try {
             String registarSQL = "INSERT INTO clientes(nombre, apellido, dni, obra_social, email, direccion, telefono, estado) "
                     + " VALUES(?,?,?,?,?,?,?,?)";
 
             try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(registarSQL, Statement.RETURN_GENERATED_KEYS)) {
-                this.setSentenceEntity(sentence, cliente);
+                this.setSentenceEntity(sentence, entity);
 
                 if (sentence.executeUpdate() == 0) {
                     throw new SQLException("No se ha modificadado ninguna fila.");
@@ -42,7 +43,7 @@ public class ClienteDAO implements GenericDAO<Cliente, Long> {
 
                 try (ResultSet generatedKeys = sentence.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        cliente.setId(generatedKeys.getLong(1));
+                        entity.setId(generatedKeys.getLong(1));
                     } else {
                         throw new SQLException("No fue posible obtener el ID generado.");
                     }
@@ -50,11 +51,11 @@ public class ClienteDAO implements GenericDAO<Cliente, Long> {
             }
 
         } catch (NullPointerException | SQLException ex) {
-            ControllerExceptionHandler.handleError(ex, "Error al registrar cliente DNI: " + cliente.getDni());
-            return false;
+            ControllerExceptionHandler.handleError(ex, "Error al registrar cliente DNI: " + entity.getDni());
+            return null;
         }
 
-        return true;
+        return this.findById(entity.getId());
     }
 
     @Override
@@ -92,20 +93,20 @@ public class ClienteDAO implements GenericDAO<Cliente, Long> {
     }
 
     @Override
-    public boolean update(Cliente cliente) {
+    public Cliente update(Cliente entity) {
         String updateSQL = "UPDATE clientes SET nombre=?, apellido=?, dni=?, obra_social=?, email=?, direccion=?, telefono=?, estado=? WHERE id=?";
 
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
-            this.setSentenceEntity(sentence, cliente);
-            sentence.setLong(9, cliente.getId());
+            this.setSentenceEntity(sentence, entity);
+            sentence.setLong(9, entity.getId());
             if (sentence.executeUpdate() == 0) {
                 throw new SQLException("No se ha modificadado ninguna fila.");
             }
         } catch (NullPointerException | SQLException ex) {
-            ControllerExceptionHandler.handleError(ex, "Error al actualizar cliente ID: " + cliente.getId());
-            return false;
+            ControllerExceptionHandler.handleError(ex, "Error al actualizar cliente ID: " + entity.getId());
+            return null;
         }
-        return true;
+        return this.findById(entity.getId());
     }
 
     public List<Cliente> findAllByParams(String parametro) {
