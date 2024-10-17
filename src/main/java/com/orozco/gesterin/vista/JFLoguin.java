@@ -1,27 +1,36 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package com.orozco.gesterin.vista;
 
+import com.orozco.gesterin.controller.AuthenticateController;
+import com.orozco.gesterin.exception.ControllerExceptionHandler;
+import com.orozco.gesterin.exception.FieldEmptyException;
+import com.orozco.gesterin.service.Implement.AuhtenticateServiceImpl;
+import com.orozco.gesterin.utils.AppConstants;
+import com.orozco.gesterin.vista.validations.CustomDocumentFilter;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.text.AbstractDocument;
 
 /**
  *
- * @author crist
+ * @author CRISTIAN MANUEL OROZCO
+ * @legajo VINF014304
+ * @fecha 5 oct. 2024
+ * @description Sistema GESTERIN
  */
 public class JFLoguin extends javax.swing.JFrame {
 
-    byte[] bytesImg;
     ImageIcon logo;
+    private boolean isPasswordVisible = false;
+    private final AuthenticateController authenticateController;
 
     public JFLoguin() {
         initComponents();
         this.loadImage();
+        this.initFields();
+        this.authenticateController = new AuthenticateController(new AuhtenticateServiceImpl());
     }
 
     private void loadImage() {
@@ -29,11 +38,62 @@ public class JFLoguin extends javax.swing.JFrame {
             InputStream inpStrIMG = getClass().getResourceAsStream("/img/FC logo HD.jpg");
             this.logo = new ImageIcon(ImageIO.read(inpStrIMG));
         } catch (IOException ex) {
-            System.out.println("Error al Cargar Imagen. \n "
-                    + "Hubo un problema al tratar de cargar una imagen de sistema.");
+            System.out.println("""
+                               Error al Cargar Imagen. 
+                                Hubo un problema al tratar de cargar una imagen de sistema.""");
         }
         this.lblLogo.setIcon(new ImageIcon(logo.getImage().getScaledInstance(this.lblLogo.getWidth(),
                 lblLogo.getHeight(), Image.SCALE_DEFAULT)));
+    }
+
+    public void initFields() {
+        ((AbstractDocument) this.txtUsuario.getDocument())
+                .setDocumentFilter(new CustomDocumentFilter(
+                        AppConstants.NAME_LASTNAME_MAX,
+                        AppConstants.PATTERN_USERNAME_COMPILE)
+                );
+        this.txtPassword.setText("");
+    }
+
+    private void hiddenPassword() {
+        if (this.isPasswordVisible) {
+            this.txtPassword.setEchoChar('*');
+            this.btnHidenPasswword.setText("Mostrar");
+        } else {
+            this.txtPassword.setEchoChar((char) 0);
+            this.btnHidenPasswword.setText("Ocultar");
+        }
+        this.isPasswordVisible = !this.isPasswordVisible;
+    }
+
+    public boolean validateField() {
+        try {
+            if (txtUsuario.getText().trim().isEmpty()) {
+                txtUsuario.requestFocus();
+                throw new FieldEmptyException(4012, "Campo NOMBRE DE USUARIO vacío", "Debe cargar el nombre de usuario para continuar.");
+            } else if (new String(txtPassword.getPassword()).trim().isEmpty()) {
+                txtPassword.requestFocus();
+                throw new FieldEmptyException(4012, "Campo CONTRASEÑA vacío", "Debe cargar CONTRASEÑA del usuario para continuar");
+            } else {
+                if (!AppConstants.PATTERN_PASSWORD_COMPILLE.matcher(new String(this.txtPassword.getPassword())).matches()) {
+                    txtPassword.requestFocus();
+                    throw new FieldEmptyException(4012, "Campo CONTRASEÑA no tiene el formato correcto",
+                            "La CONTRASEÑA puede contener letras mayusculas y minusculas, números y guiones: bajos y medios, tambien asteriscos.");
+                }
+                return true;
+            }
+        } catch (FieldEmptyException ex) {
+            ControllerExceptionHandler.handleError(ex, "Verificar Campos");
+            return false;
+        }
+    }
+
+    private void login() {
+        if (this.validateField()
+                && this.authenticateController.autenticate(this.txtUsuario.getText(), new String(this.txtPassword.getPassword()))) {
+            new JFPrincipal().setVisible(true);
+            this.dispose();
+        }
     }
 
     /**
@@ -53,6 +113,7 @@ public class JFLoguin extends javax.swing.JFrame {
         lblPassword = new javax.swing.JLabel();
         txtPassword = new javax.swing.JPasswordField();
         txtUsuario = new javax.swing.JTextField();
+        btnHidenPasswword = new javax.swing.JButton();
         btnIngresar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -80,21 +141,37 @@ public class JFLoguin extends javax.swing.JFrame {
         lblPassword.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         txtPassword.setText("jPasswordField1");
+        txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtPasswordKeyTyped(evt);
+            }
+        });
+
+        btnHidenPasswword.setBackground(new java.awt.Color(0, 102, 255));
+        btnHidenPasswword.setText("Mostrar");
+        btnHidenPasswword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHidenPasswwordActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(27, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtUsuario)
-                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnHidenPasswword))
+                    .addComponent(txtUsuario))
+                .addGap(27, 27, 27))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -106,8 +183,9 @@ public class JFLoguin extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(21, Short.MAX_VALUE))
+                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnHidenPasswword, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
+                .addGap(21, 21, 21))
         );
 
         btnIngresar.setBackground(new java.awt.Color(0, 0, 0));
@@ -125,7 +203,7 @@ public class JFLoguin extends javax.swing.JFrame {
         jPanFields.setLayout(jPanFieldsLayout);
         jPanFieldsLayout.setHorizontalGroup(
             jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
+            .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
             .addGroup(jPanFieldsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -169,11 +247,22 @@ public class JFLoguin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
-        
+        this.login();
     }//GEN-LAST:event_btnIngresarActionPerformed
+
+    private void btnHidenPasswwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHidenPasswwordActionPerformed
+        this.hiddenPassword();
+    }//GEN-LAST:event_btnHidenPasswwordActionPerformed
+
+    private void txtPasswordKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyTyped
+        if (txtPassword.getPassword().length >= AppConstants.PASSWORD_MAX) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtPasswordKeyTyped
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnHidenPasswword;
     private javax.swing.JButton btnIngresar;
     private javax.swing.JPanel jPanFields;
     private javax.swing.JPanel jPanel1;

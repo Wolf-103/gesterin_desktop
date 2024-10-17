@@ -1,6 +1,7 @@
-package com.orozco.gesterin.service;
+package com.orozco.gesterin.service.Implement;
 
 import com.orozco.gesterin.DAO.Implementaciones.AdministradorDAO;
+import com.orozco.gesterin.DAO.Implementaciones.PersonaDAO;
 import com.orozco.gesterin.DAO.Implementaciones.ProfesionalDAO;
 import com.orozco.gesterin.DAO.Implementaciones.UsuarioDAO;
 import com.orozco.gesterin.model.Persona;
@@ -18,38 +19,40 @@ import java.util.List;
 public class UsuarioServiceImpl {
 
     private final UsuarioDAO usuarioDAO;
+    private final PersonaDAO personaDAO;
     private final AdministradorDAO administradorDAO;
     private final ProfesionalDAO profesionalDAO;
 
     public UsuarioServiceImpl() {
         this.usuarioDAO = new UsuarioDAO();
-        this.administradorDAO = new AdministradorDAO(null);
-        this.profesionalDAO = new ProfesionalDAO(null);
+        this.personaDAO = new PersonaDAO();
+        this.administradorDAO = new AdministradorDAO(this.personaDAO);
+        this.profesionalDAO = new ProfesionalDAO(this.personaDAO);
     }
-    
-    public List<Persona> findPersonaUsuario(Boolean estado){
+
+    public List<Persona> findPersonaUsuario(Boolean estado) {
         List<Persona> listaPersonaUsuario = new ArrayList<>();
-        
+
         return listaPersonaUsuario;
     }
 
     public Usuario save(Usuario usuario) {
         return this.usuarioDAO.save(usuario);
     }
-    
-    public List<Usuario> findAll(){
+
+    public List<Usuario> findAll() {
         return this.usuarioDAO.findAll();
     }
-    
-    public List<Usuario> findByParams(String params){
+
+    public List<Usuario> findByParams(String params) {
         return this.usuarioDAO.findAllByParams(params);
     }
-    
-    public Usuario update(Usuario usuario){
+
+    public Usuario update(Usuario usuario) {
         return this.usuarioDAO.update(usuario);
     }
-    
-    public boolean delete(Long idUsuario){
+
+    public boolean delete(Long idUsuario) {
         return this.usuarioDAO.delete(idUsuario);
     }
 }

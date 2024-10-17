@@ -127,6 +127,31 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
         return listEntities;
     }
 
+    /**
+     * Buscar por nombre de usuario
+     *
+     * @param username
+     * @return
+     */
+    public Usuario findByUsername(String username) {
+        Usuario entitie = null;
+        String request = "SELECT * FROM usuarios WHERE nombre = ? ";
+
+        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request)) {
+            sentence.setString(1, username);
+
+            try (ResultSet resultSet = sentence.executeQuery()) {
+                while (resultSet.next()) {
+                    entitie = setUsuario(resultSet);
+                }
+            }
+        } catch (NullPointerException | SQLException ex) {
+            ControllerExceptionHandler.handleError(ex, "Error al buscar usuarios por nombre de usuaro: " + username);
+            return null;
+        }
+        return entitie;
+    }
+
     @Override
     public boolean delete(Long id) {
         String deleteSQL = "DELETE FROM usuarios WHERE id=?";
@@ -154,7 +179,7 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
         usuario.setConstrasena(resultSet.getString(3));
         usuario.setEstado(resultSet.getBoolean(4));
         usuario.setRol_id(resultSet.getLong(5));
-   
+
         return usuario;
     }
 

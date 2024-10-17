@@ -1,8 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.orozco.gesterin.utils;
+
+import java.util.regex.Pattern;
 
 /**
  *
@@ -40,9 +38,14 @@ public class AppConstants {
     public static final int OBSERVATION_MIN = 3;
     public static final int OBSERVATION_MAX = 2000;
 
+    public static final String PATTERN_USERNAME = "^[a-zA-Z0-9]*$";
+    public static final Pattern PATTERN_USERNAME_COMPILE = Pattern.compile(PATTERN_USERNAME);
+
     public static final String PATTERN_EMAIL = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
     public static final String PATTERN_EMAIL_VALID_CHARACTERS = "^[A-Za-z0-9+_.-]+@?[A-Za-z0-9+_.-]*$";
-    public static final String PATTERN_PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9]{" + PASSWORD_MIN + ",}$";
+//    public static final String PATTERN_PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9]{" + PASSWORD_MIN + ",}$";
+    public static final String PATTERN_PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9*_\\-]{" + PASSWORD_MIN + "," + PASSWORD_MAX + "}$";
+    public static final Pattern PATTERN_PASSWORD_COMPILLE = Pattern.compile(AppConstants.PATTERN_PASSWORD);
     public static final String PATTERN_ONLY_NUMBER = "^[0-9]$";
     public static final String PATTERN_SOCIAL_SECURITY_SLIM = "^[0-9]+$";
     public static final String PATTERN_DNI_SLIM = "^[0-9]+$";

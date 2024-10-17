@@ -1,6 +1,5 @@
 package com.orozco.gesterin.DAO.Implementaciones;
 
-import com.orozco.gesterin.DAO.Implementaciones.GenericDaoImpl;
 import com.orozco.gesterin.model.TipoDoctor;
 import java.sql.ResultSet;
 import java.sql.SQLException;

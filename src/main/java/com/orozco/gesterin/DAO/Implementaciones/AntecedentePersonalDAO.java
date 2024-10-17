@@ -14,7 +14,10 @@ import java.util.List;
 
 /**
  *
- * @author crist
+ * @author CRISTIAN MANUEL OROZCO
+ * @legajo VINF014304
+ * @fecha 17 sep. 2024
+ * @description Sistema GESTERIN
  */
 public class AntecedentePersonalDAO implements GenericDAO<AntecedentePersonal, Long> {
 
