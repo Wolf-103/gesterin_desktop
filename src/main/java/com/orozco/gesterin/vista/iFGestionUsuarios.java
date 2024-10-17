@@ -1,7 +1,9 @@
 package com.orozco.gesterin.vista;
 
 import com.orozco.gesterin.controller.UsuarioController;
+import com.orozco.gesterin.model.Administrador;
 import com.orozco.gesterin.model.Persona;
+import com.orozco.gesterin.model.Profesional;
 import com.orozco.gesterin.model.Usuario;
 import com.orozco.gesterin.vista.validations.CustomDocumentFilter;
 import com.orozco.gesterin.utils.AppConstants;
@@ -88,12 +90,12 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     }
     
     private List<Persona> getPersonaUsuario(){
-        List<Persona> listaPersonaUsuario = null;
+        List<Persona> listaPersonaUsuario = this.usuarioController.listAllPeopleUsers();
         return listaPersonaUsuario;
     }
 
     public void loadTableClientes() {
-        String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "EMAIL", "TELEFONO"};
+        String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "EMAIL", "ROL"};
         DefaultTableModel model = new DefaultTableModel(null, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -107,7 +109,13 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             data[1] = persona.getNombre();
             data[2] = persona.getApellido();
             data[3] = persona.getEmail();
-            data[4] = persona.getTelefono();
+            String rol = "";
+            if (persona instanceof Administrador admin ){
+                rol = admin.getUsuario().getNombre().toUpperCase();
+            }else if (persona instanceof Profesional pro ){
+                rol = pro.getUsuario().getNombre().toUpperCase();
+            }
+            data[4] = rol;
             model.addRow(data);
         }
         this.jTblUsuario.setModel(model);

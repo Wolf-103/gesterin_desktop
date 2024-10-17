@@ -3,6 +3,7 @@ package com.orozco.gesterin.DAO.Implementaciones;
 import com.orozco.gesterin.DAO.ConnectionMysql;
 import com.orozco.gesterin.DAO.GenericDAO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
+import com.orozco.gesterin.model.Rol;
 import com.orozco.gesterin.model.Usuario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,9 +23,11 @@ import java.util.List;
 public class UsuarioDAO implements GenericDAO<Usuario, Long> {
 
     private final ConnectionMysql connection;
+    private final RolDAO rolDAO;
 
     public UsuarioDAO() {
         this.connection = new ConnectionMysql();
+        this.rolDAO = new RolDAO();
     }
 
     @Override
@@ -65,7 +68,8 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
             sentence.setLong(1, id);
             try (ResultSet rs = sentence.executeQuery()) {
                 if (rs.next()) {
-                    entity = this.setUsuario(rs);
+                    Rol rol = this.rolDAO.findById(rs.getLong("rol_id"));
+                    entity = this.setUsuario(rs, rol);
                 }
             }
         } catch (SQLException ex) {
@@ -82,7 +86,8 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request); ResultSet resultSet = sentence.executeQuery()) {
 
             while (resultSet.next()) {
-                Usuario entity = this.setUsuario(resultSet);
+                Rol rol = this.rolDAO.findById(resultSet.getLong("rol_id"));
+                Usuario entity = this.setUsuario(resultSet, rol);
                 listEntities.add(entity);
             }
         } catch (NullPointerException | SQLException ex) {
@@ -117,7 +122,8 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
 
             try (ResultSet resultSet = sentence.executeQuery()) {
                 while (resultSet.next()) {
-                    Usuario entity = setUsuario(resultSet);
+                    Rol rol = this.rolDAO.findById(resultSet.getLong("rol_id"));
+                    Usuario entity = setUsuario(resultSet, rol);
                     listEntities.add(entity);
                 }
             }
@@ -142,7 +148,8 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
 
             try (ResultSet resultSet = sentence.executeQuery()) {
                 while (resultSet.next()) {
-                    entitie = setUsuario(resultSet);
+                    Rol rol = this.rolDAO.findById(resultSet.getLong("rol_id"));
+                    entitie = setUsuario(resultSet, rol);
                 }
             }
         } catch (NullPointerException | SQLException ex) {
@@ -169,16 +176,16 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
         sentence.setString(1, usuario.getNombre());
         sentence.setString(2, usuario.getConstrasena());
         sentence.setBoolean(3, usuario.getEstado());
-        sentence.setLong(4, usuario.getRol_id());
+        sentence.setLong(4, usuario.getRol().getId());
     }
 
-    private Usuario setUsuario(final ResultSet resultSet) throws SQLException {
+    private Usuario setUsuario(final ResultSet resultSet, Rol rol) throws SQLException {
         Usuario usuario = new Usuario();
         usuario.setId(resultSet.getLong(1));
         usuario.setNombre(resultSet.getString(2));
         usuario.setConstrasena(resultSet.getString(3));
         usuario.setEstado(resultSet.getBoolean(4));
-        usuario.setRol_id(resultSet.getLong(5));
+        usuario.setRol(rol);
 
         return usuario;
     }

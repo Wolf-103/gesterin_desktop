@@ -1,6 +1,7 @@
 package com.orozco.gesterin.vista;
 
 import com.orozco.gesterin.controller.AuthenticateController;
+import com.orozco.gesterin.exception.AuthenticateException;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.exception.FieldEmptyException;
 import com.orozco.gesterin.service.Implement.AuhtenticateServiceImpl;
@@ -28,6 +29,8 @@ public class JFLoguin extends javax.swing.JFrame {
 
     public JFLoguin() {
         initComponents();
+        this.setLocationRelativeTo(null);
+
         this.loadImage();
         this.initFields();
         this.authenticateController = new AuthenticateController(new AuhtenticateServiceImpl());
@@ -83,17 +86,25 @@ public class JFLoguin extends javax.swing.JFrame {
                 return true;
             }
         } catch (FieldEmptyException ex) {
-            ControllerExceptionHandler.handleError(ex, "Verificar Campos");
+            ControllerExceptionHandler.handleError(ex, "Inicio de Sesión");
             return false;
         }
     }
 
     private void login() {
-        if (this.validateField()
-                && this.authenticateController.autenticate(this.txtUsuario.getText(), new String(this.txtPassword.getPassword()))) {
-            new JFPrincipal().setVisible(true);
-            this.dispose();
-        }
+        new JFPrincipal().setVisible(true);
+        this.dispose();
+//        if (this.validateField()) {
+//            if (this.authenticateController.autenticate(this.txtUsuario.getText(), new String(this.txtPassword.getPassword()))) {
+//                new JFPrincipal().setVisible(true);
+//                this.dispose();
+//            } else {
+//                ControllerExceptionHandler.handleError(
+//                        new AuthenticateException(403, "Credenciales Invalidas",
+//                                "La combinacion de nombre de usuario y contraseña no pertenecen a ningún usuario registrado, por favor, verifique los datos ingresados e intente nuevamente."),
+//                        "Inicio de Sesión");
+//            }
+//        }
     }
 
     /**
@@ -120,13 +131,16 @@ public class JFLoguin extends javax.swing.JFrame {
         setResizable(false);
 
         jPanFields.setBackground(new java.awt.Color(255, 255, 255));
+        jPanFields.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanFields.add(lblLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(142, 55, 220, 161));
 
         lblTitle.setBackground(new java.awt.Color(0, 0, 0));
         lblTitle.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         lblTitle.setForeground(new java.awt.Color(51, 51, 51));
         lblTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTitle.setText("FORMULARIO REGISTRO DE CLIENTES");
+        lblTitle.setText("INICIO DE SESIÓN");
         lblTitle.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanFields.add(lblTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 6, 505, 37));
 
         jPanel1.setBackground(new java.awt.Color(204, 204, 204));
 
@@ -147,7 +161,8 @@ public class JFLoguin extends javax.swing.JFrame {
             }
         });
 
-        btnHidenPasswword.setBackground(new java.awt.Color(0, 102, 255));
+        btnHidenPasswword.setBackground(new java.awt.Color(0, 0, 153));
+        btnHidenPasswword.setForeground(new java.awt.Color(255, 255, 255));
         btnHidenPasswword.setText("Mostrar");
         btnHidenPasswword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -160,7 +175,7 @@ public class JFLoguin extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(27, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -171,7 +186,7 @@ public class JFLoguin extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnHidenPasswword))
                     .addComponent(txtUsuario))
-                .addGap(27, 27, 27))
+                .addGap(36, 36, 36))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -181,12 +196,15 @@ public class JFLoguin extends javax.swing.JFrame {
                     .addComponent(lblUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnHidenPasswword, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnHidenPasswword, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(21, 21, 21))
         );
+
+        jPanFields.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 234, 500, -1));
 
         btnIngresar.setBackground(new java.awt.Color(0, 0, 0));
         btnIngresar.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -198,39 +216,7 @@ public class JFLoguin extends javax.swing.JFrame {
                 btnIngresarActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout jPanFieldsLayout = new javax.swing.GroupLayout(jPanFields);
-        jPanFields.setLayout(jPanFieldsLayout);
-        jPanFieldsLayout.setHorizontalGroup(
-            jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
-            .addGroup(jPanFieldsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanFieldsLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanFieldsLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(187, 187, 187))
-        );
-        jPanFieldsLayout.setVerticalGroup(
-            jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanFieldsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
-        );
+        jPanFields.add(btnIngresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 370, 99, 46));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -240,7 +226,9 @@ public class JFLoguin extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanFields, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanFields, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();

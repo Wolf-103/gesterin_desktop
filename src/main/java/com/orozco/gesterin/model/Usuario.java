@@ -13,16 +13,23 @@ public class Usuario {
     private String nombre;
     private String constrasena;
     private Boolean estado;
-    private Long rol_id;
+    private Rol rol;
 
     public Usuario() {
     }
 
-    public Usuario(String nombre, String constrasena, Boolean estado, Long rol_id) {
+    public Usuario(Long id, String nombre, Boolean estado, Rol rol) {
+        this.id = id;
+        this.nombre = nombre;
+        this.estado = estado;
+        this.rol = rol;
+    }
+   
+    public Usuario(String nombre, String constrasena, Boolean estado, Rol rol) {
         this.nombre = nombre;
         this.constrasena = constrasena;
         this.estado = estado;
-        this.rol_id = rol_id;
+        this.rol = rol;
     }
 
     public Long getId() {
@@ -57,12 +64,14 @@ public class Usuario {
         this.estado = estado;
     }
 
-    public Long getRol_id() {
-        return rol_id;
+    public Rol getRol() {
+        return rol;
     }
 
-    public void setRol_id(Long rol_id) {
-        this.rol_id = rol_id;
+    public void setRol(Rol rol) {
+        this.rol = rol;
     }
+
+
 
 }

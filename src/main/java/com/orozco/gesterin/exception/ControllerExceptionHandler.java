@@ -114,6 +114,17 @@ public class ControllerExceptionHandler {
                         + "Contexto: " + context, JOptionPane.WARNING_MESSAGE);
             }
         });
+        
+        registerHandler((ex, context) -> {
+            if (ex instanceof AuthenticateException authErr) {
+                System.out.println("Acceso Denegado. Message: " + authErr.getMessage() + "\n"
+                        + "Detail: " + authErr.getDetails() + "\n"
+                        + "Contexto: " + context);
+                getMessageError("Usuario No Autenticado", "Message: " + authErr.getMessage() + "\n"
+                        + "Detail: " + authErr.getDetails() + "\n"
+                        + "Contexto: " + context, JOptionPane.WARNING_MESSAGE);
+            }
+        });
 
         registerHandler((ex, context) -> {
             if (ex instanceof GlobalException error) {
