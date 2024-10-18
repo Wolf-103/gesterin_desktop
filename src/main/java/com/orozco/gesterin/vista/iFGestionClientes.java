@@ -24,7 +24,7 @@ import javax.swing.text.AbstractDocument;
  * @description Sistema GESTERIN
  */
 public final class iFGestionClientes extends javax.swing.JInternalFrame {
-    
+
     JFPrincipal ppal;
     JDesktopPane desktop;
     List<Cliente> listClientes = new ArrayList<>();
@@ -45,10 +45,10 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         this.clienteController = new ClienteController();
         this.initialStatus();
         this.initFields();
-        
+
         this.loadTableClientes();
     }
-    
+
     public void initFields() {
         Pattern pattrenFullNames = Pattern.compile(AppConstants.PATTERN_NAME_LASTNAME_SLIM);
         ((AbstractDocument) this.txtName.getDocument())
@@ -87,7 +87,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
                         Pattern.compile(AppConstants.PATTERN_EMAIL_VALID_CHARACTERS))
                 );
     }
-    
+
     public void loadForm(Cliente cliente) {
         this.txtName.setText(cliente.getNombre() != null ? cliente.getNombre() : "");
         this.txtLastName.setText(cliente.getApellido() != null ? cliente.getApellido() : "");
@@ -97,7 +97,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         this.txtEmail.setText(cliente.getEmail() != null ? cliente.getEmail() : "");
         this.txtTelephone.setText(cliente.getTelefono() != null ? cliente.getTelefono() : "");
         if (cliente.getEstado() != null) {
-            if (cliente.getEstado().equals("ACTIVE")) {
+            if (cliente.getEstado()) {
                 this.rBtnActive.setSelected(true);
             } else {
                 this.rBtnInactive.setSelected(true);
@@ -106,7 +106,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
             this.rBtnInactive.setSelected(true);
         }
     }
-    
+
     public void loadTableClientes() {
         String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "DNI", "STATUS"};
         DefaultTableModel model = new DefaultTableModel(null, columnNames) {
@@ -127,7 +127,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         }
         this.jTblCliente.setModel(model);
     }
-    
+
     public void initialStatus() {
         this.clienteSelected = null;
         UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
@@ -135,13 +135,14 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         this.btnNuevo.setEnabled(true);
         this.btnGuardar.setEnabled(false);
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         btnGrupStatus = new javax.swing.ButtonGroup();
         jPopMnuTableOptions = new javax.swing.JPopupMenu();
+        jMnuInfo = new javax.swing.JMenuItem();
         jMnuEdit = new javax.swing.JMenuItem();
         jPanGeneral = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -175,7 +176,17 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         btnClearFilter = new javax.swing.JButton();
         lblTitleListaClientes = new javax.swing.JLabel();
 
+        jMnuInfo.setActionCommand("");
+        jMnuInfo.setLabel("Abrir");
+        jMnuInfo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMnuInfoActionPerformed(evt);
+            }
+        });
+        jPopMnuTableOptions.add(jMnuInfo);
+
         jMnuEdit.setText("Editar");
+        jMnuEdit.setActionCommand("");
         jMnuEdit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMnuEditActionPerformed(evt);
@@ -409,6 +420,11 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         ));
         jTblCliente.setComponentPopupMenu(jPopMnuTableOptions);
         jTblCliente.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jTblCliente.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTblClienteMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTblCliente);
 
         jpanBtnList.setBackground(new java.awt.Color(255, 255, 255));
@@ -517,7 +533,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         this.btnNuevo.setEnabled(false);
         this.btnGuardar.setEnabled(true);
     }//GEN-LAST:event_btnNuevoActionPerformed
-    
+
     private Cliente setCliente(Cliente cliente) {
         cliente.setNombre(this.txtName.getText());
         cliente.setApellido(this.txtLastName.getText());
@@ -529,11 +545,11 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         cliente.setTelefono(this.txtTelephone.getText());
         return cliente;
     }
-    
+
     private void newCliente() {
         Cliente cliente = new Cliente();
         cliente = this.setCliente(cliente);
-        cliente = this.clienteController.save(cliente) ;
+        cliente = this.clienteController.save(cliente);
         if (cliente != null) {
             JOptionPane.showMessageDialog(null,
                     "Cliente Registrado con exito!!",
@@ -545,7 +561,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
             this.btnGuardar.setEnabled(false);
         }
     }
-    
+
     private void updateCliente(Cliente cliente) {
         if (cliente != null) {
             cliente = this.setCliente(cliente);
@@ -567,7 +583,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }
-    
+
     public boolean validateFields() {
         boolean verificado = false;
         try {
@@ -634,7 +650,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         } catch (FieldEmptyException ex) {
             ControllerExceptionHandler.handleError(ex, "Verificar Campos");
         }
-        
+
         return verificado;
     }
 
@@ -651,34 +667,56 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnClearFilterActionPerformed
 
-    private void jMnuEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuEditActionPerformed
-        
+    private Optional<Cliente> getCLientFromTable() {
         int row = this.jTblCliente.getSelectedRow();
         if (row != -1) {
             Long idCliente = ((Long) this.jTblCliente.getValueAt(row, 0));
-            Optional<Cliente> clienteOptional = this.listClientes.stream()
+            return this.listClientes.stream()
                     .filter(cliente -> Objects.equals(cliente.getId(), idCliente))
                     .findFirst();
-            if (clienteOptional.isPresent()) {
-                this.clienteSelected = clienteOptional.get();
-                UtilGUI.borrarCamposDeComponentes(this.jPanFields);
-                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
-                this.loadForm(this.clienteSelected);
-                this.btnNuevo.setEnabled(false);
-                this.btnGuardar.setEnabled(true);
-                this.update = true;
-            } else {
-                UtilGUI.borrarCamposDeComponentes(this.jPanFields);
-                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
-                this.btnNuevo.setEnabled(true);
-                this.btnGuardar.setEnabled(false);
-                this.update = false;
-            }
         }
+        return null;
+    }
+
+    private void jMnuEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuEditActionPerformed
+        Optional<Cliente> clienteOptional = this.getCLientFromTable();
+        if (clienteOptional.isPresent()) {
+            this.clienteSelected = clienteOptional.get();
+            UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
+            this.loadForm(this.clienteSelected);
+            this.btnNuevo.setEnabled(false);
+            this.btnGuardar.setEnabled(true);
+            this.update = true;
+        } else {
+            UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+            this.btnNuevo.setEnabled(true);
+            this.btnGuardar.setEnabled(false);
+            this.update = false;
+        }
+    
     }//GEN-LAST:event_jMnuEditActionPerformed
+
+    private void jTblClienteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTblClienteMouseClicked
+        
+    }//GEN-LAST:event_jTblClienteMouseClicked
+
+    private void jMnuInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuInfoActionPerformed
+        Optional<Cliente> clienteOptional = this.getCLientFromTable();
+        if (clienteOptional.isPresent()) {
+            this.clienteSelected = clienteOptional.get();
+            UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+            this.loadForm(this.clienteSelected);
+            this.btnNuevo.setEnabled(false);
+            this.btnGuardar.setEnabled(false);
+            this.update = false;
+        }
+    }//GEN-LAST:event_jMnuInfoActionPerformed
     
     @Override
-    public void dispose() {
+public void dispose() {
         this.ppal.salirAlMnuPpal();
         super.dispose();
     }
@@ -690,6 +728,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnNuevo;
     private javax.swing.JMenuItem jMnuEdit;
+    private javax.swing.JMenuItem jMnuInfo;
     private javax.swing.JPanel jPanFields;
     private javax.swing.JPanel jPanGeneral;
     private javax.swing.JPanel jPanel1;

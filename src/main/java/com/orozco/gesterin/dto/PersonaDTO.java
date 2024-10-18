@@ -18,4 +18,8 @@ public class PersonaDTO extends Persona {
     public PersonaDTO() {
     }
 
+    public PersonaDTO(Long id, String nombre, String apellido, String email, String telefono) {
+        super(id, nombre, apellido, email, telefono);
+    }
+
 }

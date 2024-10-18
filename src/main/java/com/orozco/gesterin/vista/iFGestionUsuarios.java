@@ -111,9 +111,9 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             data[3] = persona.getEmail();
             String rol = "";
             if (persona instanceof Administrador admin ){
-                rol = admin.getUsuario().getNombre().toUpperCase();
+                rol = admin.getUsuario().getRol().getNombre().toUpperCase();
             }else if (persona instanceof Profesional pro ){
-                rol = pro.getUsuario().getNombre().toUpperCase();
+                rol = pro.getUsuario().getRol().getNombre().toUpperCase();
             }
             data[4] = rol;
             model.addRow(data);

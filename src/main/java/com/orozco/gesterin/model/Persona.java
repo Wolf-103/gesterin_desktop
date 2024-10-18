@@ -26,6 +26,14 @@ public abstract class Persona {
         this.telefono = telefono;
     }
 
+    public Persona(Long id, String nombre, String apellido, String email, String telefono) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.email = email;
+        this.telefono = telefono;
+    }
+
     public Persona() {
     }
 
