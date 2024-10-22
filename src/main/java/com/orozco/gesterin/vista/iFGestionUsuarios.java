@@ -9,7 +9,6 @@ import com.orozco.gesterin.vista.validations.CustomDocumentFilter;
 import com.orozco.gesterin.utils.AppConstants;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 import javax.swing.JDesktopPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
@@ -48,38 +47,53 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     }
 
     public void initFields() {
-        Pattern pattrenFullNames = Pattern.compile(AppConstants.PATTERN_NAME_LASTNAME_SLIM);
         ((AbstractDocument) this.txtName.getDocument())
                 .setDocumentFilter(new CustomDocumentFilter(
                         AppConstants.NAME_LASTNAME_MAX,
-                        pattrenFullNames)
+                        AppConstants.PATTERN_NAME_LASTNAME_SLIM_COMPILER)
                 );
         ((AbstractDocument) this.txtLastName.getDocument())
                 .setDocumentFilter(new CustomDocumentFilter(
                         AppConstants.NAME_LASTNAME_MAX,
-                        pattrenFullNames)
+                        AppConstants.PATTERN_NAME_LASTNAME_SLIM_COMPILER)
                 );
         ((AbstractDocument) this.txtTelephone.getDocument())
                 .setDocumentFilter(new CustomDocumentFilter(
                         AppConstants.TELEPHONE_MAX,
-                        Pattern.compile(AppConstants.PATTERN_TELEPHONE_SLIM))
+                        AppConstants.PATTERN_TELEPHONE_SLIM_COMPILER)
+                );
+        ((AbstractDocument) this.txtEmail.getDocument())
+                .setDocumentFilter(new CustomDocumentFilter(
+                        AppConstants.EMAIL_MAX,
+                        AppConstants.PATTERN_EMAIL_VALID_CHARACTERS_COMPILE)
                 );
         ((AbstractDocument) this.txtUsuario.getDocument())
                 .setDocumentFilter(new CustomDocumentFilter(
-                        AppConstants.EMAIL_MAX,
-                        Pattern.compile(AppConstants.PATTERN_EMAIL_VALID_CHARACTERS))
+                        AppConstants.NAME_LASTNAME_MAX,
+                        AppConstants.PATTERN_USERNAME_COMPILE)
                 );
+        this.txtPassword.setText("");
     }
 
-    public void loadForm(Persona persona, Usuario usuario) {
+    public void loadForm(Persona persona) {
         this.txtName.setText(persona.getNombre() != null ? persona.getNombre() : "");
-        this.txtLastName.setText(persona.getApellido()!= null ? persona.getApellido() : "");
+        this.txtLastName.setText(persona.getApellido() != null ? persona.getApellido() : "");
         this.txtEmail.setText(persona.getTelefono() != null ? persona.getTelefono() : "");
         this.txtTelephone.setText(persona.getTelefono() != null ? persona.getTelefono() : "");
-        this.txtUsuario.setText(persona.getEmail() != null ? persona.getEmail() : "");
 
-        if (usuario.getEstado() != null) {
-            if (usuario.getEstado()) {
+        this.txtUsuario.setText(persona.getEmail() != null ? persona.getEmail() : "");
+        this.txtPassword.setText("password_hidden");
+
+        Usuario us = null;
+        if (persona instanceof Administrador admin) {
+            us = admin.getUsuario();
+            this.btnEspecialidades.setEnabled(false);
+        } else if (persona instanceof Profesional pro) {
+            us = pro.getUsuario();
+            this.btnEspecialidades.setEnabled(true);
+        }
+        if (us != null) {
+            if (us.getEstado()) {
                 this.rBtnActive.setSelected(true);
             } else {
                 this.rBtnInactive.setSelected(true);
@@ -87,9 +101,10 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         } else {
             this.rBtnInactive.setSelected(true);
         }
+
     }
-    
-    private List<Persona> getPersonaUsuario(){
+
+    private List<Persona> getPersonaUsuario() {
         List<Persona> listaPersonaUsuario = this.usuarioController.listAllPeopleUsers();
         return listaPersonaUsuario;
     }
@@ -110,9 +125,9 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             data[2] = persona.getApellido();
             data[3] = persona.getEmail();
             String rol = "";
-            if (persona instanceof Administrador admin ){
+            if (persona instanceof Administrador admin) {
                 rol = admin.getUsuario().getRol().getNombre().toUpperCase();
-            }else if (persona instanceof Profesional pro ){
+            } else if (persona instanceof Profesional pro) {
                 rol = pro.getUsuario().getRol().getNombre().toUpperCase();
             }
             data[4] = rol;
@@ -121,10 +136,15 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         this.jTblUsuario.setModel(model);
     }
 
-    public void initialStatus() {
+    private void clearFilters() {
+        UtilGUI.borrarCamposDeComponentes(this.jPanFileters);
+    }
+
+    private void initialStatus() {
         this.usuarioSelected = null;
         UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
         UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+        UtilGUI.borrarCamposDeComponentes(this.jPanFileters);
         this.btnNuevo.setEnabled(true);
         this.btnGuardar.setEnabled(false);
     }
@@ -158,7 +178,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         lblPassword = new javax.swing.JLabel();
         txtEmail = new javax.swing.JTextField();
         txtPassword = new javax.swing.JPasswordField();
-        btnCancel1 = new javax.swing.JButton();
+        btnEspecialidades = new javax.swing.JButton();
         jpanButons = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
         btnGuardar = new javax.swing.JButton();
@@ -166,8 +186,11 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTblUsuario = new javax.swing.JTable();
-        jpanBtnList = new javax.swing.JPanel();
+        jPanFileters = new javax.swing.JPanel();
         btnClearFilter = new javax.swing.JButton();
+        txtBuscar = new javax.swing.JTextField();
+        btnBuscar = new javax.swing.JButton();
+        cboFilterRole = new javax.swing.JComboBox<>();
         lblTitleListaClientes = new javax.swing.JLabel();
 
         jMnuEdit.setText("Editar");
@@ -250,11 +273,11 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
         txtPassword.setText("jPasswordField1");
 
-        btnCancel1.setText("Especialidad");
-        btnCancel1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnCancel1.addActionListener(new java.awt.event.ActionListener() {
+        btnEspecialidades.setText("Especialidad");
+        btnEspecialidades.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEspecialidades.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancel1ActionPerformed(evt);
+                btnEspecialidadesActionPerformed(evt);
             }
         });
 
@@ -301,7 +324,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                     .addGroup(jPanFieldsLayout.createSequentialGroup()
                         .addComponent(lblEspecialidad, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnCancel1, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnEspecialidades, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanFieldsLayout.setVerticalGroup(
@@ -336,15 +359,15 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cboRol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblRol, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(lblEspecialidad, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
-                    .addComponent(btnCancel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(btnEspecialidades, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(21, 21, 21))
         );
 
         jpanButons.setBackground(new java.awt.Color(204, 204, 204));
@@ -438,9 +461,9 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         jTblUsuario.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jScrollPane1.setViewportView(jTblUsuario);
 
-        jpanBtnList.setBackground(new java.awt.Color(255, 255, 255));
-        jpanBtnList.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jpanBtnList.setForeground(new java.awt.Color(255, 255, 255));
+        jPanFileters.setBackground(new java.awt.Color(255, 255, 255));
+        jPanFileters.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanFileters.setForeground(new java.awt.Color(255, 255, 255));
 
         btnClearFilter.setText("Quitar Filtros");
         btnClearFilter.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -450,21 +473,48 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             }
         });
 
-        javax.swing.GroupLayout jpanBtnListLayout = new javax.swing.GroupLayout(jpanBtnList);
-        jpanBtnList.setLayout(jpanBtnListLayout);
-        jpanBtnListLayout.setHorizontalGroup(
-            jpanBtnListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpanBtnListLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnClearFilter)
-                .addContainerGap())
-        );
-        jpanBtnListLayout.setVerticalGroup(
-            jpanBtnListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpanBtnListLayout.createSequentialGroup()
+        btnBuscar.setText("Buscar");
+        btnBuscar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
+
+        cboFilterRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "ADMINISTRADOR", "PROFESIONAL" }));
+        cboFilterRole.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+
+        javax.swing.GroupLayout jPanFiletersLayout = new javax.swing.GroupLayout(jPanFileters);
+        jPanFileters.setLayout(jPanFiletersLayout);
+        jPanFiletersLayout.setHorizontalGroup(
+            jPanFiletersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanFiletersLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnClearFilter)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanFiletersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanFiletersLayout.createSequentialGroup()
+                        .addComponent(cboFilterRole, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnClearFilter)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanFiletersLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnBuscar)
+                        .addGap(92, 92, 92))))
+        );
+        jPanFiletersLayout.setVerticalGroup(
+            jPanFiletersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanFiletersLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanFiletersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBuscar))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanFiletersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnClearFilter)
+                    .addComponent(cboFilterRole, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         lblTitleListaClientes.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -482,7 +532,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1)
                     .addComponent(lblTitleListaClientes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE)
-                    .addComponent(jpanBtnList, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanFileters, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -491,10 +541,10 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(lblTitleListaClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(3, 3, 3)
-                .addComponent(jpanBtnList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanFileters, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 391, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jPanGeneralLayout = new javax.swing.GroupLayout(jPanGeneral);
@@ -590,7 +640,6 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 //                    JOptionPane.INFORMATION_MESSAGE);
 //        }
 //    }
-
 //    public boolean validateFields() {
 //        boolean verificado = false;
 //        try {
@@ -671,7 +720,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnClearFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearFilterActionPerformed
-        // TODO add your handling code here:
+        this.clearFilters();
     }//GEN-LAST:event_btnClearFilterActionPerformed
 
     private void jMnuEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuEditActionPerformed
@@ -700,9 +749,13 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 //        }
     }//GEN-LAST:event_jMnuEditActionPerformed
 
-    private void btnCancel1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancel1ActionPerformed
+    private void btnEspecialidadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEspecialidadesActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btnCancel1ActionPerformed
+    }//GEN-LAST:event_btnEspecialidadesActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnBuscarActionPerformed
 
     @Override
     public void dispose() {
@@ -711,22 +764,24 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCancel;
-    private javax.swing.JButton btnCancel1;
     private javax.swing.JButton btnClearFilter;
+    private javax.swing.JButton btnEspecialidades;
     private javax.swing.ButtonGroup btnGrupStatus;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnNuevo;
+    private javax.swing.JComboBox<String> cboFilterRole;
     private javax.swing.JComboBox<String> cboRol;
     private javax.swing.JMenuItem jMnuEdit;
     private javax.swing.JPanel jPanFields;
+    private javax.swing.JPanel jPanFileters;
     private javax.swing.JPanel jPanGeneral;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPopupMenu jPopMnuTableOptions;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTblUsuario;
-    private javax.swing.JPanel jpanBtnList;
     private javax.swing.JPanel jpanButons;
     private javax.swing.JLabel lblEmail;
     private javax.swing.JLabel lblEspecialidad;
@@ -741,6 +796,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblUsuario;
     private javax.swing.JRadioButton rBtnActive;
     private javax.swing.JRadioButton rBtnInactive;
+    private javax.swing.JTextField txtBuscar;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtLastName;
     private javax.swing.JTextField txtName;
