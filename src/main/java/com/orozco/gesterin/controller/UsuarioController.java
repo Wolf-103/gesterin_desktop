@@ -25,6 +25,5 @@ public class UsuarioController {
     public List<Persona> listAllPeopleUsers(){
         return this.personaDAO.findAllPeopleUsers();
     }
-    
-
+   
 }

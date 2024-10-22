@@ -21,4 +21,10 @@ public class Rol extends TipoBase {
         super(nombre, descripcion);
     }
 
+    @Override
+    public String toString() {
+        return this.getNombre();
+    }
+    
+    
 }

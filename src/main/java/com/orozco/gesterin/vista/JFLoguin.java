@@ -29,6 +29,7 @@ public class JFLoguin extends javax.swing.JFrame {
 
     public JFLoguin() {
         initComponents();
+        
         this.setLocationRelativeTo(null);
 
         this.loadImage();

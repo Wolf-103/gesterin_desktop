@@ -4,6 +4,8 @@
  */
 package com.orozco.gesterin.model;
 
+import java.util.Objects;
+
 /**
  *
  * @author CRISTIAN MANUEL OROZCO
@@ -52,4 +54,27 @@ public abstract class TipoBase {
         this.descripcion = descripcion;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TipoBase other = (TipoBase) obj;
+        return Objects.equals(this.id, other.id);
+    }
+
+    
 }

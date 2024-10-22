@@ -8,10 +8,12 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyVetoException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -19,6 +21,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFormattedTextField;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
@@ -116,6 +119,12 @@ public abstract class UtilGUI {
         componentActions.put(JButton.class, comp -> {
             JButton button = (JButton) comp;
             button.setEnabled(estado);
+        });
+        componentActions.put(JPasswordField.class, comp -> {
+            JPasswordField jPasswordField = (JPasswordField) comp;
+            jPasswordField.setEnabled(estado);
+            jPasswordField.setBackground(background);
+            jPasswordField.setForeground(foreground);
         });
         componentActions.put(JCheckBox.class, comp -> {
             JCheckBox checkBox = (JCheckBox) comp;
@@ -386,7 +395,7 @@ public abstract class UtilGUI {
         Matcher matcher1 = pattern1.matcher(numero);
         return matcher1.matches();
     }
-    
+
     /**
      * Comprueba si cumple con el patron de la construciòn de un correo
      * electronico
@@ -402,5 +411,22 @@ public abstract class UtilGUI {
         Pattern pattern = Pattern.compile(AppConstants.PATTERN_EMAIL);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void CargarCombo(List miLista, JComboBox miCombo) {
+        DefaultComboBoxModel combo = new DefaultComboBoxModel();
+        if (miLista != null) {
+            combo.addElement("[Seleccionar]");
+            for (Object o : miLista) {
+                combo.addElement(o);
+            }
+
+        } else {
+            combo.addElement("[Sin elementos]");
+        }
+        miCombo.setEditable(false);
+        miCombo.setModel(combo);
+
     }
 }

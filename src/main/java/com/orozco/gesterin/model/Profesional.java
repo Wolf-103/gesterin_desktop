@@ -1,5 +1,6 @@
 package com.orozco.gesterin.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public class Profesional extends Persona {
 
-    private List<Especialidad> listaEspecialidades;
+    private List<Especialidad> listaEspecialidades = new ArrayList<>();
     private Usuario usuario;
 
     public Profesional() {

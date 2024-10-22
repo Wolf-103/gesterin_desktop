@@ -10,6 +10,14 @@
         <Property name="useNullLayout" type="boolean" value="true"/>
       </Layout>
       <SubComponents>
+        <MenuItem class="javax.swing.JMenuItem" name="jMnuInfo">
+          <Properties>
+            <Property name="label" type="java.lang.String" value="Abrir"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMnuInfoActionPerformed"/>
+          </Events>
+        </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="jMnuEdit">
           <Properties>
             <Property name="text" type="java.lang.String" value="Editar"/>
@@ -192,8 +200,14 @@
                                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                                   <Component id="rBtnInactive" min="-2" pref="100" max="-2" attributes="0"/>
                                               </Group>
-                                              <Component id="txtUsuario" alignment="0" min="-2" pref="312" max="-2" attributes="0"/>
-                                              <Component id="txtPassword" min="-2" pref="312" max="-2" attributes="0"/>
+                                              <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                                  <Group type="102" alignment="1" attributes="0">
+                                                      <Component id="txtPassword" max="32767" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="btnHidenPasswword" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <Component id="txtUsuario" alignment="0" min="-2" pref="312" max="-2" attributes="0"/>
+                                              </Group>
                                           </Group>
                                       </Group>
                                   </Group>
@@ -247,6 +261,7 @@
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="lblPassword" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                               <Component id="txtPassword" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                              <Component id="btnHidenPasswword" alignment="3" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -381,6 +396,9 @@
                       <Color id="Hand Cursor"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cboRolActionPerformed"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                   </AuxValues>
@@ -458,6 +476,12 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="btnEspecialidades">
                   <Properties>
+                    <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="99" green="0" red="0" type="rgb"/>
+                    </Property>
+                    <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Especialidad"/>
                     <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
                       <Color id="Hand Cursor"/>
@@ -465,6 +489,20 @@
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEspecialidadesActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="btnHidenPasswword">
+                  <Properties>
+                    <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="99" green="0" red="0" type="rgb"/>
+                    </Property>
+                    <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="ff" green="ff" red="ff" type="rgb"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Mostrar"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnHidenPasswwordActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>

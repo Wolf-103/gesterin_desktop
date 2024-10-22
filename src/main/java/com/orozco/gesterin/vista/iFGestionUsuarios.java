@@ -1,14 +1,20 @@
 package com.orozco.gesterin.vista;
 
+import com.orozco.gesterin.controller.RolController;
 import com.orozco.gesterin.controller.UsuarioController;
 import com.orozco.gesterin.model.Administrador;
 import com.orozco.gesterin.model.Persona;
 import com.orozco.gesterin.model.Profesional;
+import com.orozco.gesterin.model.Rol;
 import com.orozco.gesterin.model.Usuario;
 import com.orozco.gesterin.vista.validations.CustomDocumentFilter;
 import com.orozco.gesterin.utils.AppConstants;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import javax.swing.JDesktopPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
@@ -22,12 +28,15 @@ import javax.swing.text.AbstractDocument;
  */
 public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
-    JFPrincipal ppal;
-    JDesktopPane desktop;
-    List<Persona> listaPersonas = new ArrayList<>();
-    UsuarioController usuarioController;
-    boolean update = false;
-    Usuario usuarioSelected = null;
+    private JFPrincipal ppal;
+    private JDesktopPane desktop;
+    private List<Persona> listaPersonas = new ArrayList<>();
+    private List<Rol> listaRoles = new ArrayList<>();
+    private UsuarioController usuarioController;
+    private RolController rolController;
+    private boolean update = false;
+    private boolean isPasswordVisible = false;
+    private Persona personaSelected = null;
 
     /**
      * Creates new form GestionClientes
@@ -36,13 +45,17 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
      * @param jppal
      */
     public iFGestionUsuarios(JDesktopPane esc, JFPrincipal jppal) {
+        ((javax.swing.plaf.basic.BasicInternalFrameUI) this.getUI()).setWestPane(null);
+        ((javax.swing.plaf.basic.BasicInternalFrameUI) this.getUI()).setSouthPane(null);
+        ((javax.swing.plaf.basic.BasicInternalFrameUI) this.getUI()).setEastPane(null);
         initComponents();
         this.ppal = jppal;
         this.desktop = esc;
         this.usuarioController = new UsuarioController();
+        this.rolController = new RolController();
         this.initialStatus();
         this.initFields();
-
+        this.loadRole();
         this.loadTableClientes();
     }
 
@@ -74,15 +87,22 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 );
         this.txtPassword.setText("");
     }
+    
+    public Profesional getPersonaSelected(){
+        if(this.personaSelected instanceof Profesional pro)
+            return pro;
+        return null;
+    }
+    
+    public void setPersonaSeletcted(Profesional pro){
+        this.personaSelected = pro;
+    }
 
     public void loadForm(Persona persona) {
         this.txtName.setText(persona.getNombre() != null ? persona.getNombre() : "");
         this.txtLastName.setText(persona.getApellido() != null ? persona.getApellido() : "");
         this.txtEmail.setText(persona.getTelefono() != null ? persona.getTelefono() : "");
         this.txtTelephone.setText(persona.getTelefono() != null ? persona.getTelefono() : "");
-
-        this.txtUsuario.setText(persona.getEmail() != null ? persona.getEmail() : "");
-        this.txtPassword.setText("password_hidden");
 
         Usuario us = null;
         if (persona instanceof Administrador admin) {
@@ -93,15 +113,33 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             this.btnEspecialidades.setEnabled(true);
         }
         if (us != null) {
+            this.txtUsuario.setText(us.getNombre() != null ? us.getNombre() : "");
             if (us.getEstado()) {
                 this.rBtnActive.setSelected(true);
             } else {
                 this.rBtnInactive.setSelected(true);
             }
+            if(us.getRol()!= null){
+                Rol rol = us.getRol();
+                this.cboRol.setSelectedItem(rol);
+            }else{
+                this.cboRol.setSelectedIndex(0);
+            }
         } else {
             this.rBtnInactive.setSelected(true);
         }
+        this.txtPassword.setText("password_hidden");
+    }
 
+    private void loadRole() {
+        this.listaRoles = this.rolController.findAll();
+        Collections.sort(this.listaRoles, new Comparator<Rol>() {
+            @Override
+            public int compare(Rol o1, Rol o2) {
+                return o1.getNombre().compareToIgnoreCase(o2.getNombre());
+            }
+        });
+        UtilGUI.CargarCombo(this.listaRoles, this.cboRol);
     }
 
     private List<Persona> getPersonaUsuario() {
@@ -141,7 +179,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     }
 
     private void initialStatus() {
-        this.usuarioSelected = null;
+        this.personaSelected = null;
         UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
         UtilGUI.borrarCamposDeComponentes(this.jPanFields);
         UtilGUI.borrarCamposDeComponentes(this.jPanFileters);
@@ -155,6 +193,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
         btnGrupStatus = new javax.swing.ButtonGroup();
         jPopMnuTableOptions = new javax.swing.JPopupMenu();
+        jMnuInfo = new javax.swing.JMenuItem();
         jMnuEdit = new javax.swing.JMenuItem();
         jPanGeneral = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -179,6 +218,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         txtEmail = new javax.swing.JTextField();
         txtPassword = new javax.swing.JPasswordField();
         btnEspecialidades = new javax.swing.JButton();
+        btnHidenPasswword = new javax.swing.JButton();
         jpanButons = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
         btnGuardar = new javax.swing.JButton();
@@ -192,6 +232,14 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         btnBuscar = new javax.swing.JButton();
         cboFilterRole = new javax.swing.JComboBox<>();
         lblTitleListaClientes = new javax.swing.JLabel();
+
+        jMnuInfo.setLabel("Abrir");
+        jMnuInfo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMnuInfoActionPerformed(evt);
+            }
+        });
+        jPopMnuTableOptions.add(jMnuInfo);
 
         jMnuEdit.setText("Editar");
         jMnuEdit.addActionListener(new java.awt.event.ActionListener() {
@@ -250,6 +298,11 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
         cboRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "ADMINISTRADOR", "PROFESIONAL" }));
         cboRol.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        cboRol.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboRolActionPerformed(evt);
+            }
+        });
 
         lblRol.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblRol.setForeground(new java.awt.Color(51, 51, 51));
@@ -273,11 +326,22 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
         txtPassword.setText("jPasswordField1");
 
+        btnEspecialidades.setBackground(new java.awt.Color(0, 0, 153));
+        btnEspecialidades.setForeground(new java.awt.Color(255, 255, 255));
         btnEspecialidades.setText("Especialidad");
         btnEspecialidades.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnEspecialidades.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEspecialidadesActionPerformed(evt);
+            }
+        });
+
+        btnHidenPasswword.setBackground(new java.awt.Color(0, 0, 153));
+        btnHidenPasswword.setForeground(new java.awt.Color(255, 255, 255));
+        btnHidenPasswword.setText("Mostrar");
+        btnHidenPasswword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHidenPasswwordActionPerformed(evt);
             }
         });
 
@@ -318,8 +382,12 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                                         .addComponent(rBtnActive, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
                                         .addComponent(rBtnInactive, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(jPanFieldsLayout.createSequentialGroup()
+                                            .addComponent(txtPassword)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(btnHidenPasswword))
+                                        .addComponent(txtUsuario, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addContainerGap(14, Short.MAX_VALUE))
                     .addGroup(jPanFieldsLayout.createSequentialGroup()
                         .addComponent(lblEspecialidad, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -358,7 +426,8 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnHidenPasswword, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cboRol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -588,7 +657,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
         this.update = false;
-        this.usuarioSelected = null;
+        this.personaSelected = null;
         UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
         UtilGUI.borrarCamposDeComponentes(this.jPanFields);
         this.btnNuevo.setEnabled(false);
@@ -723,39 +792,89 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         this.clearFilters();
     }//GEN-LAST:event_btnClearFilterActionPerformed
 
+    private Optional<Persona> getEntityFromTable() {
+        int row = this.jTblUsuario.getSelectedRow();
+        if (row != -1) {
+            Long idPersona = ((Long) this.jTblUsuario.getValueAt(row, 0));
+            return this.listaPersonas.stream()
+                    .filter(persona -> Objects.equals(persona.getId(), idPersona))
+                    .findFirst();
+        }
+        return null;
+    }
+
     private void jMnuEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuEditActionPerformed
 
-//        int row = this.jTblUsuario.getSelectedRow();
-//        if (row != -1) {
-//            Long idCliente = ((Long) this.jTblUsuario.getValueAt(row, 0));
-//            Optional<Cliente> clienteOptional = this.listaPersonas.stream()
-//                    .filter(cliente -> Objects.equals(cliente.getId(), idCliente))
-//                    .findFirst();
-//            if (clienteOptional.isPresent()) {
-//                this.usuarioSelected = clienteOptional.get();
-//                UtilGUI.borrarCamposDeComponentes(this.jPanFields);
-//                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
-//                this.loadForm(this.usuarioSelected);
-//                this.btnNuevo.setEnabled(false);
-//                this.btnGuardar.setEnabled(true);
-//                this.update = true;
-//            } else {
-//                UtilGUI.borrarCamposDeComponentes(this.jPanFields);
-//                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
-//                this.btnNuevo.setEnabled(true);
-//                this.btnGuardar.setEnabled(false);
-//                this.update = false;
-//            }
-//        }
+        Optional<Persona> personaOptional = this.getEntityFromTable();
+        if (personaOptional.isPresent()) {
+            this.personaSelected = personaOptional.get();
+            UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
+            this.loadForm(this.personaSelected);
+            this.btnNuevo.setEnabled(false);
+            this.btnGuardar.setEnabled(true);
+            this.update = true;
+        } else {
+            UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+            this.btnNuevo.setEnabled(true);
+            this.btnGuardar.setEnabled(false);
+            this.update = false;
+        }
     }//GEN-LAST:event_jMnuEditActionPerformed
 
+        
+    
+    
     private void btnEspecialidadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEspecialidadesActionPerformed
-        // TODO add your handling code here:
+        iFAsignacionEspecialidad asignacionEspecialidad = new iFAsignacionEspecialidad(this.desktop, this);
+        UtilGUI.openInternalFrame(this.desktop, asignacionEspecialidad);
+        this.setVisible(false);
     }//GEN-LAST:event_btnEspecialidadesActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void cboRolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboRolActionPerformed
+        if (this.cboRol.getSelectedIndex() != 0) {
+            Rol rol = (Rol) this.cboRol.getSelectedItem();
+            if (rol.getNombre().equals("PROFESIONAL")) {
+                this.btnEspecialidades.setEnabled(true);
+            }
+        } else {
+            this.btnEspecialidades.setEnabled(false);
+        }
+    }//GEN-LAST:event_cboRolActionPerformed
+
+    private void hiddenPassword() {
+        if (this.isPasswordVisible) {
+            this.txtPassword.setEchoChar('*');
+            this.btnHidenPasswword.setText("Mostrar");
+        } else {
+            this.txtPassword.setEchoChar((char) 0);
+            this.btnHidenPasswword.setText("Ocultar");
+        }
+        this.isPasswordVisible = !this.isPasswordVisible;
+    }
+
+    private void btnHidenPasswwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHidenPasswwordActionPerformed
+        this.hiddenPassword();
+    }//GEN-LAST:event_btnHidenPasswwordActionPerformed
+
+    private void jMnuInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuInfoActionPerformed
+        Optional<Persona> personaOptional = this.getEntityFromTable();
+        if (personaOptional.isPresent()) {
+            this.personaSelected = personaOptional.get();
+            UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+            this.loadForm(this.personaSelected);
+            this.btnEspecialidades.setEnabled(false);
+            this.btnNuevo.setEnabled(false);
+            this.btnGuardar.setEnabled(false);
+            this.update = false;
+        }
+    }//GEN-LAST:event_jMnuInfoActionPerformed
 
     @Override
     public void dispose() {
@@ -770,10 +889,12 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnEspecialidades;
     private javax.swing.ButtonGroup btnGrupStatus;
     private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnHidenPasswword;
     private javax.swing.JButton btnNuevo;
     private javax.swing.JComboBox<String> cboFilterRole;
     private javax.swing.JComboBox<String> cboRol;
     private javax.swing.JMenuItem jMnuEdit;
+    private javax.swing.JMenuItem jMnuInfo;
     private javax.swing.JPanel jPanFields;
     private javax.swing.JPanel jPanFileters;
     private javax.swing.JPanel jPanGeneral;
