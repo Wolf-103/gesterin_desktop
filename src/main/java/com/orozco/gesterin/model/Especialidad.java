@@ -7,7 +7,7 @@ package com.orozco.gesterin.model;
  * @fecha 4 oct. 2024
  * @description Sistema GESTERIN
  */
-public class Especialidad extends TipoBase{
+public class Especialidad extends TipoBase {
 
     public Especialidad(Long id, String nombre, String descripcion) {
         super(id, nombre, descripcion);
@@ -17,4 +17,6 @@ public class Especialidad extends TipoBase{
         super(nombre, descripcion);
     }
 
+    public Especialidad() {
+    }
 }

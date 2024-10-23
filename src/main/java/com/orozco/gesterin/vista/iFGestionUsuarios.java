@@ -88,13 +88,14 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         this.txtPassword.setText("");
     }
     
-    public Profesional getPersonaSelected(){
-        if(this.personaSelected instanceof Profesional pro)
+    public Profesional getProfesionalSelected(){
+        if(this.personaSelected instanceof Profesional pro){
             return pro;
+        }
         return null;
     }
     
-    public void setPersonaSeletcted(Profesional pro){
+    public void setProfesionalSeletcted(Profesional pro){
         this.personaSelected = pro;
     }
 

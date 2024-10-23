@@ -1,11 +1,12 @@
 package com.orozco.gesterin.DAO.Implementaciones;
 
-import com.orozco.gesterin.DAO.ConnectionMysql;
 import com.orozco.gesterin.DAO.GenericDAO;
 import com.orozco.gesterin.dto.PersonaDTO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
+import com.orozco.gesterin.model.Especialidad;
 import com.orozco.gesterin.model.Persona;
 import com.orozco.gesterin.model.Profesional;
+import com.orozco.gesterin.model.Rol;
 import com.orozco.gesterin.model.Usuario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -64,19 +65,70 @@ public class ProfesionalDAO implements GenericDAO<Profesional, Long> {
 
     @Override
     public Profesional findById(Long id) {
-        String findSQL = "SELECT * FROM profesionales WHERE id=?";
+        String findSQL = "SELECT p.id AS id, p.nombre AS nombre, p.apellido AS apellido, "
+                + "p.email AS email, p.telefono AS telefono, "
+                + "u.id AS usuario_id, u.nombre AS usuario_nombre, u.estado AS estado, "
+                + "r.id AS rol_id, r.nombre AS rol_nombre, r.descripcion AS rol_descripcion, "
+                + "e.id AS especialidad_id, e.nombre AS especialidad_nombre, e.descripcion AS especialidad_descripcion "
+                + "FROM people p "
+                + "JOIN usuarios u ON p.id = u.id "
+                + "JOIN roles r ON u.rol_id = r.id "
+                + "JOIN profesionales pr ON p.id = pr.id "
+                + "LEFT JOIN profesional_especialidades pe ON pr.id = pe.profesional_id "
+                + "LEFT JOIN especialidades e ON pe.especialidad_id = e.id "
+                + "WHERE pr.id=?";
         Profesional entity = null;
         try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(findSQL)) {
             sentence.setLong(1, id);
             try (ResultSet rs = sentence.executeQuery()) {
                 if (rs.next()) {
-                    entity = this.cearEntity(rs);
+                    Profesional profesional = new Profesional();
+                    profesional.setId(rs.getLong("id"));
+                    profesional.setNombre(rs.getString("nombre"));
+                    profesional.setApellido(rs.getString("apellido"));
+                    profesional.setEmail(rs.getString("email"));
+                    profesional.setTelefono(rs.getString("telefono"));
+                    Rol rol = new Rol(rs.getLong("rol_id"), rs.getString("rol_nombre"), rs.getString("rol_descripcion"));
+                    Usuario usuario = new Usuario(rs.getLong("usuario_id"), rs.getString("usuario_nombre"), rs.getBoolean("estado"), rol);
+                    usuario.setRol(rol);
+                    profesional.setUsuario(usuario);
+                    entity = profesional;
+
+                    do {
+                        Long especialidadId = rs.getLong("especialidad_id");
+                        if (especialidadId != null) {
+                            Especialidad especialidad = new Especialidad();
+                            especialidad.setId(especialidadId);
+                            especialidad.setNombre(rs.getString("especialidad_nombre"));
+                            especialidad.setDescripcion(rs.getString("especialidad_descripcion"));
+                            entity.getListaEspecialidades().add(especialidad);
+                        }
+                    } while (rs.next());
                 }
             }
         } catch (SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al buscar profesional por ID: " + id);
         }
         return entity;
+    }
+
+    /**
+     * Validar si existe profesional con el id
+     *
+     * @param id: identifiador del profesional
+     * @return
+     */
+    public boolean existsById(Long id) {
+        String existsSQL = "SELECT 1 FROM profesionales WHERE id = ?";
+        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(existsSQL)) {
+            sentence.setLong(1, id);
+            try (ResultSet rs = sentence.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException ex) {
+            ControllerExceptionHandler.handleError(ex, "Error al verificar existencia del profesional con ID: " + id);
+            return false;
+        }
     }
 
     @Override
@@ -87,7 +139,7 @@ public class ProfesionalDAO implements GenericDAO<Profesional, Long> {
         try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request); ResultSet resultSet = sentence.executeQuery()) {
 
             while (resultSet.next()) {
-                Profesional entity = this.cearEntity(resultSet);
+                Profesional entity = (Profesional) this.cearEntity(resultSet);
                 listaEntities.add(entity);
             }
         } catch (NullPointerException | SQLException ex) {
@@ -98,7 +150,7 @@ public class ProfesionalDAO implements GenericDAO<Profesional, Long> {
 
     @Override
     public Profesional update(Profesional entity) {
-        String updateSQL = "UPDATE profesionales SET nombre=?, apellido=?, email=?, telefono=?, estado=?, usuario_id=? WHERE id=?";
+        String updateSQL = "UPDATE profesionales SET nombre=?, apellido=?, email=?, telefono=?, usuario_id=? WHERE id=?";
 
         try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
             this.setSentenceEntity(sentence, entity);
@@ -124,7 +176,7 @@ public class ProfesionalDAO implements GenericDAO<Profesional, Long> {
 
             try (ResultSet resultSet = sentence.executeQuery()) {
                 while (resultSet.next()) {
-                    Profesional entity = cearEntity(resultSet);
+                    Profesional entity = (Profesional) cearEntity(resultSet);
                     listEntity.add(entity);
                 }
             }
@@ -155,16 +207,20 @@ public class ProfesionalDAO implements GenericDAO<Profesional, Long> {
         sentence.setLong(5, entity.getUsuario().getId());
     }
 
-    private Profesional cearEntity(final ResultSet resultSet) throws SQLException {
-        Profesional entity = new Profesional();
-        entity.setId(resultSet.getLong(1));
-        entity.setEmail(resultSet.getString(2));
-        entity.setTelefono(resultSet.getString(3));
-        entity.setNombre(resultSet.getString(4));
-        entity.setApellido(resultSet.getString(5));
-        Usuario us = new Usuario();
-        us.setId(resultSet.getLong(6));
-        entity.setUsuario(us);
+    private Persona cearEntity(final ResultSet resultSet) throws SQLException {
+        String rolNombre = resultSet.getString("rol_nombre");
+        Persona entity = switch (rolNombre) {
+            case "PROFESIONAL" ->
+                new Profesional();
+            default ->
+                new PersonaDTO();
+        };
+        entity.setId(resultSet.getLong("id"));
+        entity.setEmail(resultSet.getString("email"));
+        entity.setTelefono(resultSet.getString("telefono"));
+        entity.setNombre(resultSet.getString("nombre"));
+        entity.setApellido(resultSet.getString("apellido"));
+
         return entity;
     }
 

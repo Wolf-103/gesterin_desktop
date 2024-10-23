@@ -70,6 +70,25 @@ public abstract class GenericDaoImpl<T extends TipoBase, ID> implements GenericD
         return entity;
     }
 
+    /**
+     * Validar si existe profesional con el id
+     *
+     * @param id: identifiador del profesional
+     * @return
+     */
+    public boolean existsById(ID id) {
+        String existsSQL = "SELECT 1 FROM " + getTableName() + " WHERE id = ?";
+        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(existsSQL)) {
+            sentence.setLong(1, (long) id);
+            try (ResultSet rs = sentence.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException ex) {
+            ControllerExceptionHandler.handleError(ex, "Error al verificar existencia de " + getClassName() + " con ID: " + id);
+            return false;
+        }
+    }
+
     @Override
     public List<T> findAll() {
         List<T> entities = new ArrayList<>();
@@ -113,6 +132,8 @@ public abstract class GenericDaoImpl<T extends TipoBase, ID> implements GenericD
     }
 
     protected abstract String getTableName();
+
     protected abstract String getClassName();
+
     protected abstract T mapResultSetToEntity(ResultSet rs) throws SQLException;
 }

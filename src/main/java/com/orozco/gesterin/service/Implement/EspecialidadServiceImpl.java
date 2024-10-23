@@ -26,7 +26,8 @@ public class EspecialidadServiceImpl implements EspecialidadService {
 
     /**
      * Busca todas las especialidades
-     * @return 
+     *
+     * @return
      */
     @Override
     public List<Especialidad> findAll() {
@@ -35,15 +36,66 @@ public class EspecialidadServiceImpl implements EspecialidadService {
 
     /**
      * Asignar especialidad a un profesional
+     *
      * @param idProfesional: identificador del profesional
      * @param idEspecialidad: identificador de la especialidad
      * @return boolean
      */
+    @Override
     public boolean addEspecialidadToProfesional(Long idProfesional, Long idEspecialidad) {
         if (this.especialidadDAO.findById(idEspecialidad) != null
                 && this.profesionalDAO.findById(idProfesional) != null) {
             return this.especialidadDAO.addEspecialidadToProfesional(idProfesional, idEspecialidad);
         }
         return false;
+    }
+
+    /**
+     * Validar si existe profesional con el id
+     *
+     * @param id: identifiador del profesional
+     * @return
+     */
+    @Override
+    public boolean existsById(Long id) {
+        return this.especialidadDAO.existsById(id);
+    }
+
+    /**
+     * Des asignar especialidad en un profesional
+     *
+     * @param idProfesional: identificador del profesional
+     * @param idEspecialidad: identificador de la especialidad
+     * @return boolean
+     */
+    @Override
+    public boolean deleteEspecialidadToProfesional(Long idProfesional, Long idEspecialidad) {
+        return this.especialidadDAO.deleteEspecialidadToProfesional(idProfesional, idEspecialidad);
+    }
+
+    /**
+     * Agregar especialidades en grupo a un profesional determinado
+     *
+     * @param idProfesional: identificador del profesionar
+     * @param idEspecialidades: lista de id's Long de las especialidades a
+     * agregar
+     * @return
+     */
+    @Override
+    public boolean addEspecialidadesToProfesional(Long idProfesional, List<Long> idEspecialidades) {
+        return this.especialidadDAO.addEspecialidadesToProfesional(idProfesional, idEspecialidades);
+    }
+
+    /**
+     * Eliminar especialidades en grupo a un profesional determinado
+     *
+     * @param idProfesional: identificador del profesionar
+     * @param idEspecialidades: lista de id's Long de las especialidades a
+     * eliminar
+     * @return booelan
+     */
+    @Override
+    public boolean deleteEspecialidadesFromProfesional(Long idProfesional, List<Long> idEspecialidades) {
+        return this.especialidadDAO.deleteEspecialidadesFromProfesional(idProfesional, idEspecialidades);
     }
 }

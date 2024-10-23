@@ -39,5 +39,36 @@ public class EspecialidadController {
     public boolean addEspecialidadToProfesional(Long idProfesional, Long idEspecialidad) {
         return this.especialidadService.addEspecialidadToProfesional(idProfesional, idEspecialidad);
     }
+    
+    /**
+     * Des asignar especialidad en un profesional
+     * @param idProfesional: identificador del profesional
+     * @param idEspecialidad: identificador de la especialidad
+     * @return boolean
+     */
+    public boolean deleteEspecialidadToProfesional(Long idProfesional, Long idEspecialidad) {
+        return this.especialidadService.deleteEspecialidadToProfesional(idProfesional, idEspecialidad);
+    }
+    
+    /**
+     * Agregar especialidades en grupo a un profesional determinado
+     * @param idProfesional: identificador del profesionar
+     * @param idEspecialidades: lista de id's Long de las especialidades a agregar
+     * @return 
+     */
+    public boolean addEspecialidadesToProfesional(Long idProfesional, List<Long> idEspecialidades){
+        return this.especialidadService.addEspecialidadesToProfesional(idProfesional, idEspecialidades);
+    }
 
+    /**
+     * Eliminar especialidades en grupo a un profesional determinado
+     *
+     * @param idProfesional: identificador del profesionar
+     * @param idEspecialidades: lista de id's Long de las especialidades a
+     * eliminar
+     * @return booelan
+     */
+    public boolean deleteEspecialidadesFromProfesional(Long idProfesional, List<Long> idEspecialidades) {
+        return this.especialidadService.deleteEspecialidadesFromProfesional(idProfesional, idEspecialidades);
+    }
 }

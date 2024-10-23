@@ -90,9 +90,8 @@ public class ControllerExceptionHandler {
             if (ex instanceof SQLException) {
                 System.out.println("SQLException error: " + ex.getMessage() + "\n"
                         + "Detalle: " + context);
-                getMessageError(context.toString(), """
-                                                    Error al consultar Base de Datos. 
-                                                    Detalle: """ + ex.getMessage(), JOptionPane.ERROR_MESSAGE);
+                getMessageError("Error al consultar Base de Datos", context.toString() + ". \n"
+                        + "Detalle: " + ex.getMessage(), JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -100,7 +99,7 @@ public class ControllerExceptionHandler {
             if (ex instanceof BadLocationException) {
                 System.out.println("BadLocationException error: " + ex.getMessage() + "\n"
                         + "Detalle: " + context);
-                getMessageError(context.toString(), "Error al manitular documento", JOptionPane.ERROR_MESSAGE);
+                getMessageError("Error al manitular documento", context.toString(), JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -114,7 +113,7 @@ public class ControllerExceptionHandler {
                         + "Contexto: " + context, JOptionPane.WARNING_MESSAGE);
             }
         });
-        
+
         registerHandler((ex, context) -> {
             if (ex instanceof AuthenticateException authErr) {
                 System.out.println("Acceso Denegado. Message: " + authErr.getMessage() + "\n"

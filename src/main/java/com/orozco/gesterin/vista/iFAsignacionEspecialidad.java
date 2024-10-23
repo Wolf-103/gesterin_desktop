@@ -1,9 +1,13 @@
 package com.orozco.gesterin.vista;
 
 import com.orozco.gesterin.controller.EspecialidadController;
+import com.orozco.gesterin.controller.ProfesionalController;
 import com.orozco.gesterin.model.Especialidad;
 import com.orozco.gesterin.model.Profesional;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import javax.swing.JDesktopPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -24,7 +28,7 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
     List<Especialidad> especialidadesDisponibles;
     List<Especialidad> especialidadesAsignadas;
 
-    ProfesionalCon
+    ProfesionalController profesionalController;
     EspecialidadController especialidadesController;
 
     /**
@@ -40,12 +44,15 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
         this.desktop = desktop;
         this.ifGestionUsuarios = gestionUsuarios;
         this.especialidadesController = new EspecialidadController();
-        this.profesionalSelected = this.ifGestionUsuarios.getPersonaSelected();
+        this.profesionalController = new ProfesionalController();
+        this.profesionalSelected = this.ifGestionUsuarios.getProfesionalSelected();
         this.init();
     }
 
     private void init() {
+        this.profesionalSelected = this.profesionalController.findById(this.profesionalSelected.getId());
         this.especialidadesDisponibles = this.especialidadesNoAsignadas(this.profesionalSelected.getListaEspecialidades());
+        this.especialidadesAsignadas = this.profesionalSelected.getListaEspecialidades();
         if (this.especialidadesDisponibles.isEmpty()) {
             this.btnAgregarTodas.setEnabled(false);
         } else {
@@ -66,20 +73,28 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
      * @return Lista especialidades sin asignar
      */
     public List<Especialidad> especialidadesNoAsignadas(List<Especialidad> especialidadsUs) {
-        List<Especialidad> especialidadesSinAsignar = this.especialidadesController.findAll();
+        List<Especialidad> especialidadesSinAsignar = new ArrayList<>(this.especialidadesController.findAll());
         if (!especialidadsUs.isEmpty()) {
-            for (Especialidad e : this.especialidadesController.findAll()) {
-                for (Especialidad espUs : especialidadsUs) {
-                    if (e.equals(espUs)) {
-                        especialidadesSinAsignar.remove(e);
-                        break;
-                    }
-                }
+            for (Especialidad espUs : especialidadsUs) {
+                especialidadesSinAsignar.removeIf(e -> e.equals(espUs));
             }
-        } else {
-            especialidadesSinAsignar = this.especialidadesController.findAll();
         }
         return especialidadesSinAsignar;
+
+//        List<Especialidad> especialidadesSinAsignar = this.especialidadesController.findAll();
+//        if (!especialidadsUs.isEmpty()) {
+//            for (Especialidad e : this.especialidadesController.findAll()) {
+//                for (Especialidad espUs : especialidadsUs) {
+//                    if (e.equals(espUs)) {
+//                        especialidadesSinAsignar.remove(e);
+//                        break;
+//                    }
+//                }
+//            }
+//        } else {
+//            especialidadesSinAsignar = this.especialidadesController.findAll();
+//        }
+//        return especialidadesSinAsignar;
     }
 
     public void loadTable(JTable jTable) {
@@ -96,7 +111,11 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
             listaEspecialidades = this.especialidadesDisponibles;
             jTable = this.jTblDisponibles;
         } else {
-            listaEspecialidades = this.profesionalSelected.getListaEspecialidades();
+            if (this.especialidadesAsignadas.get(0).getId() == 0) {
+                listaEspecialidades = new ArrayList<>();
+            } else {
+                listaEspecialidades = this.especialidadesAsignadas;
+            }
             jTable = this.jTblAsignadas;
         }
         Object[] data = new Object[columnNames.length];
@@ -113,7 +132,6 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
             } else {
                 this.btnSacarTodas.setEnabled(true);
             }
-            model.addRow(data);
         }
         jTable.setModel(model);
     }
@@ -169,6 +187,11 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
             }
         ));
         jTblDisponibles.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jTblDisponibles.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTblDisponiblesMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTblDisponibles);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -213,6 +236,11 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
             }
         ));
         jTblAsignadas.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jTblAsignadas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTblAsignadasMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTblAsignadas);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -365,31 +393,87 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
 
     private void btnAgregarTodasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarTodasActionPerformed
 
+        if (this.profesionalSelected != null) {
+            if (this.especialidadesController.addEspecialidadesToProfesional(this.profesionalSelected.getId(),
+                    this.especialidadesDisponibles.stream().map(esp -> esp.getId()).toList())) {
+                this.init();
+            }
+        }
+
     }//GEN-LAST:event_btnAgregarTodasActionPerformed
 
     private void btnSacarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSacarActionPerformed
+
+        if (this.especialidadSelected != null && this.profesionalSelected != null) {
+            if (this.especialidadesController.deleteEspecialidadToProfesional(this.profesionalSelected.getId(), this.especialidadSelected.getId())) {
+                this.init();
+            }
+        }
 
     }//GEN-LAST:event_btnSacarActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
 
         if (this.especialidadSelected != null && this.profesionalSelected != null) {
-            if (this.especialidadesController.addEspecialidadToProfesional(this.profesionalSelected.getId(), Long.MIN_VALUE)){
-                this.profesionalSelected = this.pro;
+            if (this.especialidadesController.addEspecialidadToProfesional(this.profesionalSelected.getId(), this.especialidadSelected.getId())) {
                 this.init();
             }
         }
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnSacarTodasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSacarTodasActionPerformed
-        // TODO add your handling code here:
+        if (this.profesionalSelected != null) {
+            if (this.especialidadesController.deleteEspecialidadesFromProfesional(this.profesionalSelected.getId(),
+                    this.especialidadesAsignadas.stream().map(esp -> esp.getId()).toList())) {
+                this.init();
+            }
+        }
     }//GEN-LAST:event_btnSacarTodasActionPerformed
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
-        this.ifGestionUsuarios.setPersonaSeletcted(this.profesionalSelected);
+        this.ifGestionUsuarios.setProfesionalSeletcted(this.profesionalSelected);
         this.ifGestionUsuarios.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnVolverActionPerformed
+
+
+    private void jTblDisponiblesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTblDisponiblesMouseClicked
+        int row = this.jTblDisponibles.getSelectedRow();
+        if (row != -1) {
+            Long idEspecialidad = ((Long) this.jTblDisponibles.getValueAt(row, 0));
+            Optional<Especialidad> espOptional = this.especialidadesDisponibles.stream()
+                    .filter(especialidad -> Objects.equals(especialidad.getId(), idEspecialidad))
+                    .findFirst();
+            if (espOptional.isPresent() && espOptional.get().getId() != 0) {
+                this.especialidadSelected = espOptional.get();
+                this.btnAgregar.setEnabled(true);
+                this.btnSacar.setEnabled(false);
+            } else {
+                this.especialidadSelected = null;
+                this.btnAgregar.setEnabled(false);
+                this.btnSacar.setEnabled(false);
+            }
+        }
+    }//GEN-LAST:event_jTblDisponiblesMouseClicked
+
+    private void jTblAsignadasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTblAsignadasMouseClicked
+        int row = this.jTblAsignadas.getSelectedRow();
+        if (row != -1) {
+            Long idEspecialidad = ((Long) this.jTblAsignadas.getValueAt(row, 0));
+            Optional<Especialidad> espOptional = this.especialidadesAsignadas.stream()
+                    .filter(especialidad -> Objects.equals(especialidad.getId(), idEspecialidad))
+                    .findFirst();
+            if (espOptional.isPresent() && espOptional.get().getId() != 0) {
+                this.especialidadSelected = espOptional.get();
+                this.btnAgregar.setEnabled(false);
+                this.btnSacar.setEnabled(true);
+            } else {
+                this.especialidadSelected = null;
+                this.btnAgregar.setEnabled(false);
+                this.btnSacar.setEnabled(false);
+            }
+        }
+    }//GEN-LAST:event_jTblAsignadasMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -30,6 +30,9 @@ public abstract class TipoBase {
         this.descripcion = descripcion;
     }
 
+    public TipoBase() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -76,5 +79,4 @@ public abstract class TipoBase {
         return Objects.equals(this.id, other.id);
     }
 
-    
 }

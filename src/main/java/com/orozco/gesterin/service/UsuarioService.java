@@ -2,7 +2,6 @@ package com.orozco.gesterin.service;
 
 import com.orozco.gesterin.model.Persona;
 import com.orozco.gesterin.model.Usuario;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
