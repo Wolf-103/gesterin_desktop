@@ -1,6 +1,5 @@
 package com.orozco.gesterin.DAO.Implementaciones;
 
-import com.orozco.gesterin.DAO.ConnectionMysql;
 import com.orozco.gesterin.DAO.GenericDAO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.model.TipoBase;
@@ -22,10 +21,10 @@ import java.util.List;
  */
 public abstract class GenericDaoImpl<T extends TipoBase, ID> implements GenericDAO<T, ID> {
 
-    protected ConnectionMysql connection;
+    protected ConnectionMysqlImpl connection;
 
     public GenericDaoImpl() {
-        this.connection = new ConnectionMysql();
+        this.connection = new ConnectionMysqlImpl();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.orozco.gesterin.DAO.Implementaciones;
 
-import com.orozco.gesterin.DAO.ConnectionMysql;
 import com.orozco.gesterin.DAO.GenericDAO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.model.Cliente;
@@ -21,10 +20,10 @@ import java.util.List;
  */
 public class ClienteDAO implements GenericDAO<Cliente, Long> {
 
-    private final ConnectionMysql connection;
+    private final ConnectionMysqlImpl connection;
 
     public ClienteDAO() {
-        this.connection = new ConnectionMysql();
+        this.connection = new ConnectionMysqlImpl();
     }
 
     @Override

@@ -1,4 +1,3 @@
--- Creción tabla Tipo de Antecedentes
 CREATE TABLE
     `gesterindb`.`tipos_antecedentes` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -8,7 +7,6 @@ CREATE TABLE
         UNIQUE INDEX `nombre_tipo_antecedente_UNIQUE` (`nombre` ASC) VISIBLE
     );
 
--- Creación tabla tipo patología
 CREATE TABLE
     `gesterindb`.`patologias` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -18,7 +16,6 @@ CREATE TABLE
         UNIQUE INDEX `nombre_patologia_UNIQUE` (`nombre` ASC) VISIBLE
     );
 
--- Creación tabla tipo de lesiones
 CREATE TABLE
     `gesterindb`.`lesiones` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -29,7 +26,6 @@ CREATE TABLE
         UNIQUE INDEX `nombre_lesion_UNIQUE` (`nombre` ASC) VISIBLE
     );
 
--- Creación tabla tipo de tratamientos
 CREATE TABLE
     `gesterindb`.`tipos_tratamientos` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -39,7 +35,6 @@ CREATE TABLE
         UNIQUE INDEX `nombre_tipo_tratamiento_UNIQUE` (`nombre` ASC) VISIBLE
     );
 
--- Creación de tabla tipo de doctores
 CREATE TABLE
     `gesterindb`.`tipos_doctores` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -49,7 +44,6 @@ CREATE TABLE
         UNIQUE INDEX `nombre_tipo_doctor_UNIQUE` (`nombre` ASC) VISIBLE
     );
 
--- Creación de tabla especialidades del profesional 
 CREATE TABLE
     `gesterindb`.`especialidades` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -59,7 +53,6 @@ CREATE TABLE
         UNIQUE INDEX `nombre_especialidad_UNIQUE` (`nombre` ASC) VISIBLE
     );
 
--- Creación de tabla de roles
 CREATE TABLE
     `gesterindb`.`roles` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -69,7 +62,6 @@ CREATE TABLE
         UNIQUE INDEX `nombre_rol_UNIQUE` (`nombre` ASC) VISIBLE
     );
 
--- Creación de tabla de usuarios
 CREATE TABLE
     `gesterindb`.`usuarios` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -81,38 +73,37 @@ CREATE TABLE
         FOREIGN KEY (`rol_id`) REFERENCES `gesterindb`.`roles` (`id`),
         UNIQUE INDEX `nombre_usuario_UNIQUE` (`nombre` ASC) VISIBLE
     );
+    
+CREATE TABLE `gesterindb`.`people` (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+	`email` VARCHAR(255) NULL,
+    `telefono` VARCHAR(12) NOT NULL,
+	`nombre` VARCHAR(45) NOT NULL,
+	`apellido` VARCHAR(45) NOT NULL,
+    PRIMARY KEY (id),
+	UNIQUE INDEX `email_administrator_UNIQUE` (`email` ASC) VISIBLE,
+	UNIQUE INDEX `telefono_administrador_UNIQUE` (`telefono` ASC) VISIBLE
+);
 
--- Creación de tabla de Administradores
+
 CREATE TABLE
     `gesterindb`.`administradores` (
-        `id` BIGINT NOT NULL AUTO_INCREMENT,
-        `email` VARCHAR(255) NULL,
-        `telefono` VARCHAR(12) NOT NULL,
-        `nombre` VARCHAR(45) NOT NULL,
-        `apellido` VARCHAR(45) NOT NULL,
+        `id` BIGINT NOT NULL,
         `usuario_id` BIGINT NOT NULL UNIQUE,
         PRIMARY KEY (`id`),
-        FOREIGN KEY (`usuario_id`) REFERENCES `gesterindb`.`usuarios` (`id`),
-        UNIQUE INDEX `email_administrator_UNIQUE` (`email` ASC) VISIBLE,
-        UNIQUE INDEX `telefono_administrador_UNIQUE` (`telefono` ASC) VISIBLE
-    );
-
--- Creaión de tabla de profesionales
-CREATE TABLE
-    `gesterindb`.`profesionales` (
-        `id` BIGINT NOT NULL AUTO_INCREMENT,
-        `email` VARCHAR(255) NULL,
-        `telefono` VARCHAR(12) NOT NULL,
-        `nombre` VARCHAR(45) NOT NULL,
-        `apellido` VARCHAR(45) NOT NULL,
-        `usuario_id` BIGINT NOT NULL UNIQUE,
-        PRIMARY KEY (`id`),
-        UNIQUE INDEX `email_profesional_UNIQUE` (`email` ASC) VISIBLE,
-        UNIQUE INDEX `telefono_profesional_UNIQUE` (`telefono` ASC) VISIBLE,
+        foreign key (`id`) REFERENCES `gesterindb`.`people` (`id`),
         FOREIGN KEY (`usuario_id`) REFERENCES `gesterindb`.`usuarios` (`id`)
     );
 
--- Creación de tabla clientes
+CREATE TABLE
+    `gesterindb`.`profesionales` (
+        `id` BIGINT NOT NULL,
+        `usuario_id` BIGINT NOT NULL UNIQUE,
+        PRIMARY KEY (`id`),
+        foreign key (`id`) REFERENCES `gesterindb`.`people` (`id`),
+        FOREIGN KEY (`usuario_id`) REFERENCES `gesterindb`.`usuarios` (`id`)
+    );
+
 CREATE TABLE
     `gesterindb`.`clientes` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -131,7 +122,6 @@ CREATE TABLE
         UNIQUE INDEX `telefono_cliente_UNIQUE` (`telefono` ASC) VISIBLE
     );
 
--- Creación de características físicas de un cliente
 CREATE TABLE
     `gesterindb`.`caracteristicas_fisicas` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -144,7 +134,6 @@ CREATE TABLE
         FOREIGN KEY (`cliente_id`) REFERENCES `gesterindb`.`clientes` (`id`)
     );
 
--- Creación de antecedentes personales de un cliente
 CREATE TABLE
     `gesterindb`.`antecedentes_personales` (
         `id` INT NOT NULL AUTO_INCREMENT,
@@ -156,7 +145,6 @@ CREATE TABLE
         FOREIGN KEY (`cliente_id`) REFERENCES `gesterindb`.`clientes` (`id`)
     );
 
--- Creación de historial clínico de un cliente
 CREATE TABLE
     `gesterindb`.`historiales_clinicos` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -167,7 +155,7 @@ CREATE TABLE
         FOREIGN KEY (`cliente_id`) REFERENCES `gesterindb`.`clientes` (`id`)
     );
 
--- Creación de tabla de relación de muchos a muchos de historial clinico con tipo patologí
+-- Relación de muchos a mcuhos de historial clinico con patologí
 CREATE TABLE
     `gesterindb`.`historiales_clinicos_patologias` (
         `historial_clinico_id` BIGINT NOT NULL,
@@ -177,7 +165,6 @@ CREATE TABLE
         FOREIGN KEY (`patologia_id`) REFERENCES `gesterindb`.`patologias` (`id`)
     );
 
--- Creación de tabla de relación de muchos a muchos de historial clinico con tipo lesion
 CREATE TABLE
     `gesterindb`.`historiales_clinicos_lesiones` (
         `hstorial_clinico_id` BIGINT NOT NULL,
@@ -187,7 +174,6 @@ CREATE TABLE
         FOREIGN KEY (`lesion_id`) REFERENCES `gesterindb`.`lesiones` (`id`)
     );
 
--- Creación tabla de doctores
 CREATE TABLE
     `gesterindb`.`doctores` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -202,7 +188,6 @@ CREATE TABLE
         FOREIGN KEY (`tipoDoctor_id`) REFERENCES `gesterindb`.`tipos_doctores` (`id`)
     );
 
--- Creación tabla de derivación
 CREATE TABLE
     `gesterindb`.`derivaciones` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -214,7 +199,6 @@ CREATE TABLE
         FOREIGN KEY (`doctor_id`) REFERENCES `gesterindb`.`doctores` (`id`)
     );
 
--- Creación de tabla tratamiento
 CREATE TABLE
     `gesterindb`.`tratamientos` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -231,7 +215,6 @@ CREATE TABLE
         FOREIGN KEY (`profesional_id`) REFERENCES `gesterindb`.`profesionales` (`id`)
     );
 
--- Creación tabla de sesiones
 CREATE TABLE
     `gesterindb`.`sesiones` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,
@@ -247,7 +230,7 @@ CREATE TABLE
         FOREIGN KEY (`tratamiento_id`) REFERENCES `gesterindb`.`tratamientos` (`id`)
     );
 
--- Creación de tabla relacion de muchos a muchos de Profesional y especialidades
+-- Relacion de muchos a muchos de Profesional y especialidades
 CREATE TABLE
     `gesterindb`.`profesional_especialidades` (
         `profesional_id` BIGINT NOT NULL,
@@ -257,7 +240,6 @@ CREATE TABLE
         FOREIGN KEY (`especialidad_id`) REFERENCES `gesterindb`.`especialidades` (`id`)
     );
 
--- Creación de tabla turno
 CREATE TABLE
     `gesterindb`.`turnos` (
         `id` BIGINT NOT NULL AUTO_INCREMENT,

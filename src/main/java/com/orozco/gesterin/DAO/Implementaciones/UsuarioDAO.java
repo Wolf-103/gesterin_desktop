@@ -1,6 +1,5 @@
 package com.orozco.gesterin.DAO.Implementaciones;
 
-import com.orozco.gesterin.DAO.ConnectionMysql;
 import com.orozco.gesterin.DAO.GenericDAO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.model.Rol;
@@ -22,11 +21,11 @@ import java.util.List;
  */
 public class UsuarioDAO implements GenericDAO<Usuario, Long> {
 
-    private final ConnectionMysql connection;
+    private final ConnectionMysqlImpl connection;
     private final RolDAO rolDAO;
 
     public UsuarioDAO() {
-        this.connection = new ConnectionMysql();
+        this.connection = new ConnectionMysqlImpl();
         this.rolDAO = new RolDAO();
     }
 

@@ -1,7 +1,8 @@
 package com.orozco.gesterin;
 
+import com.orozco.gesterin.DAO.DataBaseInicializer;
+import com.orozco.gesterin.DAO.Implementaciones.ConnectionMysqlImpl;
 import com.orozco.gesterin.vista.JFLoguin;
-import java.sql.SQLException;
 
 /**
  *
@@ -12,7 +13,11 @@ import java.sql.SQLException;
  */
 public class Gesterin {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
+        
+        DataBaseInicializer dataBaseInicializer = new DataBaseInicializer(new ConnectionMysqlImpl());
+        dataBaseInicializer.initializeDatabase();
+        
 //        try {
 //            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 //
@@ -30,11 +35,9 @@ public class Gesterin {
 //        LOGGER.warn("Log level warn");
 //        LOGGER.error("Log level error");
 //        LOGGER.fatal("Log level fatal");
-
 //        JFPrincipal principal = new JFPrincipal();
 //        principal.setVisible(true);
-
-           JFLoguin login = new JFLoguin();
-           login.setVisible(true);
+        JFLoguin login = new JFLoguin();
+        login.setVisible(true);
     }
 }

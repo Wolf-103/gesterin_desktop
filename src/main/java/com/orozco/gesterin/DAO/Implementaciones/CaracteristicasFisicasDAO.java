@@ -1,6 +1,5 @@
 package com.orozco.gesterin.DAO.Implementaciones;
 
-import com.orozco.gesterin.DAO.ConnectionMysql;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.model.CaracteristicasFisicas;
 import java.sql.Connection;
@@ -18,10 +17,10 @@ import java.sql.Statement;
  */
 public class CaracteristicasFisicasDAO {
 
-    private final ConnectionMysql connection;
+    private final ConnectionMysqlImpl connection;
 
     public CaracteristicasFisicasDAO() {
-        this.connection = new ConnectionMysql();
+        this.connection = new ConnectionMysqlImpl();
     }
 
     public boolean registrar(CaracteristicasFisicas caracteristicas) {

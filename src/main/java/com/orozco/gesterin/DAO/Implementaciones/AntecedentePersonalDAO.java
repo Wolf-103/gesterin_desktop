@@ -1,6 +1,5 @@
 package com.orozco.gesterin.DAO.Implementaciones;
 
-import com.orozco.gesterin.DAO.ConnectionMysql;
 import com.orozco.gesterin.DAO.GenericDAO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.model.AntecedentePersonal;
@@ -21,10 +20,10 @@ import java.util.List;
  */
 public class AntecedentePersonalDAO implements GenericDAO<AntecedentePersonal, Long> {
 
-    private final ConnectionMysql connection;
+    private final ConnectionMysqlImpl connection;
 
     public AntecedentePersonalDAO() {
-        this.connection = new ConnectionMysql();
+        this.connection = new ConnectionMysqlImpl();
     }
 
     @Override

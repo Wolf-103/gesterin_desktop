@@ -1,6 +1,5 @@
 package com.orozco.gesterin.DAO.Implementaciones;
 
-import com.orozco.gesterin.DAO.ConnectionMysql;
 import com.orozco.gesterin.DAO.GenericDAO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.model.Lesion;
@@ -20,10 +19,10 @@ import java.util.List;
  */
 public abstract class LesionDAO implements GenericDAO<Lesion, Long> {
     
-    protected ConnectionMysql connection;
+    protected ConnectionMysqlImpl connection;
     
     public LesionDAO() {
-        this.connection = new ConnectionMysql();
+        this.connection = new ConnectionMysqlImpl();
     }
     
     @Override
