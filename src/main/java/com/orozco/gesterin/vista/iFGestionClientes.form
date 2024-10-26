@@ -12,7 +12,6 @@
       <SubComponents>
         <MenuItem class="javax.swing.JMenuItem" name="jMnuInfo">
           <Properties>
-            <Property name="actionCommand" type="java.lang.String" value=""/>
             <Property name="label" type="java.lang.String" value="Abrir"/>
           </Properties>
           <Events>

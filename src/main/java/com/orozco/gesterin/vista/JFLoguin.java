@@ -1,7 +1,6 @@
 package com.orozco.gesterin.vista;
 
 import com.orozco.gesterin.controller.AuthenticateController;
-import com.orozco.gesterin.exception.AuthenticateException;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.exception.FieldEmptyException;
 import com.orozco.gesterin.service.Implement.AuhtenticateServiceImpl;
@@ -126,14 +125,14 @@ public class JFLoguin extends javax.swing.JFrame {
         txtPassword = new javax.swing.JPasswordField();
         txtUsuario = new javax.swing.JTextField();
         btnHidenPasswword = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
         btnIngresar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
         jPanFields.setBackground(new java.awt.Color(255, 255, 255));
-        jPanFields.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanFields.add(lblLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(142, 55, 220, 161));
+        jPanFields.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         lblTitle.setBackground(new java.awt.Color(0, 0, 0));
         lblTitle.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -141,7 +140,6 @@ public class JFLoguin extends javax.swing.JFrame {
         lblTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblTitle.setText("INICIO DE SESIÓN");
         lblTitle.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanFields.add(lblTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 6, 505, 37));
 
         jPanel1.setBackground(new java.awt.Color(204, 204, 204));
 
@@ -176,7 +174,7 @@ public class JFLoguin extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(18, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -205,7 +203,7 @@ public class JFLoguin extends javax.swing.JFrame {
                 .addGap(21, 21, 21))
         );
 
-        jPanFields.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 234, 500, -1));
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
         btnIngresar.setBackground(new java.awt.Color(0, 0, 0));
         btnIngresar.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -217,7 +215,51 @@ public class JFLoguin extends javax.swing.JFrame {
                 btnIngresarActionPerformed(evt);
             }
         });
-        jPanFields.add(btnIngresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 370, 99, 46));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(194, 194, 194))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(7, Short.MAX_VALUE)
+                .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout jPanFieldsLayout = new javax.swing.GroupLayout(jPanFields);
+        jPanFields.setLayout(jPanFieldsLayout);
+        jPanFieldsLayout.setHorizontalGroup(
+            jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(jPanFieldsLayout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanFieldsLayout.createSequentialGroup()
+                        .addGap(132, 132, 132)
+                        .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        );
+        jPanFieldsLayout.setVerticalGroup(
+            jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanFieldsLayout.createSequentialGroup()
+                .addGap(5, 5, 5)
+                .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
+                .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -228,7 +270,7 @@ public class JFLoguin extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanFields, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)
+                .addComponent(jPanFields, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -255,6 +297,7 @@ public class JFLoguin extends javax.swing.JFrame {
     private javax.swing.JButton btnIngresar;
     private javax.swing.JPanel jPanFields;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblLogo;
     private javax.swing.JLabel lblPassword;
     private javax.swing.JLabel lblTitle;

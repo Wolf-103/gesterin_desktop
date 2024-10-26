@@ -2,6 +2,8 @@ package com.orozco.gesterin.vista;
 
 import com.orozco.gesterin.controller.RolController;
 import com.orozco.gesterin.controller.UsuarioController;
+import com.orozco.gesterin.exception.ControllerExceptionHandler;
+import com.orozco.gesterin.exception.FieldEmptyException;
 import com.orozco.gesterin.model.Administrador;
 import com.orozco.gesterin.model.Persona;
 import com.orozco.gesterin.model.Profesional;
@@ -87,15 +89,15 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 );
         this.txtPassword.setText("");
     }
-    
-    public Profesional getProfesionalSelected(){
-        if(this.personaSelected instanceof Profesional pro){
+
+    public Profesional getProfesionalSelected() {
+        if (this.personaSelected instanceof Profesional pro) {
             return pro;
         }
         return null;
     }
-    
-    public void setProfesionalSeletcted(Profesional pro){
+
+    public void setProfesionalSeletcted(Profesional pro) {
         this.personaSelected = pro;
     }
 
@@ -120,10 +122,10 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             } else {
                 this.rBtnInactive.setSelected(true);
             }
-            if(us.getRol()!= null){
+            if (us.getRol() != null) {
                 Rol rol = us.getRol();
                 this.cboRol.setSelectedItem(rol);
-            }else{
+            } else {
                 this.cboRol.setSelectedIndex(0);
             }
         } else {
@@ -710,75 +712,39 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 //                    JOptionPane.INFORMATION_MESSAGE);
 //        }
 //    }
-//    public boolean validateFields() {
-//        boolean verificado = false;
-//        try {
-////------Datos Generales Cliente 
-//            if (this.txtDNI.getText().equals("")) {
-//                this.txtDNI.requestFocus();
-//                throw new FieldEmptyException(4012, "Campo DNI vacío", "El dni no puede estar constituido por digitos repetidos.");
-//            } else {
-//                if (UtilGUI.validarNumerosRepetidos(this.txtDNI.getText(), "dni")) {
-////                    this.jTabPanelCliente.setSelectedIndex(0);
-//                    this.txtDNI.requestFocus();
-//                    throw new FieldEmptyException(4012, "Campo DNI no válido", "El dni no puede estar constituido por digitos repetidos.");
-//                } else {
-//                    if (this.txtDNI.getText().length() < AppConstants.DNI_MIN) {
-//                        this.txtDNI.requestFocus();
-//                        throw new FieldEmptyException(4012, "Campo DNI no válido.", "El dni no puede tener una longitud menor a " + AppConstants.DNI_MIN + ".");
-//                    } else {
-//                        if (this.txtName.getText().equals("")) {
-//                            this.txtName.requestFocus();
-//                            throw new FieldEmptyException(4012, "Campo Nombre vacío", "Debe cargar NOMBRE del Cliente");
-//                        } else {
-//                            if (this.txtLastName.getText().equals("")) {
-//                                this.txtLastName.requestFocus();
-//                                throw new FieldEmptyException(4012, "Campo Apellido vacío", "Debe cargar APELLIDO del Cliente");
-//                            } else {
-//                                if (this.txtAddress.getText().equals("")) {
-//                                    this.txtAddress.requestFocus();
-//                                    throw new FieldEmptyException(4012, "Campo Dirección vacío", "Debe cargar DIRECCION del Cliente");
-//                                } else {
-//                                    if (this.txtSocialSecurity.getText().equals("")) {
-//                                        this.txtSocialSecurity.requestFocus();
-//                                        throw new FieldEmptyException(4012, "Campo Obra Social vacío", "Debe cargar OBRA SOCIAL del Cliente");
-//                                    } else {
-//                                        if (this.txtTelephone.getText().equals("")) {
-//                                            this.txtTelephone.requestFocus();
-//                                            throw new FieldEmptyException(4012, "Campo Teléfono vacío", "Debe cargar TELÉFONO del Cliente");
-//                                        } else {
-//                                            if (!this.rBtnActive.isSelected() && !this.rBtnInactive.isSelected()) {
-//                                                this.rBtnActive.requestFocus();
-//                                                throw new FieldEmptyException(4012, "Campo Estado no seleccionado.", "Debe seleccionar el ESTADO del Cliente");
-//                                            } else {
-//                                                if (this.txtUsuario.getText().equals("")) {
-//                                                    this.txtUsuario.requestFocus();
-//                                                    throw new FieldEmptyException(4012, "Campo Email vacío", "Debe cargar EMAIL del Cliente");
-//                                                } else {
-//                                                    if (!UtilGUI.validateEmail(this.txtUsuario.getText())) {
-//                                                        this.txtUsuario.requestFocus();
-//                                                        throw new FieldEmptyException(4012, "Campo Email no valido", """
-//                                                            Verifique la informaci\u00f3n ingresada, el email debe tener el formato: 
-//                                                            xxxxx...@xxxxx.xxx """);
-//                                                    } else {
-//                                                        verificado = true;
-//                                                    }
-//                                                }
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (FieldEmptyException ex) {
-//            ControllerExceptionHandler.handleError(ex, "Verificar Campos");
-//        }
-//
-//        return verificado;
-//    }
+    public boolean validateFields() {
+        boolean verificado = false;
+        try {
+            if (this.txtName.getText().equals("")) {
+                this.txtName.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Nombre vacío", "Debe cargar NOMBRE del Usuario");
+            } else if (this.txtLastName.getText().equals("")) {
+                this.txtLastName.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Apellido vacío", "Debe cargar APELLIDO del Usuario");
+            } else if (this.txtTelephone.getText().equals("")) {
+                this.txtTelephone.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Teléfono vacío", "Debe cargar TELÉFONO del Usuario");
+            } else if (!this.rBtnActive.isSelected() && !this.rBtnInactive.isSelected()) {
+                this.rBtnActive.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Estado no seleccionado.", "Debe seleccionar el ESTADO del Usuario");
+            } else if (this.txtEmail.getText().equals("")) {
+                this.txtEmail.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Email vacío", "Debe cargar EMAIL del Usuario");
+            } else if (!UtilGUI.validateEmail(this.txtEmail.getText())) {
+                this.txtEmail.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Email no valido", """
+                                                            Verifique la informaci\u00f3n ingresada, el email debe tener el formato: 
+                                                            xxxxx...@xxxxx.xxx """);
+            } else {
+                verificado = true;
+            }
+
+        } catch (FieldEmptyException ex) {
+            ControllerExceptionHandler.handleError(ex, "Verificar Campos");
+        }
+
+        return verificado;
+    }
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
 //        if (this.validateFields())
@@ -824,9 +790,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_jMnuEditActionPerformed
 
-        
-    
-    
+
     private void btnEspecialidadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEspecialidadesActionPerformed
         iFAsignacionEspecialidad asignacionEspecialidad = new iFAsignacionEspecialidad(this.desktop, this);
         UtilGUI.openInternalFrame(this.desktop, asignacionEspecialidad);

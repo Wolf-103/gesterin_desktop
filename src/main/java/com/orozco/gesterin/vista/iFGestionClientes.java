@@ -108,7 +108,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
     }
 
     public void loadTableClientes() {
-        String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "DNI", "STATUS"};
+        String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "DNI", "ESTADO"};
         DefaultTableModel model = new DefaultTableModel(null, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -122,7 +122,8 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
             data[1] = cliente.getNombre();
             data[2] = cliente.getApellido();
             data[3] = cliente.getDni();
-            data[4] = cliente.getEstado();
+            String status = (cliente.getEstado() == true) ? "ACTIVO" : "INACTIVO";
+            data[4] = status;
             model.addRow(data);
         }
         this.jTblCliente.setModel(model);
@@ -591,62 +592,43 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
             if (this.txtDNI.getText().equals("")) {
                 this.txtDNI.requestFocus();
                 throw new FieldEmptyException(4012, "Campo DNI vacío", "El dni no puede estar constituido por digitos repetidos.");
-            } else {
-                if (UtilGUI.validarNumerosRepetidos(this.txtDNI.getText(), "dni")) {
+            } else if (UtilGUI.validarNumerosRepetidos(this.txtDNI.getText(), "dni")) {
 //                    this.jTabPanelCliente.setSelectedIndex(0);
-                    this.txtDNI.requestFocus();
-                    throw new FieldEmptyException(4012, "Campo DNI no válido", "El dni no puede estar constituido por digitos repetidos.");
-                } else {
-                    if (this.txtDNI.getText().length() < AppConstants.DNI_MIN) {
-                        this.txtDNI.requestFocus();
-                        throw new FieldEmptyException(4012, "Campo DNI no válido.", "El dni no puede tener una longitud menor a " + AppConstants.DNI_MIN + ".");
-                    } else {
-                        if (this.txtName.getText().equals("")) {
-                            this.txtName.requestFocus();
-                            throw new FieldEmptyException(4012, "Campo Nombre vacío", "Debe cargar NOMBRE del Cliente");
-                        } else {
-                            if (this.txtLastName.getText().equals("")) {
-                                this.txtLastName.requestFocus();
-                                throw new FieldEmptyException(4012, "Campo Apellido vacío", "Debe cargar APELLIDO del Cliente");
-                            } else {
-                                if (this.txtAddress.getText().equals("")) {
-                                    this.txtAddress.requestFocus();
-                                    throw new FieldEmptyException(4012, "Campo Dirección vacío", "Debe cargar DIRECCION del Cliente");
-                                } else {
-                                    if (this.txtSocialSecurity.getText().equals("")) {
-                                        this.txtSocialSecurity.requestFocus();
-                                        throw new FieldEmptyException(4012, "Campo Obra Social vacío", "Debe cargar OBRA SOCIAL del Cliente");
-                                    } else {
-                                        if (this.txtTelephone.getText().equals("")) {
-                                            this.txtTelephone.requestFocus();
-                                            throw new FieldEmptyException(4012, "Campo Teléfono vacío", "Debe cargar TELÉFONO del Cliente");
-                                        } else {
-                                            if (!this.rBtnActive.isSelected() && !this.rBtnInactive.isSelected()) {
-                                                this.rBtnActive.requestFocus();
-                                                throw new FieldEmptyException(4012, "Campo Estado no seleccionado.", "Debe seleccionar el ESTADO del Cliente");
-                                            } else {
-                                                if (this.txtEmail.getText().equals("")) {
-                                                    this.txtEmail.requestFocus();
-                                                    throw new FieldEmptyException(4012, "Campo Email vacío", "Debe cargar EMAIL del Cliente");
-                                                } else {
-                                                    if (!UtilGUI.validateEmail(this.txtEmail.getText())) {
-                                                        this.txtEmail.requestFocus();
-                                                        throw new FieldEmptyException(4012, "Campo Email no valido", """
+                this.txtDNI.requestFocus();
+                throw new FieldEmptyException(4012, "Campo DNI no válido", "El dni no puede estar constituido por digitos repetidos.");
+            } else if (this.txtDNI.getText().length() < AppConstants.DNI_MIN) {
+                this.txtDNI.requestFocus();
+                throw new FieldEmptyException(4012, "Campo DNI no válido.", "El dni no puede tener una longitud menor a " + AppConstants.DNI_MIN + ".");
+            } else if (this.txtName.getText().equals("")) {
+                this.txtName.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Nombre vacío", "Debe cargar NOMBRE del Cliente");
+            } else if (this.txtLastName.getText().equals("")) {
+                this.txtLastName.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Apellido vacío", "Debe cargar APELLIDO del Cliente");
+            } else if (this.txtAddress.getText().equals("")) {
+                this.txtAddress.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Dirección vacío", "Debe cargar DIRECCION del Cliente");
+            } else if (this.txtSocialSecurity.getText().equals("")) {
+                this.txtSocialSecurity.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Obra Social vacío", "Debe cargar OBRA SOCIAL del Cliente");
+            } else if (this.txtTelephone.getText().equals("")) {
+                this.txtTelephone.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Teléfono vacío", "Debe cargar TELÉFONO del Cliente");
+            } else if (!this.rBtnActive.isSelected() && !this.rBtnInactive.isSelected()) {
+                this.rBtnActive.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Estado no seleccionado.", "Debe seleccionar el ESTADO del Cliente");
+            } else if (this.txtEmail.getText().equals("")) {
+                this.txtEmail.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Email vacío", "Debe cargar EMAIL del Cliente");
+            } else if (!UtilGUI.validateEmail(this.txtEmail.getText())) {
+                this.txtEmail.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Email no valido", """
                                                             Verifique la informaci\u00f3n ingresada, el email debe tener el formato: 
                                                             xxxxx...@xxxxx.xxx """);
-                                                    } else {
-                                                        verificado = true;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            } else {
+                verificado = true;
             }
+
         } catch (FieldEmptyException ex) {
             ControllerExceptionHandler.handleError(ex, "Verificar Campos");
         }
@@ -695,11 +677,11 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
             this.btnGuardar.setEnabled(false);
             this.update = false;
         }
-    
+
     }//GEN-LAST:event_jMnuEditActionPerformed
 
     private void jTblClienteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTblClienteMouseClicked
-        
+
     }//GEN-LAST:event_jTblClienteMouseClicked
 
     private void jMnuInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuInfoActionPerformed
@@ -714,9 +696,9 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
             this.update = false;
         }
     }//GEN-LAST:event_jMnuInfoActionPerformed
-    
+
     @Override
-public void dispose() {
+    public void dispose() {
         this.ppal.salirAlMnuPpal();
         super.dispose();
     }
