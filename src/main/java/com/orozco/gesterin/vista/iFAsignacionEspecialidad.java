@@ -1,9 +1,13 @@
 package com.orozco.gesterin.vista;
 
+import com.orozco.gesterin.DAO.Implementaciones.PersonaDAO;
+import com.orozco.gesterin.DAO.Implementaciones.UsuarioDAO;
 import com.orozco.gesterin.controller.EspecialidadController;
 import com.orozco.gesterin.controller.ProfesionalController;
 import com.orozco.gesterin.model.Especialidad;
 import com.orozco.gesterin.model.Profesional;
+import com.orozco.gesterin.service.Implement.ProfesionalServiceImpl;
+import com.orozco.gesterin.service.ProfesionalService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,18 +25,21 @@ import javax.swing.table.DefaultTableModel;
  */
 public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
 
-    private JDesktopPane desktop;
-    Profesional profesionalSelected;
-    Especialidad especialidadSelected;
-    iFGestionUsuarios ifGestionUsuarios;
-    List<Especialidad> especialidadesDisponibles;
-    List<Especialidad> especialidadesAsignadas;
+    private final JDesktopPane desktop;
+    private Profesional profesionalSelected;
+    private Especialidad especialidadSelected;
+    private final iFGestionUsuarios ifGestionUsuarios;
+    private List<Especialidad> especialidadesDisponibles;
+    private List<Especialidad> especialidadesAsignadas;
 
     ProfesionalController profesionalController;
     EspecialidadController especialidadesController;
 
     /**
      * Creates new form iFSeleccionEspecialidad
+     *
+     * @param desktop
+     * @param gestionUsuarios
      */
     public iFAsignacionEspecialidad(JDesktopPane desktop, iFGestionUsuarios gestionUsuarios) {
         ((javax.swing.plaf.basic.BasicInternalFrameUI) this.getUI()).setNorthPane(null);
@@ -43,8 +50,9 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
 
         this.desktop = desktop;
         this.ifGestionUsuarios = gestionUsuarios;
-        this.especialidadesController = new EspecialidadController();
-        this.profesionalController = new ProfesionalController();
+        ProfesionalService profesionalService = new ProfesionalServiceImpl(new PersonaDAO(), new UsuarioDAO());
+        this.profesionalController = new ProfesionalController(profesionalService);
+        this.especialidadesController = new EspecialidadController(profesionalService.getProfesionalDAO());
         this.profesionalSelected = this.ifGestionUsuarios.getProfesionalSelected();
         this.init();
     }
@@ -53,17 +61,24 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
         this.profesionalSelected = this.profesionalController.findById(this.profesionalSelected.getId());
         this.especialidadesDisponibles = this.especialidadesNoAsignadas(this.profesionalSelected.getListaEspecialidades());
         this.especialidadesAsignadas = this.profesionalSelected.getListaEspecialidades();
-        if (this.especialidadesDisponibles.isEmpty()) {
-            this.btnAgregarTodas.setEnabled(false);
-        } else {
-            this.btnAgregarTodas.setEnabled(true);
-        }
-
         this.loadTable(this.jTblAsignadas);
         this.loadTable(this.jTblDisponibles);
 
-        this.btnAgregar.setEnabled(false);
-        this.btnSacar.setEnabled(false);
+        if (this.ifGestionUsuarios.isUpdate()) {
+            if (this.especialidadesDisponibles.isEmpty()) {
+                this.btnAgregarTodas.setEnabled(false);
+            } else {
+                this.btnAgregarTodas.setEnabled(true);
+            }
+
+            this.btnAgregar.setEnabled(false);
+            this.btnSacar.setEnabled(false);
+        } else {
+            this.btnAgregarTodas.setEnabled(false);
+            this.btnSacarTodas.setEnabled(false);
+            this.btnAgregar.setEnabled(false);
+            this.btnSacar.setEnabled(false);
+        }
     }
 
     /**
@@ -134,6 +149,7 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
             }
         }
         jTable.setModel(model);
+
     }
 
     /**
@@ -439,7 +455,7 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
 
     private void jTblDisponiblesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTblDisponiblesMouseClicked
         int row = this.jTblDisponibles.getSelectedRow();
-        if (row != -1) {
+        if (row != -1 && this.ifGestionUsuarios.isUpdate()) {
             Long idEspecialidad = ((Long) this.jTblDisponibles.getValueAt(row, 0));
             Optional<Especialidad> espOptional = this.especialidadesDisponibles.stream()
                     .filter(especialidad -> Objects.equals(especialidad.getId(), idEspecialidad))
@@ -458,7 +474,7 @@ public class iFAsignacionEspecialidad extends javax.swing.JInternalFrame {
 
     private void jTblAsignadasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTblAsignadasMouseClicked
         int row = this.jTblAsignadas.getSelectedRow();
-        if (row != -1) {
+        if (row != -1 && this.ifGestionUsuarios.isUpdate()) {
             Long idEspecialidad = ((Long) this.jTblAsignadas.getValueAt(row, 0));
             Optional<Especialidad> espOptional = this.especialidadesAsignadas.stream()
                     .filter(especialidad -> Objects.equals(especialidad.getId(), idEspecialidad))

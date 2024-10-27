@@ -1,6 +1,6 @@
-
 package com.orozco.gesterin.service;
 
+import com.orozco.gesterin.DAO.Implementaciones.ProfesionalDAO;
 import com.orozco.gesterin.model.Profesional;
 
 /**
@@ -12,10 +12,18 @@ import com.orozco.gesterin.model.Profesional;
  */
 public interface ProfesionalService {
 
+    ProfesionalDAO getProfesionalDAO();
+
     /**
      * Buscar profesional por id
+     *
      * @param idProfesional: identificador del profesional
      * @return Profesional
      */
     Profesional findById(Long idProfesional);
+
+    public Profesional save(Profesional profesional);
+
+    public Profesional update(Profesional profesional);
+
 }

@@ -32,7 +32,7 @@ private static final List<String[]> users = new ArrayList<>();
         for (String[] user : users) {
             String username = user[0];
             String password = user[1];
-            String hashedPassword = authService.hashPassword(password);
+            String hashedPassword = BcryptUtil.hashPassword(password);
 
             System.out.println("Username: " + username);
             System.out.println("Password: " + password);

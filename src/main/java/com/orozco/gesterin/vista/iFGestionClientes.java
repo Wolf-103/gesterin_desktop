@@ -94,7 +94,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         this.txtDNI.setText(cliente.getDni() != null ? cliente.getDni() : "");
         this.txtAddress.setText(cliente.getDireccion() != null ? cliente.getDireccion() : "");
         this.txtSocialSecurity.setText(cliente.getObraSocial() != null ? cliente.getObraSocial() : "");
-        this.txtEmail.setText(cliente.getEmail() != null ? cliente.getEmail() : "");
+        this.txtEmail.setText(cliente.getEmail() != null ? cliente.getEmail().toLowerCase() : "");
         this.txtTelephone.setText(cliente.getTelefono() != null ? cliente.getTelefono() : "");
         if (cliente.getEstado() != null) {
             if (cliente.getEstado()) {
@@ -130,6 +130,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
     }
 
     public void initialStatus() {
+        this.update = false;
         this.clienteSelected = null;
         UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
         UtilGUI.borrarCamposDeComponentes(this.jPanFields);
@@ -536,20 +537,19 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private Cliente setCliente(Cliente cliente) {
-        cliente.setNombre(this.txtName.getText());
-        cliente.setApellido(this.txtLastName.getText());
+        cliente.setNombre(UtilGUI.capitalizeAll(this.txtName.getText()));
+        cliente.setApellido(UtilGUI.capitalizeAll(this.txtLastName.getText()));
         cliente.setDni(this.txtDNI.getText());
         cliente.setObraSocial(this.txtSocialSecurity.getText());
         cliente.setEmail(this.txtEmail.getText());
         cliente.setEstado(this.rBtnActive.isSelected());
-        cliente.setDireccion(this.txtAddress.getText());
+        cliente.setDireccion(UtilGUI.capitalizeFirstLetters(this.txtAddress.getText()));
         cliente.setTelefono(this.txtTelephone.getText());
         return cliente;
     }
 
     private void newCliente() {
-        Cliente cliente = new Cliente();
-        cliente = this.setCliente(cliente);
+        Cliente cliente = this.setCliente(new Cliente());
         cliente = this.clienteController.save(cliente);
         if (cliente != null) {
             JOptionPane.showMessageDialog(null,

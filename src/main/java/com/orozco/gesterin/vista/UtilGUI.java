@@ -228,41 +228,29 @@ public abstract class UtilGUI {
             if (componentes[i] instanceof JTextField) {
                 caja = (JTextField) componentes[i];
                 caja.setText("");
-            } else {
-                if (componentes[i] instanceof JTextArea) {
-                    cajaArea = (JTextArea) componentes[i];
-                    cajaArea.setText("");
-                } else {
-                    if (componentes[i] instanceof JFormattedTextField) {
-                        cajaF = (JFormattedTextField) componentes[i];
-                        cajaF.setText("");
-                    } else {
-                        if (componentes[i] instanceof JComboBox) {
-                            combo = (JComboBox) componentes[i];
-                            combo.setSelectedIndex(0);
-                        } else {
-                            if (componentes[i] instanceof JScrollPane) {
-                                JScrollPane jScrllP = (JScrollPane) componentes[i];
-                                for (int j = 0; j < jScrllP.getViewport().getComponents().length; j++) {
-                                    if (jScrllP.getViewport().getComponent(j) instanceof JTextArea) {
-                                        cajaArea = ((JTextArea) jScrllP.getViewport().getComponent(j));
-                                        cajaArea.setText("");
-                                    }
-                                }
-                            } else {
-                                if (componentes[i] instanceof JCheckBox) {
-                                    JCheckBox checkBox = ((JCheckBox) componentes[i]);
-                                    checkBox.setSelected(false);
-                                } else {
-                                    if (componentes[i] instanceof JSpinner) {
-                                        JSpinner spin = ((JSpinner) componentes[i]);
-                                        spin.setValue(0);
-                                    }
-                                }
-                            }
-                        }
+            } else if (componentes[i] instanceof JTextArea) {
+                cajaArea = (JTextArea) componentes[i];
+                cajaArea.setText("");
+            } else if (componentes[i] instanceof JFormattedTextField) {
+                cajaF = (JFormattedTextField) componentes[i];
+                cajaF.setText("");
+            } else if (componentes[i] instanceof JComboBox) {
+                combo = (JComboBox) componentes[i];
+                combo.setSelectedIndex(0);
+            } else if (componentes[i] instanceof JScrollPane) {
+                JScrollPane jScrllP = (JScrollPane) componentes[i];
+                for (int j = 0; j < jScrllP.getViewport().getComponents().length; j++) {
+                    if (jScrllP.getViewport().getComponent(j) instanceof JTextArea) {
+                        cajaArea = ((JTextArea) jScrllP.getViewport().getComponent(j));
+                        cajaArea.setText("");
                     }
                 }
+            } else if (componentes[i] instanceof JCheckBox) {
+                JCheckBox checkBox = ((JCheckBox) componentes[i]);
+                checkBox.setSelected(false);
+            } else if (componentes[i] instanceof JSpinner) {
+                JSpinner spin = ((JSpinner) componentes[i]);
+                spin.setValue(0);
             }
         }
     }
@@ -428,5 +416,56 @@ public abstract class UtilGUI {
         miCombo.setEditable(false);
         miCombo.setModel(combo);
 
+    }
+
+    /**
+     * Vuelve mayúsculas todas las primeras letras
+     *
+     * @param field: palabra a capitalizar
+     * @return String
+     */
+    public static String capitalizeAll(String field) {
+        //Genera array de palabras tomando como parpametro de separacion los espacios
+        String[] words = field.split("\\s+");
+        //Se utiliza para facilitar la reconstrucción con el detalle que se elijaS
+        StringBuilder capitalizedString = new StringBuilder();
+        //Recorremos las palabras y apliamos los cambios en cada una
+        for (String word : words) {
+            if (word.length() > 0) {
+                capitalizedString.append(Character.toUpperCase(word.charAt(0)))
+                        .append(word.substring(1).toLowerCase())
+                        .append(" ");
+            }
+        }
+        //Convertimos a StringBuilder en String. Trim elimina espacios adicionales.
+        return capitalizedString.toString().trim();
+    }
+
+    /**
+     * Capitalizar primera letra en texto y despues de un punto
+     *
+     * @param field. Texto a capitalizar
+     * @return String
+     */
+    public static String capitalizeFirstLetters(String field) {
+        //Se utiliza para facilitar la reconstrucción con el detalle que se elijaS
+        StringBuilder capitalizedString = new StringBuilder();
+        boolean capitalizeNext = true;
+
+        for (char c : field.toCharArray()) {
+            //Verificamos que no sea una letra sola y no sea un numero
+            if (capitalizeNext && Character.isLetter(c)) {
+                capitalizedString.append(Character.toUpperCase(c));
+                capitalizeNext = false;
+            } else {
+                capitalizedString.append(c);
+            }
+
+            if (c == '.') {
+                capitalizeNext = true;
+            }
+        }
+
+        return capitalizedString.toString();
     }
 }

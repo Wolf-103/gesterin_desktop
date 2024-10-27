@@ -1,5 +1,6 @@
 package com.orozco.gesterin.controller;
 
+import com.orozco.gesterin.model.Usuario;
 import com.orozco.gesterin.service.AutenticateService;
 
 /**
@@ -23,7 +24,7 @@ public class AuthenticateController {
      * @param contrasena: contraseña del usuario
      * @return boolean
      */
-    public boolean autenticate(String nombre, String contrasena) {
+    public Usuario autenticate(String nombre, String contrasena) {
         return this.autenticateService.authenticate(nombre, contrasena);
     }
 

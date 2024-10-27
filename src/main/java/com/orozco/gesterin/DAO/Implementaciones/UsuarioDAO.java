@@ -59,6 +59,35 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
         return this.findById(entity.getId());
     }
 
+    public Long saveWithConnection(Usuario entity, Connection conn) {
+        try {
+            String registarSQL = "INSERT INTO usuarios(nombre, contrasena, estado, rol_id) "
+                    + " VALUES(?,?,?,?)";
+
+            try (PreparedStatement sentence = conn.prepareStatement(registarSQL, Statement.RETURN_GENERATED_KEYS)) {
+                this.setSentenceUsuario(sentence, entity);
+
+                if (sentence.executeUpdate() == 0) {
+                    throw new SQLException("No se ha modificadado ninguna fila.");
+                }
+
+                try (ResultSet generatedKeys = sentence.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        entity.setId(generatedKeys.getLong(1));
+                    } else {
+                        throw new SQLException("No fue posible obtener el ID generado.");
+                    }
+                }
+            }
+
+        } catch (NullPointerException | SQLException ex) {
+            ControllerExceptionHandler.handleError(ex, "Error al registrar usuario Nombre: " + entity.getNombre());
+            return null;
+        }
+
+        return entity.getId();
+    }
+
     @Override
     public Usuario findById(Long id) {
         String findSQL = "SELECT * FROM usuarios WHERE id=?";
@@ -109,6 +138,21 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
             return null;
         }
         return this.findById(entity.getId());
+    }
+    
+    public boolean updateWithConnection(Usuario entity, Connection conn) {
+        String updateSQL = "UPDATE usuarios SET nombre=?, contrasena=?, estado=?, rol_id=? WHERE id=?";
+
+        try (PreparedStatement sentence = conn.prepareStatement(updateSQL)) {
+            this.setSentenceUsuario(sentence, entity);
+            sentence.setLong(5, entity.getId());
+
+            sentence.executeUpdate();
+        } catch (NullPointerException | SQLException ex) {
+            ControllerExceptionHandler.handleError(ex, "Error al actualizar usuario ID: " + entity.getId());
+            return false;
+        }
+        return true;
     }
 
     public List<Usuario> findAllByParams(String parametro) {
@@ -187,6 +231,27 @@ public class UsuarioDAO implements GenericDAO<Usuario, Long> {
         usuario.setRol(rol);
 
         return usuario;
+    }
+
+    /**
+     * Verifica si existe el nombre de usuario
+     * @param username: STring nombre del usuario
+     * @return boolean true si lo encuentra false si no
+     */
+    public boolean existByUsername(String username) {
+        if (username != null) {
+            String existsSQL = "SELECT 1 FROM usuarios WHERE nombre=?";
+            try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(existsSQL)) {
+                sentence.setString(1, username);
+                try (ResultSet rs = sentence.executeQuery()) {
+                    return rs.next();
+                }
+            } catch (SQLException ex) {
+                ControllerExceptionHandler.handleError(ex, "Error al verificar existencia del usuario con NOMBRE DE USUARIO: " + username);
+                return false;
+            }
+        }
+        return true;
     }
 
 }

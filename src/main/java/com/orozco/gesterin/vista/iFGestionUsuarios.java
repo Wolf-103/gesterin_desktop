@@ -2,8 +2,10 @@ package com.orozco.gesterin.vista;
 
 import com.orozco.gesterin.controller.RolController;
 import com.orozco.gesterin.controller.UsuarioController;
+import com.orozco.gesterin.dto.PersonaDTO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.exception.FieldEmptyException;
+import com.orozco.gesterin.exception.GlobalException;
 import com.orozco.gesterin.model.Administrador;
 import com.orozco.gesterin.model.Persona;
 import com.orozco.gesterin.model.Profesional;
@@ -11,6 +13,7 @@ import com.orozco.gesterin.model.Rol;
 import com.orozco.gesterin.model.Usuario;
 import com.orozco.gesterin.vista.validations.CustomDocumentFilter;
 import com.orozco.gesterin.utils.AppConstants;
+import com.orozco.gesterin.utils.BcryptUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.swing.JDesktopPane;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
 
@@ -30,15 +34,17 @@ import javax.swing.text.AbstractDocument;
  */
 public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
-    private JFPrincipal ppal;
-    private JDesktopPane desktop;
+    private final JFPrincipal ppal;
+    private final JDesktopPane desktop;
     private List<Persona> listaPersonas = new ArrayList<>();
     private List<Rol> listaRoles = new ArrayList<>();
-    private UsuarioController usuarioController;
-    private RolController rolController;
+    private final UsuarioController usuarioController;
+    private final RolController rolController;
     private boolean update = false;
     private boolean isPasswordVisible = false;
     private Persona personaSelected = null;
+    private Usuario usuarioSelected = null;
+    private Rol rolSelected = null;
 
     /**
      * Creates new form GestionClientes
@@ -58,7 +64,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         this.initialStatus();
         this.initFields();
         this.loadRole();
-        this.loadTableClientes();
+        this.loadTableUsuarios();
     }
 
     public void initFields() {
@@ -90,6 +96,10 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         this.txtPassword.setText("");
     }
 
+    public boolean isUpdate() {
+        return this.update;
+    }
+
     public Profesional getProfesionalSelected() {
         if (this.personaSelected instanceof Profesional pro) {
             return pro;
@@ -104,53 +114,57 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     public void loadForm(Persona persona) {
         this.txtName.setText(persona.getNombre() != null ? persona.getNombre() : "");
         this.txtLastName.setText(persona.getApellido() != null ? persona.getApellido() : "");
-        this.txtEmail.setText(persona.getTelefono() != null ? persona.getTelefono() : "");
         this.txtTelephone.setText(persona.getTelefono() != null ? persona.getTelefono() : "");
+        this.txtEmail.setText(persona.getEmail() != null ? persona.getEmail() : "");
 
-        Usuario us = null;
+        this.usuarioSelected = null;
         if (persona instanceof Administrador admin) {
-            us = admin.getUsuario();
+            this.usuarioSelected = admin.getUsuario();
+            this.btnEspecialidades.setText("Deshabiliado");
             this.btnEspecialidades.setEnabled(false);
         } else if (persona instanceof Profesional pro) {
-            us = pro.getUsuario();
-            this.btnEspecialidades.setEnabled(true);
+            this.usuarioSelected = pro.getUsuario();
         }
-        if (us != null) {
-            this.txtUsuario.setText(us.getNombre() != null ? us.getNombre() : "");
-            if (us.getEstado()) {
+        if (this.usuarioSelected != null) {
+            this.txtUsuario.setText(this.usuarioSelected.getNombre() != null ? this.usuarioSelected.getNombre() : "");
+            if (this.usuarioSelected.getEstado()) {
                 this.rBtnActive.setSelected(true);
             } else {
                 this.rBtnInactive.setSelected(true);
             }
-            if (us.getRol() != null) {
-                Rol rol = us.getRol();
+            if (this.usuarioSelected.getRol() != null) {
+                Rol rol = this.usuarioSelected.getRol();
                 this.cboRol.setSelectedItem(rol);
+                if (this.rolSelected.getNombre().equals("PROFESIONAL")) {
+                    this.btnEspecialidades.setEnabled(true);
+                    if (this.update == true) {
+                        this.btnEspecialidades.setText("Administrar");
+                    } else {
+                        this.btnEspecialidades.setText("Ver Asignados");
+                    }
+                }
             } else {
                 this.cboRol.setSelectedIndex(0);
             }
         } else {
             this.rBtnInactive.setSelected(true);
         }
-        this.txtPassword.setText("password_hidden");
+        this.txtPassword.setText("contraseña oculta");
     }
 
     private void loadRole() {
         this.listaRoles = this.rolController.findAll();
-        Collections.sort(this.listaRoles, new Comparator<Rol>() {
-            @Override
-            public int compare(Rol o1, Rol o2) {
-                return o1.getNombre().compareToIgnoreCase(o2.getNombre());
-            }
-        });
+        Collections.sort(this.listaRoles, (Rol o1, Rol o2) -> o1.getNombre().compareToIgnoreCase(o2.getNombre()));
         UtilGUI.CargarCombo(this.listaRoles, this.cboRol);
     }
 
     private List<Persona> getPersonaUsuario() {
         List<Persona> listaPersonaUsuario = this.usuarioController.listAllPeopleUsers();
+        Collections.sort(listaPersonaUsuario, (Persona o1, Persona o2) -> o1.getId().compareTo(o2.getId()));
         return listaPersonaUsuario;
     }
 
-    public void loadTableClientes() {
+    public void loadTableUsuarios() {
         String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "EMAIL", "ROL"};
         DefaultTableModel model = new DefaultTableModel(null, columnNames) {
             @Override
@@ -182,7 +196,11 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     }
 
     private void initialStatus() {
+        this.update = false;
         this.personaSelected = null;
+        this.usuarioSelected = null;
+        this.rolSelected = null;
+        this.btnEspecialidades.setText("Deshabilitado");
         UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
         UtilGUI.borrarCamposDeComponentes(this.jPanFields);
         UtilGUI.borrarCamposDeComponentes(this.jPanFileters);
@@ -331,7 +349,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
         btnEspecialidades.setBackground(new java.awt.Color(0, 0, 153));
         btnEspecialidades.setForeground(new java.awt.Color(255, 255, 255));
-        btnEspecialidades.setText("Especialidad");
+        btnEspecialidades.setText("Ver Asignados");
         btnEspecialidades.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnEspecialidades.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -395,7 +413,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                     .addGroup(jPanFieldsLayout.createSequentialGroup()
                         .addComponent(lblEspecialidad, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnEspecialidades, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnEspecialidades, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanFieldsLayout.setVerticalGroup(
@@ -661,57 +679,176 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
         this.update = false;
         this.personaSelected = null;
+        this.usuarioSelected = null;
+        this.rolSelected = null;
         UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
         UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+        this.btnEspecialidades.setText("Deshabilitado");
+        this.btnEspecialidades.setEnabled(false);
         this.btnNuevo.setEnabled(false);
         this.btnGuardar.setEnabled(true);
     }//GEN-LAST:event_btnNuevoActionPerformed
 
-//    private Persona setPersona(Persona persona) {
-//        persona.setNombre(this.txtName.getText());
-//        persona.setApellido(this.txtLastName.getText());
-//        persona.setEmail(this.txtEmail.getText());
-//        persona.setTelefono(this.txtTelephone.getText());
-//        return persona;
-//    }
-//
-//    private void newCliente() {
-//        Cliente cliente = new Cliente();
-//        cliente = this.setPersona(cliente);
-//        boolean request = this.usuarioController.save(cliente);
-//        if (request) {
-//            JOptionPane.showMessageDialog(null,
-//                    "Cliente Registrado con exito!!",
-//                    "Exito",
-//                    JOptionPane.INFORMATION_MESSAGE);
-//            this.loadTableClientes();
-//            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
-//            this.btnNuevo.setEnabled(true);
-//            this.btnGuardar.setEnabled(false);
-//        }
-//    }
-//
-//    private void updateCliente(Cliente cliente) {
-//        if (cliente != null) {
-//            cliente = this.setPersona(cliente);
-//            boolean request = this.usuarioController.update(cliente);
-//            if (request) {
-//                JOptionPane.showMessageDialog(null,
-//                        "Cliente actualizado con exito!!",
-//                        "Exito",
-//                        JOptionPane.INFORMATION_MESSAGE);
-//                this.loadTableClientes();
-//                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
-//                this.btnNuevo.setEnabled(true);
-//                this.btnGuardar.setEnabled(false);
-//            }
-//        } else {
-//            JOptionPane.showMessageDialog(null,
-//                    "Cliente No seleccionado",
-//                    "Informacion",
-//                    JOptionPane.INFORMATION_MESSAGE);
-//        }
-//    }
+    private void setPersona(Persona persona) {
+        persona.setNombre(UtilGUI.capitalizeAll(this.txtName.getText()));
+        persona.setApellido(UtilGUI.capitalizeAll(this.txtLastName.getText()));
+        persona.setEmail(this.txtEmail.getText().toLowerCase());
+        persona.setTelefono(this.txtTelephone.getText());
+    }
+
+    private Profesional setProfesional(Profesional prof) {
+        prof.setUsuario(prof.getUsuario());
+        return prof;
+    }
+
+    private Administrador setAdministrador(Administrador admin) {
+        admin.setUsuario(admin.getUsuario());
+        return admin;
+    }
+
+    private Usuario setUsuario(Usuario us) {
+        us.setEstado(this.rBtnActive.isSelected());
+        us.setNombre(this.txtUsuario.getText());
+        if (!new String(this.txtPassword.getPassword()).equals("contraseña oculta")) {
+            us.setConstrasena(new String(this.txtPassword.getPassword()));
+            us.setConstrasena(BcryptUtil.hashPassword(us.getConstrasena()));
+        }
+        us.setRol(this.rolSelected);
+
+        return us;
+    }
+
+    private void newPersona() {
+        Persona persona = null;
+        try {
+            Usuario us = this.setUsuario(new Usuario());
+            switch (this.rolSelected.getNombre()) {
+                case "PROFESIONAL" -> {
+                    Profesional pro = new Profesional();
+                    this.setPersona(pro);
+                    pro.setUsuario(us);
+                    persona = pro;
+                }
+                case "ADMINISTRADOR" -> {
+                    Administrador admin = new Administrador();
+                    this.setPersona(admin);
+                    admin.setUsuario(us);
+                    persona = admin;
+                }
+                default ->
+                    throw new GlobalException(4001, "ROL NO ENCONTRADO",
+                            "Generar usuario");
+            }
+
+            persona = this.usuarioController.save(persona);
+
+        } catch (GlobalException ex) {
+            ControllerExceptionHandler.handleError(ex, """
+                                        Ocurri\u00f3 un problema al intentar de registrar al nuevo usuario, reinicie la aplicaci\u00f3n e intentelo de nuevo. 
+                                        Si el problema persiste contacte a su t{ecnico designado.""");
+        }
+        if (persona != null) {
+            JOptionPane.showMessageDialog(null,
+                    "Usuario Registrado con exito!!",
+                    "Exito",
+                    JOptionPane.INFORMATION_MESSAGE);
+            this.loadTableUsuarios();
+            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+            this.personaSelected = persona;
+            this.loadForm(persona);
+            this.txtPassword.setText("contraseña oculta");
+            this.btnNuevo.setEnabled(true);
+            this.btnGuardar.setEnabled(false);
+        }
+    }
+
+    private void updateUser() {
+        if (this.personaSelected != null) {
+            try {
+                this.setPersona(this.personaSelected);
+                switch (this.rolSelected.getNombre()) {
+                    case "ADMINISTRADOR":
+                        Administrador admin = (Administrador) this.personaSelected;
+                        admin.setUsuario(this.setUsuario(admin.getUsuario()));
+                        this.personaSelected = this.usuarioController.update(admin);
+                        break;
+                    case "PROFESIONAL":
+                        Profesional prof = (Profesional) this.personaSelected;
+                        prof.setUsuario(this.setUsuario(prof.getUsuario()));
+                        this.personaSelected = this.usuarioController.update(prof);
+                        break;
+                    default:
+                        throw new GlobalException(4001, "ROL NO ENCONTRADO",
+                                "Generar usuario");
+                }
+            } catch (GlobalException ex) {
+                ControllerExceptionHandler.handleError(ex, """
+                                        Ocurri\u00f3 un problema al intentar de registrar al nuevo usuario, reinicie la aplicaci\u00f3n e intentelo de nuevo. 
+                                        Si el problema persiste contacte a su t{ecnico designado.""");
+            }
+
+            if (this.personaSelected != null) {
+                JOptionPane.showMessageDialog(null,
+                        "Usuario actualizado con exito!!",
+                        "Exito",
+                        JOptionPane.INFORMATION_MESSAGE);
+                this.loadTableUsuarios();
+                UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+                this.loadForm(this.personaSelected);
+                this.txtPassword.setText("contraseña oculta");
+                this.btnNuevo.setEnabled(true);
+                this.btnGuardar.setEnabled(false);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null,
+                    "Usuario No seleccionado",
+                    "Informacion",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private boolean validarSiExisteNombreUsuario() {
+        if (this.update == true && this.usuarioSelected != null) {
+            if (!this.txtUsuario.getText().equals(this.usuarioSelected.getNombre())) {
+                return this.usuarioController.validarUsername(this.txtUsuario.getText());
+            } else {
+                return false;
+            }
+        }
+        return this.usuarioController.validarUsername(this.txtUsuario.getText());
+    }
+
+    private boolean validarSiExisteEmail() {
+        if (this.update == true && this.personaSelected != null) {
+            if (!this.txtEmail.getText().equals(this.personaSelected.getEmail())) {
+                return this.usuarioController.validarEmail(this.txtEmail.getText());
+            } else {
+                return false;
+            }
+        }
+        return this.usuarioController.validarEmail(this.txtEmail.getText());
+    }
+
+    private boolean validarSiExisteTelefono() {
+        if (this.update == true && this.personaSelected != null) {
+            if (!this.txtTelephone.getText().equals(this.personaSelected.getTelefono())) {
+                return this.usuarioController.validarTelefono(this.txtTelephone.getText());
+            } else {
+                return false;
+            }
+        }
+        return this.usuarioController.validarTelefono(this.txtTelephone.getText());
+    }
+
+    private boolean validarContraseña() {
+        if (!new String(this.txtPassword.getPassword()).equals("contraseña oculta")) {
+            if (!AppConstants.PATTERN_PASSWORD_COMPILLE.matcher(new String(this.txtPassword.getPassword())).matches()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean validateFields() {
         boolean verificado = false;
         try {
@@ -724,6 +861,9 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             } else if (this.txtTelephone.getText().equals("")) {
                 this.txtTelephone.requestFocus();
                 throw new FieldEmptyException(4012, "Campo Teléfono vacío", "Debe cargar TELÉFONO del Usuario");
+            } else if (this.validarSiExisteTelefono()) {
+                this.txtTelephone.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Teléfono no válido", "El Teléfono pertenece a un usuario registrado");
             } else if (!this.rBtnActive.isSelected() && !this.rBtnInactive.isSelected()) {
                 this.rBtnActive.requestFocus();
                 throw new FieldEmptyException(4012, "Campo Estado no seleccionado.", "Debe seleccionar el ESTADO del Usuario");
@@ -732,9 +872,32 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 throw new FieldEmptyException(4012, "Campo Email vacío", "Debe cargar EMAIL del Usuario");
             } else if (!UtilGUI.validateEmail(this.txtEmail.getText())) {
                 this.txtEmail.requestFocus();
-                throw new FieldEmptyException(4012, "Campo Email no valido", """
+                throw new FieldEmptyException(4012, "Campo Correo Electrónico no valido", """
                                                             Verifique la informaci\u00f3n ingresada, el email debe tener el formato: 
                                                             xxxxx...@xxxxx.xxx """);
+            } else if (this.validarSiExisteEmail()) {
+                this.txtEmail.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Correo Electrónico no válido", "Correo Electrónico pertenece a un usuario registrado");
+            } else if (this.txtUsuario.getText().equals("")) {
+                this.txtUsuario.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Nombre de Usuario vacío", "Debe cargar el Nombre de Usuario");
+            } else if (this.validarSiExisteNombreUsuario()) {
+                this.txtUsuario.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Nombre de Usuario no válido", "El Nombre de Usuario pertenece a un usaurio registrado");
+            } else if (this.txtPassword.getPassword().equals("")) {
+                this.txtPassword.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Contraseña vacío", "Debe cargar la contraseña del Usuario");
+            } else if (this.update == false && this.txtPassword.getPassword().equals("contraseña oculta")) {
+                this.txtPassword.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Contraseña vacío", "Debe cargar la contraseña del Usuario");
+            } else if (!this.validarContraseña()) {
+                this.txtPassword.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Contraseña Inválida", "Contraseña debe contener una longitud mínima de " + AppConstants.PASSWORD_MIN
+                        + " y máxima de " + AppConstants.PASSWORD_MAX
+                        + ", debe contener al menos una letra minúscula, mayúscula y un número. Acetpta asteriscos, guión bajo y medio.");
+            } else if (this.cboRol.getSelectedIndex() == 0) {
+                this.cboRol.requestFocus();
+                throw new FieldEmptyException(4012, "Campo Rol No Seleccionado", "Debe seleccionar el Rol del Usuario");
             } else {
                 verificado = true;
             }
@@ -747,12 +910,13 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     }
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-//        if (this.validateFields())
-//            if (!this.update) {
-//                this.newCliente();
-//            } else {
-//                this.updateCliente(this.usuarioSelected);
-//            }
+        if (this.validateFields()) {
+            if (!this.update) {
+                this.newPersona();
+            } else {
+                this.updateUser();
+            }
+        }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnClearFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearFilterActionPerformed
@@ -763,11 +927,15 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         int row = this.jTblUsuario.getSelectedRow();
         if (row != -1) {
             Long idPersona = ((Long) this.jTblUsuario.getValueAt(row, 0));
-            return this.listaPersonas.stream()
-                    .filter(persona -> Objects.equals(persona.getId(), idPersona))
-                    .findFirst();
+            return getPersonToList(idPersona);
         }
         return null;
+    }
+
+    private Optional<Persona> getPersonToList(Long idPersona) {
+        return this.listaPersonas.stream()
+                .filter(persona -> Objects.equals(persona.getId(), idPersona))
+                .findFirst();
     }
 
     private void jMnuEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuEditActionPerformed
@@ -775,12 +943,13 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         Optional<Persona> personaOptional = this.getEntityFromTable();
         if (personaOptional.isPresent()) {
             this.personaSelected = personaOptional.get();
+            this.update = true;
             UtilGUI.borrarCamposDeComponentes(this.jPanFields);
             UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
             this.loadForm(this.personaSelected);
+            this.cboRol.setEnabled(false);
             this.btnNuevo.setEnabled(false);
             this.btnGuardar.setEnabled(true);
-            this.update = true;
         } else {
             UtilGUI.borrarCamposDeComponentes(this.jPanFields);
             UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
@@ -803,12 +972,9 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
     private void cboRolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboRolActionPerformed
         if (this.cboRol.getSelectedIndex() != 0) {
-            Rol rol = (Rol) this.cboRol.getSelectedItem();
-            if (rol.getNombre().equals("PROFESIONAL")) {
-                this.btnEspecialidades.setEnabled(true);
-            }
+            this.rolSelected = (Rol) this.cboRol.getSelectedItem();
         } else {
-            this.btnEspecialidades.setEnabled(false);
+            this.rolSelected = null;
         }
     }//GEN-LAST:event_cboRolActionPerformed
 
@@ -830,14 +996,13 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     private void jMnuInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuInfoActionPerformed
         Optional<Persona> personaOptional = this.getEntityFromTable();
         if (personaOptional.isPresent()) {
+            this.update = false;
             this.personaSelected = personaOptional.get();
             UtilGUI.borrarCamposDeComponentes(this.jPanFields);
             UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
             this.loadForm(this.personaSelected);
-            this.btnEspecialidades.setEnabled(false);
             this.btnNuevo.setEnabled(false);
             this.btnGuardar.setEnabled(false);
-            this.update = false;
         }
     }//GEN-LAST:event_jMnuInfoActionPerformed
 

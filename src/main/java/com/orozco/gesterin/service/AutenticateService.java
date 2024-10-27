@@ -1,5 +1,7 @@
 package com.orozco.gesterin.service;
 
+import com.orozco.gesterin.model.Usuario;
+
 /**
  *
  * @author CRISTIAN MANUEL OROZCO
@@ -10,27 +12,10 @@ package com.orozco.gesterin.service;
 public interface AutenticateService {
 
     /**
-     * Encriptar contraseña
-     *
-     * @param password
-     * @return
-     */
-    String hashPassword(String password);
-
-    /**
-     * Validación de contraseña, utilizando métodos de la librería BCypt
-     *
-     * @param originalPassword: tipo String contraseña enviada por usuario
-     * @param storedPasswordHash: tipo
-     * @return
-     */
-    boolean validatePassword(String originalPassword, String storedPasswordHash);
-
-    /**
      * Validación de existencia de usaurio y comprobación de contraseña
      * @param nombre
      * @param contrasena
      * @return 
      */
-    boolean authenticate(String nombre, String contrasena);
+    Usuario authenticate(String nombre, String contrasena);
 }

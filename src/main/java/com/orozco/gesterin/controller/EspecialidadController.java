@@ -1,5 +1,6 @@
 package com.orozco.gesterin.controller;
 
+import com.orozco.gesterin.DAO.Implementaciones.ProfesionalDAO;
 import com.orozco.gesterin.model.Especialidad;
 import com.orozco.gesterin.service.EspecialidadService;
 import com.orozco.gesterin.service.Implement.EspecialidadServiceImpl;
@@ -16,8 +17,8 @@ public class EspecialidadController {
 
     private final EspecialidadService especialidadService;
 
-    public EspecialidadController() {
-        this.especialidadService = new EspecialidadServiceImpl();
+    public EspecialidadController(ProfesionalDAO profesionalDAO) {
+        this.especialidadService = new EspecialidadServiceImpl(profesionalDAO);
     }
 
     /**
@@ -39,9 +40,10 @@ public class EspecialidadController {
     public boolean addEspecialidadToProfesional(Long idProfesional, Long idEspecialidad) {
         return this.especialidadService.addEspecialidadToProfesional(idProfesional, idEspecialidad);
     }
-    
+
     /**
      * Des asignar especialidad en un profesional
+     *
      * @param idProfesional: identificador del profesional
      * @param idEspecialidad: identificador de la especialidad
      * @return boolean
@@ -49,14 +51,16 @@ public class EspecialidadController {
     public boolean deleteEspecialidadToProfesional(Long idProfesional, Long idEspecialidad) {
         return this.especialidadService.deleteEspecialidadToProfesional(idProfesional, idEspecialidad);
     }
-    
+
     /**
      * Agregar especialidades en grupo a un profesional determinado
+     *
      * @param idProfesional: identificador del profesionar
-     * @param idEspecialidades: lista de id's Long de las especialidades a agregar
-     * @return 
+     * @param idEspecialidades: lista de id's Long de las especialidades a
+     * agregar
+     * @return
      */
-    public boolean addEspecialidadesToProfesional(Long idProfesional, List<Long> idEspecialidades){
+    public boolean addEspecialidadesToProfesional(Long idProfesional, List<Long> idEspecialidades) {
         return this.especialidadService.addEspecialidadesToProfesional(idProfesional, idEspecialidades);
     }
 

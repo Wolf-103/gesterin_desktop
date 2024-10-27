@@ -3,6 +3,7 @@ package com.orozco.gesterin.service.Implement;
 import com.orozco.gesterin.DAO.Implementaciones.EspecialidadDAO;
 import com.orozco.gesterin.DAO.Implementaciones.PersonaDAO;
 import com.orozco.gesterin.DAO.Implementaciones.ProfesionalDAO;
+import com.orozco.gesterin.DAO.Implementaciones.UsuarioDAO;
 import com.orozco.gesterin.model.Especialidad;
 import com.orozco.gesterin.service.EspecialidadService;
 import java.util.List;
@@ -19,9 +20,9 @@ public class EspecialidadServiceImpl implements EspecialidadService {
     private final EspecialidadDAO especialidadDAO;
     private final ProfesionalDAO profesionalDAO;
 
-    public EspecialidadServiceImpl() {
+    public EspecialidadServiceImpl(ProfesionalDAO profesionalDAO) {
         this.especialidadDAO = new EspecialidadDAO();
-        this.profesionalDAO = new ProfesionalDAO(new PersonaDAO());
+        this.profesionalDAO = profesionalDAO;
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.orozco.gesterin.service;
 
+import com.orozco.gesterin.DAO.Implementaciones.UsuarioDAO;
 import com.orozco.gesterin.model.Persona;
 import com.orozco.gesterin.model.Usuario;
 import java.util.List;
@@ -24,5 +25,9 @@ public interface UsuarioService {
     Usuario update(Usuario usuario);
 
     boolean delete(Long idUsuario);
+
+    UsuarioDAO getUsuarioDAO();
+
+    boolean existByUsername(String username);
 
 }
