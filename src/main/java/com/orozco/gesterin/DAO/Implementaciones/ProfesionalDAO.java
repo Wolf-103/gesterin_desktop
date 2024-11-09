@@ -196,25 +196,26 @@ public class ProfesionalDAO implements GenericDAO<Profesional, Long> {
     }
 
     public List<Profesional> findAllByParams(String parametro) {
-        List<Profesional> listEntity = new ArrayList<>();
-        String request = "SELECT * FROM profesionales WHERE nombre LIKE ? OR apellido LIKE ? OR email LIKE ?";
-
-        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request)) {
-            String querySQL = "%" + parametro + "%";
-            sentence.setString(1, querySQL);
-            sentence.setString(2, querySQL);
-            sentence.setString(3, querySQL);
-
-            try (ResultSet resultSet = sentence.executeQuery()) {
-                while (resultSet.next()) {
-                    Profesional entity = createEntity(resultSet);
-                    listEntity.add(entity);
-                }
-            }
-        } catch (NullPointerException | SQLException ex) {
-            ControllerExceptionHandler.handleError(ex, "Error al buscar profesional por parametro: " + parametro);
-        }
-        return listEntity;
+        return this.personaDAO.findAllPeopleProfesional(parametro);
+//        List<Profesional> listEntity = new ArrayList<>();
+//        String request = "SELECT * FROM profesionales WHERE nombre LIKE ? OR apellido LIKE ? OR email LIKE ?";
+//
+//        try (Connection conn = this.personaDAO.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request)) {
+//            String querySQL = "%" + parametro + "%";
+//            sentence.setString(1, querySQL);
+//            sentence.setString(2, querySQL);
+//            sentence.setString(3, querySQL);
+//
+//            try (ResultSet resultSet = sentence.executeQuery()) {
+//                while (resultSet.next()) {
+//                    Profesional entity = createEntity(resultSet);
+//                    listEntity.add(entity);
+//                }
+//            }
+//        } catch (NullPointerException | SQLException ex) {
+//            ControllerExceptionHandler.handleError(ex, "Error al buscar profesional por parametro: " + parametro);
+//        }
+//        return listEntity;
     }
 
     @Override

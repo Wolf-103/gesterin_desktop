@@ -1,10 +1,8 @@
 package com.orozco.gesterin.vista;
 
 import com.orozco.gesterin.controller.AuthenticateController;
-import com.orozco.gesterin.exception.AuthenticateException;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.exception.FieldEmptyException;
-import com.orozco.gesterin.model.Usuario;
 import com.orozco.gesterin.service.Implement.AuhtenticateServiceImpl;
 import com.orozco.gesterin.utils.AppConstants;
 import com.orozco.gesterin.vista.validations.CustomDocumentFilter;
@@ -94,25 +92,27 @@ public class JFLoguin extends javax.swing.JFrame {
     }
 
     private void login() {
-        if (this.validateField()) {
-            Usuario us = this.authenticateController.autenticate(this.txtUsuario.getText(), new String(this.txtPassword.getPassword()));
-            if (us != null) {
-                if (us.getEstado()) {
-                    new JFPrincipal().setVisible(true);
-                    this.dispose();
-                } else {
-                    ControllerExceptionHandler.handleError(
-                            new AuthenticateException(403, "Usuario Inactivo",
-                                    "El usuario se encuentra inactivo. Para más información contacte a su administrador."),
-                            "Inicio de Sesión");
-                }
-            } else {
-                ControllerExceptionHandler.handleError(
-                        new AuthenticateException(403, "Credenciales Invalidas",
-                                "La combinacion de nombre de usuario y contraseña no pertenecen a ningún usuario registrado, por favor, verifique los datos ingresados e intente nuevamente."),
-                        "Inicio de Sesión");
-            }
-        }
+        new JFPrincipal().setVisible(true);
+        this.dispose();
+//        if (this.validateField()) {
+//            Usuario us = this.authenticateController.autenticate(this.txtUsuario.getText(), new String(this.txtPassword.getPassword()));
+//            if (us != null) {
+//                if (us.getEstado()) {
+//                    new JFPrincipal().setVisible(true);
+//                    this.dispose();
+//                } else {
+//                    ControllerExceptionHandler.handleError(
+//                            new AuthenticateException(403, "Usuario Inactivo",
+//                                    "El usuario se encuentra inactivo. Para más información contacte a su administrador."),
+//                            "Inicio de Sesión");
+//                }
+//            } else {
+//                ControllerExceptionHandler.handleError(
+//                        new AuthenticateException(403, "Credenciales Invalidas",
+//                                "La combinacion de nombre de usuario y contraseña no pertenecen a ningún usuario registrado, por favor, verifique los datos ingresados e intente nuevamente."),
+//                        "Inicio de Sesión");
+//            }
+//        }
     }
 
     /**

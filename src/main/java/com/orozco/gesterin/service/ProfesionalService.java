@@ -2,6 +2,7 @@ package com.orozco.gesterin.service;
 
 import com.orozco.gesterin.DAO.Implementaciones.ProfesionalDAO;
 import com.orozco.gesterin.model.Profesional;
+import java.util.List;
 
 /**
  *
@@ -26,4 +27,5 @@ public interface ProfesionalService {
 
     public Profesional update(Profesional profesional);
 
+    List<Profesional> findPersonaProfesionals();
 }

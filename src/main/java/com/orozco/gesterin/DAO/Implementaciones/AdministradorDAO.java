@@ -12,7 +12,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -172,25 +171,26 @@ public class AdministradorDAO implements GenericDAO<Administrador, Long> {
     }
 
     public List<Administrador> findAllByParams(String parametro) {
-        List<Administrador> listEntity = new ArrayList<>();
-        String request = "SELECT * FROM administradores WHERE nombre LIKE ? OR apellido LIKE ? OR email LIKE ?";
-
-        try (Connection getCon = this.personaDAO.connection.getConn(); PreparedStatement sentence = getCon.prepareStatement(request)) {
-            String querySQL = "%" + parametro + "%";
-            sentence.setString(1, querySQL);
-            sentence.setString(2, querySQL);
-            sentence.setString(3, querySQL);
-
-            try (ResultSet resultSet = sentence.executeQuery()) {
-                while (resultSet.next()) {
-                    Administrador entity = createEntity(resultSet);
-                    listEntity.add(entity);
-                }
-            }
-        } catch (NullPointerException | SQLException ex) {
-            ControllerExceptionHandler.handleError(ex, "Error al buscar Administrador por parametro: " + parametro);
-        }
-        return listEntity;
+        return this.personaDAO.findAllPeopleAdministrador(parametro);
+//        List<Administrador> listEntity = new ArrayList<>();
+//        String request = "SELECT * FROM administradores WHERE nombre LIKE ? OR apellido LIKE ? OR email LIKE ?";
+//
+//        try (Connection getCon = this.personaDAO.connection.getConn(); PreparedStatement sentence = getCon.prepareStatement(request)) {
+//            String querySQL = "%" + parametro + "%";
+//            sentence.setString(1, querySQL);
+//            sentence.setString(2, querySQL);
+//            sentence.setString(3, querySQL);
+//
+//            try (ResultSet resultSet = sentence.executeQuery()) {
+//                while (resultSet.next()) {
+//                    Administrador entity = createEntity(resultSet);
+//                    listEntity.add(entity);
+//                }
+//            }
+//        } catch (NullPointerException | SQLException ex) {
+//            ControllerExceptionHandler.handleError(ex, "Error al buscar Administrador por parametro: " + parametro);
+//        }
+//        return listEntity;
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.orozco.gesterin.vista;
 
 import com.orozco.gesterin.controller.RolController;
 import com.orozco.gesterin.controller.UsuarioController;
-import com.orozco.gesterin.dto.PersonaDTO;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.exception.FieldEmptyException;
 import com.orozco.gesterin.exception.GlobalException;
@@ -16,7 +15,6 @@ import com.orozco.gesterin.utils.AppConstants;
 import com.orozco.gesterin.utils.BcryptUtil;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -64,7 +62,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         this.initialStatus();
         this.initFields();
         this.loadRole();
-        this.loadTableUsuarios();
+        this.loadTableUsuarios(this.getAllPersonaUsuario());
     }
 
     public void initFields() {
@@ -158,13 +156,21 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         UtilGUI.CargarCombo(this.listaRoles, this.cboRol);
     }
 
-    private List<Persona> getPersonaUsuario() {
-        List<Persona> listaPersonaUsuario = this.usuarioController.listAllPeopleUsers();
+    private List<Persona> getAllPersonaUsuario() {
+        List<Persona> listaPersonaUsuario = this.usuarioController.getAllPeopleUsers();
         Collections.sort(listaPersonaUsuario, (Persona o1, Persona o2) -> o1.getId().compareTo(o2.getId()));
         return listaPersonaUsuario;
     }
 
-    public void loadTableUsuarios() {
+    private List<Profesional> getAllProfessional() {
+        return this.usuarioController.getAllPeopleProfessionals();
+    }
+
+    private List<Administrador> getAllAdministrators() {
+        return this.usuarioController.getAllPeopleUserAdministradors();
+    }
+
+    public void loadTableUsuarios(List<Persona> listUsers) {
         String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "EMAIL", "ROL"};
         DefaultTableModel model = new DefaultTableModel(null, columnNames) {
             @Override
@@ -172,7 +178,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 return false;
             }
         };
-        this.listaPersonas = this.getPersonaUsuario();
+        this.listaPersonas = listUsers;
         for (Persona persona : this.listaPersonas) {
             Object[] data = new Object[columnNames.length];
             data[0] = persona.getId();
@@ -573,6 +579,11 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
         cboFilterRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "ADMINISTRADOR", "PROFESIONAL" }));
         cboFilterRole.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        cboFilterRole.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboFilterRoleActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanFiletersLayout = new javax.swing.GroupLayout(jPanFileters);
         jPanFileters.setLayout(jPanFiletersLayout);
@@ -744,15 +755,15 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
         } catch (GlobalException ex) {
             ControllerExceptionHandler.handleError(ex, """
-                                        Ocurri\u00f3 un problema al intentar de registrar al nuevo usuario, reinicie la aplicaci\u00f3n e intentelo de nuevo. 
-                                        Si el problema persiste contacte a su t{ecnico designado.""");
+                                        Ocurrió un problema al intentar de registrar al nuevo usuario, reinicie la aplicación e intentelo de nuevo. 
+                                        Si el problema persiste contacte a su técnico designado.""");
         }
         if (persona != null) {
             JOptionPane.showMessageDialog(null,
-                    "Usuario Registrado con exito!!",
+                    "Usuario Registrado con éxito!!",
                     "Exito",
                     JOptionPane.INFORMATION_MESSAGE);
-            this.loadTableUsuarios();
+            this.loadTableUsuarios(this.getAllPersonaUsuario());
             UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
             this.personaSelected = persona;
             this.loadForm(persona);
@@ -783,8 +794,8 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 }
             } catch (GlobalException ex) {
                 ControllerExceptionHandler.handleError(ex, """
-                                        Ocurri\u00f3 un problema al intentar de registrar al nuevo usuario, reinicie la aplicaci\u00f3n e intentelo de nuevo. 
-                                        Si el problema persiste contacte a su t{ecnico designado.""");
+                                        Ocurrió un problema al intentar de registrar al nuevo usuario, reinicie la aplicación e intentelo de nuevo. 
+                                        Si el problema persiste contacte a su tecnico designado.""");
             }
 
             if (this.personaSelected != null) {
@@ -792,7 +803,9 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                         "Usuario actualizado con exito!!",
                         "Exito",
                         JOptionPane.INFORMATION_MESSAGE);
-                this.loadTableUsuarios();
+                this.update = false;
+                this.loadTableUsuarios(this.getAllPersonaUsuario());
+                UtilGUI.borrarCamposDeComponentes(this.jPanFields);
                 UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
                 this.loadForm(this.personaSelected);
                 this.txtPassword.setText("contraseña oculta");
@@ -947,7 +960,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             UtilGUI.borrarCamposDeComponentes(this.jPanFields);
             UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, true);
             this.loadForm(this.personaSelected);
-            this.cboRol.setEnabled(false);
+//            this.cboRol.setEnabled(false);
             this.btnNuevo.setEnabled(false);
             this.btnGuardar.setEnabled(true);
         } else {
@@ -1005,6 +1018,22 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             this.btnGuardar.setEnabled(false);
         }
     }//GEN-LAST:event_jMnuInfoActionPerformed
+
+    private void cboFilterRoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboFilterRoleActionPerformed
+        if (this.cboFilterRole.getSelectedIndex() != 0) {
+            Rol rolSelc = (Rol) this.cboFilterRole.getSelectedItem();
+            switch (rolSelc.getNombre()) {
+                case "ADMINISTRADOR" -> {
+                    this.loadTableUsuarios(this.getAllAdministrators());
+                }
+                case "PROFESIONAL"->{
+                    
+                }
+            }
+        } else {
+            this.loadTableUsuarios(this.getAllPersonaUsuario());
+        }
+    }//GEN-LAST:event_cboFilterRoleActionPerformed
 
     @Override
     public void dispose() {

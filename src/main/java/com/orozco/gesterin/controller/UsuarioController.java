@@ -1,7 +1,5 @@
 package com.orozco.gesterin.controller;
 
-import com.orozco.gesterin.exception.ControllerExceptionHandler;
-import com.orozco.gesterin.exception.GlobalException;
 import com.orozco.gesterin.model.Administrador;
 import com.orozco.gesterin.model.Persona;
 import com.orozco.gesterin.model.Profesional;
@@ -42,10 +40,16 @@ public class UsuarioController {
         );
     }
 
-    public List<Persona> listAllPeopleUsers() {
+    public List<Persona> getAllPeopleUsers() {
         return this.personaService.findPersonaUsuario();
     }
 
+    public List<Administrador> getAllPeopleUserAdministradors() {
+        return this.administradorService.findPersonaUsersAdministrators();
+    }
+    public List<Profesional> getAllPeopleProfessionals() {
+        return this.profesionalService.findPersonaProfesionals();
+    }
     public boolean validarEmail(String email) {
         return this.personaService.existsByEmail(email);
     }

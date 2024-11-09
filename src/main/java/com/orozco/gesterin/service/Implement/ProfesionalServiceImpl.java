@@ -5,6 +5,7 @@ import com.orozco.gesterin.DAO.Implementaciones.ProfesionalDAO;
 import com.orozco.gesterin.DAO.Implementaciones.UsuarioDAO;
 import com.orozco.gesterin.model.Profesional;
 import com.orozco.gesterin.service.ProfesionalService;
+import java.util.List;
 
 /**
  *
@@ -45,6 +46,11 @@ public class ProfesionalServiceImpl implements ProfesionalService {
     @Override
     public Profesional update(Profesional profesional) {
         return this.profesionalDAO.update(profesional);
+    }
+
+    @Override
+    public List<Profesional> findPersonaProfesionals() {
+        return this.profesionalDAO.findAll();
     }
 
 }

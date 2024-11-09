@@ -22,4 +22,5 @@ public interface AdministradorService {
 
     boolean delete(Long idAdministrador);
 
+    List<Administrador> findPersonaUsersAdministrators();
 }

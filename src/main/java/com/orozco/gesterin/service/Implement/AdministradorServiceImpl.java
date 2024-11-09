@@ -47,4 +47,9 @@ public class AdministradorServiceImpl implements AdministradorService {
         return this.administradorDAO.delete(idAdministrador);
     }
 
+    @Override
+    public List<Administrador> findPersonaUsersAdministrators() {
+        return this.administradorDAO.findAll();
+    }
+
 }
