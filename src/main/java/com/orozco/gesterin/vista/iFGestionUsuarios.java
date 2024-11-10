@@ -15,6 +15,7 @@ import com.orozco.gesterin.utils.AppConstants;
 import com.orozco.gesterin.utils.BcryptUtil;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -154,6 +155,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         this.listaRoles = this.rolController.findAll();
         Collections.sort(this.listaRoles, (Rol o1, Rol o2) -> o1.getNombre().compareToIgnoreCase(o2.getNombre()));
         UtilGUI.CargarCombo(this.listaRoles, this.cboRol);
+        UtilGUI.CargarCombo(this.listaRoles, this.cboFilterRole);
     }
 
     private List<Persona> getAllPersonaUsuario() {
@@ -170,7 +172,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         return this.usuarioController.getAllPeopleUserAdministradors();
     }
 
-    public void loadTableUsuarios(List<Persona> listUsers) {
+    public void loadTableUsuarios(List<? extends Persona> listUsers) {
         String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "EMAIL", "ROL"};
         DefaultTableModel model = new DefaultTableModel(null, columnNames) {
             @Override
@@ -178,7 +180,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 return false;
             }
         };
-        this.listaPersonas = listUsers;
+        this.listaPersonas = new ArrayList<>(listUsers);
         for (Persona persona : this.listaPersonas) {
             Object[] data = new Object[columnNames.length];
             data[0] = persona.getId();
@@ -323,7 +325,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         btnGrupStatus.add(rBtnInactive);
         rBtnInactive.setText("Inactivo");
 
-        cboRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "ADMINISTRADOR", "PROFESIONAL" }));
+        cboRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar" }));
         cboRol.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         cboRol.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -577,7 +579,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             }
         });
 
-        cboFilterRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "ADMINISTRADOR", "PROFESIONAL" }));
+        cboFilterRole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar" }));
         cboFilterRole.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         cboFilterRole.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -765,6 +767,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                     JOptionPane.INFORMATION_MESSAGE);
             this.loadTableUsuarios(this.getAllPersonaUsuario());
             UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+            UtilGUI.borrarCamposDeComponentes(this.jPanFileters);
             this.personaSelected = persona;
             this.loadForm(persona);
             this.txtPassword.setText("contraseña oculta");
@@ -806,6 +809,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 this.update = false;
                 this.loadTableUsuarios(this.getAllPersonaUsuario());
                 UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+                UtilGUI.borrarCamposDeComponentes(this.jPanFileters);
                 UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
                 this.loadForm(this.personaSelected);
                 this.txtPassword.setText("contraseña oculta");
@@ -979,8 +983,37 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         this.setVisible(false);
     }//GEN-LAST:event_btnEspecialidadesActionPerformed
 
+    private boolean validateFieldBuscar() {
+        try {
+            if (this.txtBuscar.getText().equals("") || this.txtBuscar.getText().length() < 3) {
+                this.txtBuscar.requestFocus();
+                throw new FieldEmptyException(4012, "Campo buscar vacío o inferior a 3 caracteres.", "Debe cargar NOMBRE, APELLIDO o CORREO ELECTRONICO, o almenos 3 caracteres del párametro a buscar");
+            } else {
+                return true;
+            }
+        } catch (FieldEmptyException ex) {
+            ControllerExceptionHandler.handleError(ex, "Verificar Campos");
+        }
+        return false;
+    }
+
+    private List<Persona> finPersonUserWithParams(String param) {
+        return this.usuarioController.findPersonUserWithParam(param);
+    }
+
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        // TODO add your handling code here:
+        if (this.validateFieldBuscar()) {
+            List<Persona> findPersonUser = this.finPersonUserWithParams(this.txtBuscar.getText());
+            if (!findPersonUser.isEmpty()) {
+                this.loadTableUsuarios(findPersonUser);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "No se encontraron coincidencias con los datos cargados",
+                        "Información ´sobre búsqueda",
+                        JOptionPane.INFORMATION_MESSAGE);
+                this.loadTableUsuarios(new LinkedList<>());
+            }
+        }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void cboRolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboRolActionPerformed
@@ -1026,8 +1059,8 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                 case "ADMINISTRADOR" -> {
                     this.loadTableUsuarios(this.getAllAdministrators());
                 }
-                case "PROFESIONAL"->{
-                    
+                case "PROFESIONAL" -> {
+                    this.loadTableUsuarios(this.getAllProfessional());
                 }
             }
         } else {

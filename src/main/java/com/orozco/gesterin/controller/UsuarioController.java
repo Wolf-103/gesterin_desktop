@@ -53,6 +53,10 @@ public class UsuarioController {
     public boolean validarEmail(String email) {
         return this.personaService.existsByEmail(email);
     }
+    
+    public List<Persona> findPersonUserWithParam(String param){
+        return this.personaService.findByParams(param);
+    }
 
     /**
      * Verifica si existe el nombre de usuario

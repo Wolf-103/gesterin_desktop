@@ -386,10 +386,8 @@
                 <Component class="javax.swing.JComboBox" name="cboRol">
                   <Properties>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="3">
+                      <StringArray count="1">
                         <StringItem index="0" value="Seleccionar"/>
-                        <StringItem index="1" value="ADMINISTRADOR"/>
-                        <StringItem index="2" value="PROFESIONAL"/>
                       </StringArray>
                     </Property>
                     <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
@@ -759,10 +757,8 @@
                 <Component class="javax.swing.JComboBox" name="cboFilterRole">
                   <Properties>
                     <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                      <StringArray count="3">
+                      <StringArray count="1">
                         <StringItem index="0" value="Seleccionar"/>
-                        <StringItem index="1" value="ADMINISTRADOR"/>
-                        <StringItem index="2" value="PROFESIONAL"/>
                       </StringArray>
                     </Property>
                     <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">

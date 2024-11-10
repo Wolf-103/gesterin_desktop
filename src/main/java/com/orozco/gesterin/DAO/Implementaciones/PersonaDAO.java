@@ -187,18 +187,42 @@ public class PersonaDAO implements GenericDAO<Persona, Long> {
 
     public List<Persona> findAllByParams(String parametro) {
         List<Persona> listEntity = new ArrayList<>();
-        String request = "SELECT * FROM people WHERE nombre LIKE ? OR apellido LIKE ? OR email LIKE ?";
-
-        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request)) {
+        String sql = "SELECT p.id AS id, p.nombre AS nombre, p.apellido AS apellido, "
+                + " p.email AS email, p.telefono AS telefono, "
+                + " u.id AS usuario_id, u.nombre AS usuario_nombre, u.estado AS estado, u.contrasena AS usuario_pass, "
+                + " r.id AS rol_id, r.nombre AS rol_nombre, r.descripcion AS rol_descripcion "
+                + "FROM people p "
+                + "JOIN usuarios u ON p.id = u.id "
+                + "JOIN roles r ON u.rol_id = r.id "
+                + "LEFT JOIN administradores a ON p.id = a.id "
+                + "LEFT JOIN profesionales pr ON p.id = pr.id "
+                + "WHERE p.nombre LIKE ? OR p.apellido LIKE ? OR p.email LIKE ?";
+        
+        try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(sql)) {
             String querySQL = "%" + parametro + "%";
             sentence.setString(1, querySQL);
             sentence.setString(2, querySQL);
             sentence.setString(3, querySQL);
 
-            try (ResultSet resultSet = sentence.executeQuery()) {
-                while (resultSet.next()) {
-                    Persona entity = cearEntity(resultSet);
-                    listEntity.add(entity);
+            try (ResultSet rs = sentence.executeQuery()) {
+                while (rs.next()) {
+                    Persona persona = this.cearEntity(rs);
+                    Rol rol = new Rol(rs.getLong("rol_id"), rs.getString("rol_nombre"), rs.getString("rol_descripcion"));
+                    Usuario usuario = new Usuario(rs.getLong("usuario_id"), rs.getString("usuario_nombre"), rs.getBoolean("estado"), rol);
+                    usuario.setRol(rol);
+                    usuario.setConstrasena(rs.getString("usuario_pass"));
+
+                    if ((persona instanceof Administrador admin)) {
+                        admin.setUsuario(usuario);
+                        persona = admin;
+                    } else if (persona instanceof Profesional profesional) {
+                        profesional.setUsuario(usuario);
+                        persona = profesional;
+                    } else {
+                        continue;
+                    }
+
+                    listEntity.add(persona);
                 }
             }
         } catch (NullPointerException | SQLException ex) {
@@ -260,7 +284,7 @@ public class PersonaDAO implements GenericDAO<Persona, Long> {
                 + "JOIN usuarios u ON p.id = u.id "
                 + "JOIN roles r ON u.rol_id = r.id "
                 + "LEFT JOIN administradores a ON p.id = a.id "
-                + "WHERE r.nombre = ADMINISTRADOR ";
+                + "WHERE r.nombre = 'ADMINISTRADOR' ";
 
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request); ResultSet rs = sentence.executeQuery(request)) {
             while (rs.next()) {
@@ -348,7 +372,7 @@ public class PersonaDAO implements GenericDAO<Persona, Long> {
                 + "JOIN usuarios u ON p.id = u.id "
                 + "JOIN roles r ON u.rol_id = r.id "
                 + "LEFT JOIN profesionales pr ON p.id = pr.id "
-                + "WHERE r.nombre = PROFESIONAL ";
+                + "WHERE r.nombre = 'PROFESIONAL' ";
 
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(request); ResultSet rs = sentence.executeQuery(request)) {
             while (rs.next()) {
