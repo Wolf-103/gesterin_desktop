@@ -1,7 +1,6 @@
 package com.orozco.gesterin.DAO;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
@@ -65,7 +64,7 @@ public class DataBaseInicializer {
                     sql.append(line);
                     if (line.endsWith(";")) {
                         statement.executeUpdate(sql.toString());
-                        sql.setLength(0); // Limpiar el StringBuilder para la siguiente sentencia
+                        sql.setLength(0);
                     }
                 }
             }

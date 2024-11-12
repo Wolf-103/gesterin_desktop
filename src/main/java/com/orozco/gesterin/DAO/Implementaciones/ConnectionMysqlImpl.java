@@ -21,8 +21,10 @@ public class ConnectionMysqlImpl implements ConnectionMysql{
     private final String database = "gesterindb";
     private final String url = "jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database + "?serverTimezone=UTC";
 
+    /**
+     * Constructor libre (no abre la conexión al instanciar)
+     */
     public ConnectionMysqlImpl() {
-        // El constructor no abre la conexión
     }
 
     @Override
@@ -31,7 +33,7 @@ public class ConnectionMysqlImpl implements ConnectionMysql{
             return DriverManager.getConnection(this.url, this.user, this.password);
         } catch (SQLException ex) {
             System.out.println("Connection error: " + ex.getMessage());
-            return null; // Devuelve null si no puede obtener la conexión
+            return null;
         }
     }
 }
