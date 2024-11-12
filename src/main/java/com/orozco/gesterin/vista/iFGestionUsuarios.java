@@ -13,12 +13,16 @@ import com.orozco.gesterin.model.Usuario;
 import com.orozco.gesterin.vista.validations.CustomDocumentFilter;
 import com.orozco.gesterin.utils.AppConstants;
 import com.orozco.gesterin.utils.BcryptUtil;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -64,6 +68,18 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         this.initFields();
         this.loadRole();
         this.loadTableUsuarios(this.getAllPersonaUsuario());
+        this.loadIconTitle();
+    }
+
+    private void loadIconTitle() {
+        try {
+            InputStream inpStrIMG = getClass().getResourceAsStream("/img/Usuarios 25x25.png");
+            this.setFrameIcon(new ImageIcon(ImageIO.read(inpStrIMG)));
+        } catch (IOException ex) {
+            System.out.println("""
+                               Error al Cargar Imagen. 
+                                Hubo un problema al tratar de cargar una imagen de sistema.""");
+        }
     }
 
     public void initFields() {
@@ -357,6 +373,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
         btnEspecialidades.setBackground(new java.awt.Color(0, 0, 153));
         btnEspecialidades.setForeground(new java.awt.Color(255, 255, 255));
+        btnEspecialidades.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Adjuntar 25x25.png"))); // NOI18N
         btnEspecialidades.setText("Ver Asignados");
         btnEspecialidades.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnEspecialidades.addActionListener(new java.awt.event.ActionListener() {
@@ -367,6 +384,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
 
         btnHidenPasswword.setBackground(new java.awt.Color(0, 0, 153));
         btnHidenPasswword.setForeground(new java.awt.Color(255, 255, 255));
+        btnHidenPasswword.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Consulta Verde 25x25.png"))); // NOI18N
         btnHidenPasswword.setText("Mostrar");
         btnHidenPasswword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -463,13 +481,14 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
                     .addComponent(lblRol, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lblEspecialidad, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                    .addComponent(lblEspecialidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnEspecialidades, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(21, 21, 21))
         );
 
         jpanButons.setBackground(new java.awt.Color(204, 204, 204));
 
+        btnCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Cancelar.png"))); // NOI18N
         btnCancel.setText("Cancelar");
         btnCancel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
@@ -478,6 +497,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             }
         });
 
+        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Guardar.png"))); // NOI18N
         btnGuardar.setText("Guardar");
         btnGuardar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -486,6 +506,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             }
         });
 
+        btnNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Nuevo.png"))); // NOI18N
         btnNuevo.setText("Nuevo");
         btnNuevo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnNuevo.addActionListener(new java.awt.event.ActionListener() {
@@ -499,7 +520,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         jpanButonsLayout.setHorizontalGroup(
             jpanButonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpanButonsLayout.createSequentialGroup()
-                .addGap(120, 120, 120)
+                .addGap(80, 80, 80)
                 .addComponent(btnNuevo)
                 .addGap(30, 30, 30)
                 .addComponent(btnGuardar)
@@ -509,13 +530,13 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         );
         jpanButonsLayout.setVerticalGroup(
             jpanButonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpanButonsLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpanButonsLayout.createSequentialGroup()
+                .addContainerGap(20, Short.MAX_VALUE)
                 .addGroup(jpanButonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCancel)
                     .addComponent(btnGuardar)
                     .addComponent(btnNuevo))
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addGap(14, 14, 14))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -563,6 +584,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         jPanFileters.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanFileters.setForeground(new java.awt.Color(255, 255, 255));
 
+        btnClearFilter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Cancelar BN.png"))); // NOI18N
         btnClearFilter.setText("Quitar Filtros");
         btnClearFilter.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnClearFilter.addActionListener(new java.awt.event.ActionListener() {
@@ -571,6 +593,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             }
         });
 
+        btnBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Buscar.png"))); // NOI18N
         btnBuscar.setText("Buscar");
         btnBuscar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnBuscar.addActionListener(new java.awt.event.ActionListener() {

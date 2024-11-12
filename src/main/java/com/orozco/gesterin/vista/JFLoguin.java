@@ -1,12 +1,15 @@
 package com.orozco.gesterin.vista;
 
 import com.orozco.gesterin.controller.AuthenticateController;
+import com.orozco.gesterin.exception.AuthenticateException;
 import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.exception.FieldEmptyException;
+import com.orozco.gesterin.model.Usuario;
 import com.orozco.gesterin.service.Implement.AuhtenticateServiceImpl;
 import com.orozco.gesterin.utils.AppConstants;
 import com.orozco.gesterin.vista.validations.CustomDocumentFilter;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
@@ -28,9 +31,7 @@ public class JFLoguin extends javax.swing.JFrame {
 
     public JFLoguin() {
         initComponents();
-
         this.setLocationRelativeTo(null);
-
         this.loadImage();
         this.initFields();
         this.authenticateController = new AuthenticateController(new AuhtenticateServiceImpl());
@@ -40,6 +41,7 @@ public class JFLoguin extends javax.swing.JFrame {
         try {
             InputStream inpStrIMG = getClass().getResourceAsStream("/img/FC logo HD.jpg");
             this.logo = new ImageIcon(ImageIO.read(inpStrIMG));
+            this.setIconImage(new ImageIcon(getClass().getResource("/img/fc.jpg")).getImage());
         } catch (IOException ex) {
             System.out.println("""
                                Error al Cargar Imagen. 
@@ -92,27 +94,29 @@ public class JFLoguin extends javax.swing.JFrame {
     }
 
     private void login() {
-        new JFPrincipal().setVisible(true);
-        this.dispose();
-//        if (this.validateField()) {
-//            Usuario us = this.authenticateController.autenticate(this.txtUsuario.getText(), new String(this.txtPassword.getPassword()));
-//            if (us != null) {
-//                if (us.getEstado()) {
-//                    new JFPrincipal().setVisible(true);
-//                    this.dispose();
-//                } else {
-//                    ControllerExceptionHandler.handleError(
-//                            new AuthenticateException(403, "Usuario Inactivo",
-//                                    "El usuario se encuentra inactivo. Para más información contacte a su administrador."),
-//                            "Inicio de Sesión");
-//                }
-//            } else {
-//                ControllerExceptionHandler.handleError(
-//                        new AuthenticateException(403, "Credenciales Invalidas",
-//                                "La combinacion de nombre de usuario y contraseña no pertenecen a ningún usuario registrado, por favor, verifique los datos ingresados e intente nuevamente."),
-//                        "Inicio de Sesión");
-//            }
-//        }
+//        Usuario us = this.authenticateController.autenticate("wolf103", "Donna103");
+//        Usuario us = this.authenticateController.autenticate("geraProf", "Gerardo901");
+//        new JFPrincipal(us).setVisible(true);
+//        this.dispose();
+        if (this.validateField()) {
+            Usuario us = this.authenticateController.autenticate(this.txtUsuario.getText(), new String(this.txtPassword.getPassword()));
+            if (us != null) {
+                if (us.getEstado()) {
+                    new JFPrincipal(us).setVisible(true);
+                    this.dispose();
+                } else {
+                    ControllerExceptionHandler.handleError(
+                            new AuthenticateException(403, "Usuario Inactivo",
+                                    "El usuario se encuentra inactivo. Para más información contacte a su administrador."),
+                            "Inicio de Sesión");
+                }
+            } else {
+                ControllerExceptionHandler.handleError(
+                        new AuthenticateException(403, "Credenciales Invalidas",
+                                "La combinacion de nombre de usuario y contraseña no pertenecen a ningún usuario registrado, por favor, verifique los datos ingresados e intente nuevamente."),
+                        "Inicio de Sesión");
+            }
+        }
     }
 
     /**
@@ -138,9 +142,12 @@ public class JFLoguin extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanFields.setBackground(new java.awt.Color(255, 255, 255));
         jPanFields.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanFields.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanFields.add(lblLogo, new org.netbeans.lib.awtextra.AbsoluteConstraints(26, 49, 450, 185));
 
         lblTitle.setBackground(new java.awt.Color(0, 0, 0));
         lblTitle.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -148,74 +155,63 @@ public class JFLoguin extends javax.swing.JFrame {
         lblTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblTitle.setText("INICIO DE SESIÓN");
         lblTitle.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanFields.add(lblTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 6, 485, 37));
 
         jPanel1.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblUsuario.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblUsuario.setForeground(new java.awt.Color(51, 51, 51));
         lblUsuario.setText("Nombre Usuario");
         lblUsuario.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jPanel1.add(lblUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(17, 17, 170, 30));
 
         lblPassword.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblPassword.setForeground(new java.awt.Color(51, 51, 51));
         lblPassword.setText("Contraseña");
         lblPassword.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jPanel1.add(lblPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(17, 60, 170, 30));
 
         txtPassword.setText("jPasswordField1");
+        txtPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPasswordActionPerformed(evt);
+            }
+        });
         txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtPasswordKeyTyped(evt);
             }
         });
+        jPanel1.add(txtPassword, new org.netbeans.lib.awtextra.AbsoluteConstraints(205, 61, 155, 30));
+
+        txtUsuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtUsuarioActionPerformed(evt);
+            }
+        });
+        jPanel1.add(txtUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(205, 18, 261, 30));
 
         btnHidenPasswword.setBackground(new java.awt.Color(0, 0, 153));
         btnHidenPasswword.setForeground(new java.awt.Color(255, 255, 255));
+        btnHidenPasswword.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Consulta Verde 25x25.png"))); // NOI18N
         btnHidenPasswword.setText("Mostrar");
         btnHidenPasswword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnHidenPasswwordActionPerformed(evt);
             }
         });
+        jPanel1.add(btnHidenPasswword, new org.netbeans.lib.awtextra.AbsoluteConstraints(366, 61, -1, -1));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnHidenPasswword))
-                    .addComponent(txtUsuario))
-                .addGap(36, 36, 36))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnHidenPasswword, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(21, 21, 21))
-        );
+        jPanFields.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 490, 110));
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         btnIngresar.setBackground(new java.awt.Color(0, 0, 0));
         btnIngresar.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         btnIngresar.setForeground(new java.awt.Color(255, 255, 255));
+        btnIngresar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Aprobar 25x25.png"))); // NOI18N
         btnIngresar.setText("Ingresar");
         btnIngresar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnIngresar.addActionListener(new java.awt.event.ActionListener() {
@@ -223,64 +219,11 @@ public class JFLoguin extends javax.swing.JFrame {
                 btnIngresarActionPerformed(evt);
             }
         });
+        jPanel2.add(btnIngresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 6, 160, 46));
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(194, 194, 194))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(7, Short.MAX_VALUE)
-                .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
+        jPanFields.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 359, 490, -1));
 
-        javax.swing.GroupLayout jPanFieldsLayout = new javax.swing.GroupLayout(jPanFields);
-        jPanFields.setLayout(jPanFieldsLayout);
-        jPanFieldsLayout.setHorizontalGroup(
-            jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(jPanFieldsLayout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addGroup(jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanFieldsLayout.createSequentialGroup()
-                        .addGap(132, 132, 132)
-                        .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-        );
-        jPanFieldsLayout.setVerticalGroup(
-            jPanFieldsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanFieldsLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
-                .addComponent(lblLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanFields, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanFields, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+        getContentPane().add(jPanFields, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 510, 430));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -298,6 +241,16 @@ public class JFLoguin extends javax.swing.JFrame {
             evt.consume();
         }
     }//GEN-LAST:event_txtPasswordKeyTyped
+
+    private void txtUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsuarioActionPerformed
+        evt.setSource((char) KeyEvent.VK_CLEAR);
+        this.txtPassword.requestFocus();
+    }//GEN-LAST:event_txtUsuarioActionPerformed
+
+    private void txtPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPasswordActionPerformed
+        evt.setSource((char) KeyEvent.VK_CLEAR);
+        this.btnIngresar.doClick();
+    }//GEN-LAST:event_txtPasswordActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

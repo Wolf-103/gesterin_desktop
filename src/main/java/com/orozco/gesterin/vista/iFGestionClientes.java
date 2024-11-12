@@ -6,11 +6,16 @@ import com.orozco.gesterin.exception.ControllerExceptionHandler;
 import com.orozco.gesterin.exception.FieldEmptyException;
 import com.orozco.gesterin.vista.validations.CustomDocumentFilter;
 import com.orozco.gesterin.utils.AppConstants;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -45,8 +50,19 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         this.clienteController = new ClienteController();
         this.initialStatus();
         this.initFields();
-
-        this.loadTableClientes();
+        this.loadIconTitle();
+        this.loadTableClientes(this.getAllCliente());
+    }
+    
+        private void loadIconTitle() {
+        try {
+            InputStream inpStrIMG = getClass().getResourceAsStream("/img/Clientes 25x25.png");
+            this.setFrameIcon(new ImageIcon(ImageIO.read(inpStrIMG)));
+        } catch (IOException ex) {
+            System.out.println("""
+                               Error al Cargar Imagen. 
+                                Hubo un problema al tratar de cargar una imagen de sistema.""");
+        }
     }
 
     public void initFields() {
@@ -106,8 +122,12 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
             this.rBtnInactive.setSelected(true);
         }
     }
+    
+    private List<Cliente> getAllCliente(){
+        return this.clienteController.findAll();
+    }
 
-    public void loadTableClientes() {
+    public void loadTableClientes(List<Cliente> listaCliente) {
         String[] columnNames = {"ID", "NOMBRE", "APELLIDO", "DNI", "ESTADO"};
         DefaultTableModel model = new DefaultTableModel(null, columnNames) {
             @Override
@@ -115,7 +135,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
                 return false;
             }
         };
-        this.listClientes = this.clienteController.findAll();
+        this.listClientes = listaCliente;
         for (Cliente cliente : this.listClientes) {
             Object[] data = new Object[columnNames.length];
             data[0] = cliente.getId();
@@ -175,10 +195,11 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTblCliente = new javax.swing.JTable();
         jpanBtnList = new javax.swing.JPanel();
+        txtBuscar = new javax.swing.JTextField();
+        btnBuscar = new javax.swing.JButton();
         btnClearFilter = new javax.swing.JButton();
         lblTitleListaClientes = new javax.swing.JLabel();
 
-        jMnuInfo.setActionCommand("");
         jMnuInfo.setLabel("Abrir");
         jMnuInfo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -335,6 +356,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
 
         jpanButons.setBackground(new java.awt.Color(204, 204, 204));
 
+        btnCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Cancelar.png"))); // NOI18N
         btnCancel.setText("Cancelar");
         btnCancel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnCancel.addActionListener(new java.awt.event.ActionListener() {
@@ -343,6 +365,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
             }
         });
 
+        btnGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Guardar.png"))); // NOI18N
         btnGuardar.setText("Guardar");
         btnGuardar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -351,6 +374,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
             }
         });
 
+        btnNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Nuevo.png"))); // NOI18N
         btnNuevo.setText("Nuevo");
         btnNuevo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnNuevo.addActionListener(new java.awt.event.ActionListener() {
@@ -363,24 +387,24 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         jpanButons.setLayout(jpanButonsLayout);
         jpanButonsLayout.setHorizontalGroup(
             jpanButonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpanButonsLayout.createSequentialGroup()
-                .addGap(120, 120, 120)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpanButonsLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnNuevo)
-                .addGap(30, 30, 30)
+                .addGap(18, 18, 18)
                 .addComponent(btnGuardar)
-                .addGap(30, 30, 30)
+                .addGap(18, 18, 18)
                 .addComponent(btnCancel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(96, 96, 96))
         );
         jpanButonsLayout.setVerticalGroup(
             jpanButonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpanButonsLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(15, 15, 15)
                 .addGroup(jpanButonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnCancel)
                     .addComponent(btnGuardar)
                     .addComponent(btnNuevo))
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -403,7 +427,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
                 .addComponent(jPanFields, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jpanButons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -433,6 +457,16 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         jpanBtnList.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jpanBtnList.setForeground(new java.awt.Color(255, 255, 255));
 
+        btnBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Buscar.png"))); // NOI18N
+        btnBuscar.setText("Buscar");
+        btnBuscar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
+
+        btnClearFilter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/BTN Cancelar BN.png"))); // NOI18N
         btnClearFilter.setText("Quitar Filtros");
         btnClearFilter.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnClearFilter.addActionListener(new java.awt.event.ActionListener() {
@@ -447,14 +481,21 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
             jpanBtnListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpanBtnListLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnBuscar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnClearFilter)
-                .addContainerGap())
+                .addGap(15, 15, 15))
         );
         jpanBtnListLayout.setVerticalGroup(
             jpanBtnListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpanBtnListLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnClearFilter)
+                .addGroup(jpanBtnListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnClearFilter)
+                    .addComponent(btnBuscar)
+                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -472,7 +513,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1)
-                    .addComponent(lblTitleListaClientes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 505, Short.MAX_VALUE)
+                    .addComponent(lblTitleListaClientes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jpanBtnList, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -556,7 +597,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
                     "Cliente Registrado con exito!!",
                     "Exito",
                     JOptionPane.INFORMATION_MESSAGE);
-            this.loadTableClientes();
+            this.loadTableClientes(this.getAllCliente());
             UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
             this.btnNuevo.setEnabled(true);
             this.btnGuardar.setEnabled(false);
@@ -572,7 +613,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
                         "Cliente actualizado con exito!!",
                         "Exito",
                         JOptionPane.INFORMATION_MESSAGE);
-                this.loadTableClientes();
+                this.loadTableClientes(this.getAllCliente());
                 UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
                 this.btnNuevo.setEnabled(true);
                 this.btnGuardar.setEnabled(false);
@@ -645,10 +686,6 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
             }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
-    private void btnClearFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearFilterActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnClearFilterActionPerformed
-
     private Optional<Cliente> getCLientFromTable() {
         int row = this.jTblCliente.getSelectedRow();
         if (row != -1) {
@@ -697,6 +734,40 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_jMnuInfoActionPerformed
 
+    private boolean validateFieldBuscar() {
+        try {
+            if (this.txtBuscar.getText().equals("") || this.txtBuscar.getText().length() < 3) {
+                this.txtBuscar.requestFocus();
+                throw new FieldEmptyException(4012, "Campo buscar vacío o inferior a 3 caracteres.", "Debe cargar NOMBRE, APELLIDO o CORREO ELECTRONICO, o almenos 3 caracteres del párametro a buscar");
+            } else {
+                return true;
+            }
+        } catch (FieldEmptyException ex) {
+            ControllerExceptionHandler.handleError(ex, "Verificar Campos");
+        }
+        return false;
+    }
+    
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        if (this.validateFieldBuscar()) {
+            List<Cliente> findClientes = this.clienteController.findByParams(this.txtBuscar.getText());
+            if (!findClientes.isEmpty()) {
+                this.loadTableClientes(findClientes);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "No se encontraron coincidencias con los datos cargados",
+                    "Información sobre búsqueda",
+                    JOptionPane.INFORMATION_MESSAGE);
+                this.loadTableClientes(new LinkedList<>());
+            }
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void btnClearFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearFilterActionPerformed
+        this.initialStatus();
+        this.loadTableClientes(this.getAllCliente());
+    }//GEN-LAST:event_btnClearFilterActionPerformed
+
     @Override
     public void dispose() {
         this.ppal.salirAlMnuPpal();
@@ -704,6 +775,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnClearFilter;
     private javax.swing.ButtonGroup btnGrupStatus;
@@ -733,6 +805,7 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
     private javax.swing.JRadioButton rBtnActive;
     private javax.swing.JRadioButton rBtnInactive;
     private javax.swing.JTextField txtAddress;
+    private javax.swing.JTextField txtBuscar;
     private javax.swing.JTextField txtDNI;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtLastName;
