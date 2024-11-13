@@ -166,6 +166,8 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         jPopMnuTableOptions = new javax.swing.JPopupMenu();
         jMnuInfo = new javax.swing.JMenuItem();
         jMnuEdit = new javax.swing.JMenuItem();
+        jMnuBaja = new javax.swing.JMenuItem();
+        jMnuEliminar = new javax.swing.JMenuItem();
         jPanGeneral = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         lblTitle = new javax.swing.JLabel();
@@ -216,6 +218,22 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
             }
         });
         jPopMnuTableOptions.add(jMnuEdit);
+
+        jMnuBaja.setText("Baja");
+        jMnuBaja.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMnuBajaActionPerformed(evt);
+            }
+        });
+        jPopMnuTableOptions.add(jMnuBaja);
+
+        jMnuEliminar.setText("Eliminar");
+        jMnuEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMnuEliminarActionPerformed(evt);
+            }
+        });
+        jPopMnuTableOptions.add(jMnuEliminar);
 
         setClosable(true);
         setTitle("Gestión de Clientes");
@@ -768,6 +786,38 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
         this.loadTableClientes(this.getAllCliente());
     }//GEN-LAST:event_btnClearFilterActionPerformed
 
+    private void jMnuBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuBajaActionPerformed
+        Optional<Cliente> clienteOptional = this.getCLientFromTable();
+        if (clienteOptional.isPresent()) {
+            this.clienteSelected = clienteOptional.get();
+            UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+            int delete = JOptionPane.showConfirmDialog(this, "Desea dar de baja al cliente: " + this.clienteSelected.getNombre() + " " + this.clienteSelected.getApellido(),
+                    "Confirmar baja de Cliente", JOptionPane.YES_NO_OPTION);
+            if(delete==0){
+                this.clienteController.bajaCliente(this.clienteSelected);
+                this.loadTableClientes(this.getAllCliente());
+                this.initialStatus();
+            }
+        }
+    }//GEN-LAST:event_jMnuBajaActionPerformed
+
+    private void jMnuEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuEliminarActionPerformed
+         Optional<Cliente> clienteOptional = this.getCLientFromTable();
+        if (clienteOptional.isPresent()) {
+            this.clienteSelected = clienteOptional.get();
+            UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+            int delete = JOptionPane.showConfirmDialog(this, "Desea Eliminar al cliente: " + this.clienteSelected.getNombre() + " " + this.clienteSelected.getApellido(),
+                    "Confirmar Eliminar Cliente", JOptionPane.YES_NO_OPTION);
+            if(delete==0){
+                this.clienteController.delete(this.clienteSelected.getId());
+                this.loadTableClientes(this.getAllCliente());
+                this.initialStatus();
+            }
+        }
+    }//GEN-LAST:event_jMnuEliminarActionPerformed
+
     @Override
     public void dispose() {
         this.ppal.salirAlMnuPpal();
@@ -781,7 +831,9 @@ public final class iFGestionClientes extends javax.swing.JInternalFrame {
     private javax.swing.ButtonGroup btnGrupStatus;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnNuevo;
+    private javax.swing.JMenuItem jMnuBaja;
     private javax.swing.JMenuItem jMnuEdit;
+    private javax.swing.JMenuItem jMnuEliminar;
     private javax.swing.JMenuItem jMnuInfo;
     private javax.swing.JPanel jPanFields;
     private javax.swing.JPanel jPanGeneral;

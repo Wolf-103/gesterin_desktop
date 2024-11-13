@@ -240,6 +240,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         jPopMnuTableOptions = new javax.swing.JPopupMenu();
         jMnuInfo = new javax.swing.JMenuItem();
         jMnuEdit = new javax.swing.JMenuItem();
+        jMnuBaja = new javax.swing.JMenuItem();
         jPanGeneral = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         lblTitle = new javax.swing.JLabel();
@@ -293,6 +294,14 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
             }
         });
         jPopMnuTableOptions.add(jMnuEdit);
+
+        jMnuBaja.setText("Baja");
+        jMnuBaja.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMnuBajaActionPerformed(evt);
+            }
+        });
+        jPopMnuTableOptions.add(jMnuBaja);
 
         setClosable(true);
         setTitle("Gestión de Usuario");
@@ -1091,6 +1100,23 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_cboFilterRoleActionPerformed
 
+    private void jMnuBajaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMnuBajaActionPerformed
+        Optional<Persona> personaOptional = this.getEntityFromTable();
+        if (personaOptional.isPresent()) {
+            this.update = false;
+            UtilGUI.borrarCamposDeComponentes(this.jPanFields);
+            UtilGUI.deshabilitarHabilitarComponentes(this.jPanFields, false);
+            this.personaSelected = personaOptional.get();
+            int delete = JOptionPane.showConfirmDialog(this, "Desea dar de baja al usuario: " + this.personaSelected.getNombre() + " " + this.personaSelected.getApellido(),
+                    "Confirmar baja de Usuario", JOptionPane.YES_NO_OPTION);
+            if(delete==0){
+                this.usuarioController.bajaUsuario(this.personaSelected);
+                this.loadTableUsuarios(this.getAllPersonaUsuario());
+                this.initialStatus();
+            }
+        }
+    }//GEN-LAST:event_jMnuBajaActionPerformed
+
     @Override
     public void dispose() {
         this.ppal.salirAlMnuPpal();
@@ -1108,6 +1134,7 @@ public final class iFGestionUsuarios extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnNuevo;
     private javax.swing.JComboBox<String> cboFilterRole;
     private javax.swing.JComboBox<String> cboRol;
+    private javax.swing.JMenuItem jMnuBaja;
     private javax.swing.JMenuItem jMnuEdit;
     private javax.swing.JMenuItem jMnuInfo;
     private javax.swing.JPanel jPanFields;

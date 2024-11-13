@@ -10,5 +10,17 @@ import java.sql.Connection;
  * @description Sistema GESTERIN
  */
 public interface ConnectionMysql {
-    public Connection getConn();
+    /**
+     * Mètodo destinado a establecer la conexiòn, devuelve como resultado la clase Connection
+     * si se logrò establecer la conexiòn o null sino 
+     * @return Connection o null
+     */
+    Connection getConn();
+
+    /**
+     * La coneciòn debe cerrarse luego de ser utilizada para liberar recursos
+     * tanto del lado del cliente como del lado del servidor
+     * @param conn clase Connection.
+     */
+    void closeConnection(Connection conn);
 }

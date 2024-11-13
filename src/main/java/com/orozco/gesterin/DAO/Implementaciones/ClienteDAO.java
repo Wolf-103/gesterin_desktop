@@ -23,10 +23,15 @@ public class ClienteDAO implements GenericDAO<Cliente, Long> {
 
     private final ConnectionMysql connection;
 
-    public ClienteDAO() {
-        this.connection = new ConnectionMysqlImpl();
+    public ClienteDAO(ConnectionMysql conn) {
+        this.connection = conn;
     }
 
+    /**
+     * Método para guardar un cliente en la base de datos.
+     * @param entity El cliente a guardar.
+     * @return El cliente con el ID generado o null si ocurre un error.
+     */
     @Override
     public Cliente save(Cliente entity) {
         try {
@@ -47,13 +52,13 @@ public class ClienteDAO implements GenericDAO<Cliente, Long> {
                         throw new SQLException("No fue posible obtener el ID generado.");
                     }
                 }
+                this.connection.closeConnection(conn);
             }
 
         } catch (NullPointerException | SQLException ex) {
             ControllerExceptionHandler.handleError(ex, "Error al registrar cliente DNI: " + entity.getDni());
             return null;
         }
-
         return this.findById(entity.getId());
     }
 
@@ -135,7 +140,7 @@ public class ClienteDAO implements GenericDAO<Cliente, Long> {
         String deleteSQL = "DELETE FROM clientes WHERE id=?";
         try (Connection conn = this.connection.getConn(); PreparedStatement sentence = conn.prepareStatement(deleteSQL)) {
             sentence.setLong(1, id);
-            
+
             if (sentence.executeUpdate() == 0) {
                 throw new SQLException("No se ha modificadado ninguna fila.");
             }

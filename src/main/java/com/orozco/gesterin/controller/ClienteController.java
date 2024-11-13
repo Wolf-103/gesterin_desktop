@@ -2,6 +2,7 @@ package com.orozco.gesterin.controller;
 
 import com.orozco.gesterin.model.Cliente;
 import com.orozco.gesterin.DAO.Implementaciones.ClienteDAO;
+import com.orozco.gesterin.DAO.Implementaciones.ConnectionMysqlImpl;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ public class ClienteController {
     private final ClienteDAO clienteDAO;
 
     public ClienteController() {
-        this.clienteDAO = new ClienteDAO();
+        this.clienteDAO = new ClienteDAO( new ConnectionMysqlImpl());
     }
 
     public Cliente save(Cliente cliente) {
@@ -37,6 +38,11 @@ public class ClienteController {
     
     public boolean delete(Long idCliente){
         return this.clienteDAO.delete(idCliente);
+    }
+    
+    public void bajaCliente(Cliente cliente){
+        cliente.setEstado(false);
+        this.update(cliente);
     }
 
 }

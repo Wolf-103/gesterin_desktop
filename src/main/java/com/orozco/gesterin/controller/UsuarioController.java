@@ -47,14 +47,16 @@ public class UsuarioController {
     public List<Administrador> getAllPeopleUserAdministradors() {
         return this.administradorService.findPersonaUsersAdministrators();
     }
+
     public List<Profesional> getAllPeopleProfessionals() {
         return this.profesionalService.findPersonaProfesionals();
     }
+
     public boolean validarEmail(String email) {
         return this.personaService.existsByEmail(email);
     }
-    
-    public List<Persona> findPersonUserWithParam(String param){
+
+    public List<Persona> findPersonUserWithParam(String param) {
         return this.personaService.findByParams(param);
     }
 
@@ -76,6 +78,18 @@ public class UsuarioController {
      */
     public boolean validarTelefono(String telefono) {
         return this.personaService.existsByTelephone(telefono);
+    }
+
+    public void bajaUsuario(Persona persona) {
+        if (persona != null) {
+            if (persona instanceof Administrador admin) {
+                admin.getUsuario().setEstado(false);
+                admin = this.administradorService.update(admin);
+            } else if (persona instanceof Profesional prof) {
+                prof.getUsuario().setEstado(false);
+                prof = this.profesionalService.update(prof);
+            }
+        }
     }
 
     /**
